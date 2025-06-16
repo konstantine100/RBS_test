@@ -385,4 +385,21 @@ public class UserController : ControllerBase
 
         return Ok(user);
     }
+
+
+
+    [HttpPut("change-user-status/{id}")]
+    public ActionResult ChangeStatus(Guid id, USER_STATUS status)
+    {
+        var user = _context.Users.FirstOrDefault(u => u.Id == id);
+        if (user == null)
+        {
+            return NotFound("User not found.");
+        }
+
+        user.UserStatus = status;
+        _context.SaveChanges();
+
+        return Ok("User status updated successfully.");
+    }
 }
