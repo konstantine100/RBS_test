@@ -15,5 +15,6 @@ public class User
     public string? VerificationCode { get; set; }
     
     public string? PasswordResetCode { get; set; }
+    public string? GoogleId { get; set; }
     
 }
