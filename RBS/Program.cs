@@ -4,6 +4,7 @@ using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using RBS.Data;
@@ -41,12 +42,14 @@ builder.Services.AddCors(options =>
 // JWT Service
 builder.Services.AddScoped<IJWTService, JWTService>();
 
-// Authentication configuration
+// Authentication configuration - Fixed
 builder.Services.AddAuthentication(options =>
     {
         options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
         options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme; // Added this line
     })
+    .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme) // Added cookie authentication
     .AddJwtBearer(options =>
     {
         options.TokenValidationParameters = new TokenValidationParameters
@@ -66,6 +69,7 @@ builder.Services.AddAuthentication(options =>
         options.ClientId = builder.Configuration["GoogleAuth:ClientId"];
         options.ClientSecret = builder.Configuration["GoogleAuth:ClientSecret"];
         options.SaveTokens = true;
+        options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme; // Added this line
     });
 
 builder.Services.AddAuthorization(options =>
