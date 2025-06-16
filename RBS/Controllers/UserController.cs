@@ -19,6 +19,7 @@ using RBS.Requests;
 using RBS.Services.Interfaces;
 using RBS.SMTP;
 using RBS.Validation;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Api14.Controllers;
 
@@ -260,10 +261,15 @@ public class UserController : ControllerBase
             var response = new ApiResponse<bool>
             {
                 Data = false,
-                Message = "User Not Found",
+                Message = "User NotFound",
                 Status = StatusCodes.Status404NotFound,
             };
-            
+            //{
+            //    Data = false,
+            //    Message = "User NotFound",
+            //    Status = StatusCodes.Status404NotFound,
+            //};
+
             return NotFound(response);
         }
 
