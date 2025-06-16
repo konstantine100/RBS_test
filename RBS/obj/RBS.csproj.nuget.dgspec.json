@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\kmami\\RiderProjects\\RBS\\RBS\\RBS.csproj": {}
+    "F:\\CuberCoders\\rbs\\RBS\\RBS.csproj": {}
   },
   "projects": {
-    "C:\\Users\\kmami\\RiderProjects\\RBS\\RBS\\RBS.csproj": {
+    "F:\\CuberCoders\\rbs\\RBS\\RBS.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\kmami\\RiderProjects\\RBS\\RBS\\RBS.csproj",
+        "projectUniqueName": "F:\\CuberCoders\\rbs\\RBS\\RBS.csproj",
         "projectName": "RBS",
-        "projectPath": "C:\\Users\\kmami\\RiderProjects\\RBS\\RBS\\RBS.csproj",
-        "packagesPath": "C:\\Users\\kmami\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\kmami\\RiderProjects\\RBS\\RBS\\obj\\",
+        "projectPath": "F:\\CuberCoders\\rbs\\RBS\\RBS.csproj",
+        "packagesPath": "C:\\Users\\shota\\.nuget\\packages\\",
+        "outputPath": "F:\\CuberCoders\\rbs\\RBS\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\kmami\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\shota\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [

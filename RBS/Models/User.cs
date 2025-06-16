@@ -15,5 +15,15 @@ public class User
     public string? VerificationCode { get; set; }
     
     public string? PasswordResetCode { get; set; }
-    
+
+    public DateTime? BirthDate { get; set; }  
+
+    public DateTime VerificationCodeExpired { get; set; }
+    public DateTime? PasswordResetCodeExpired   { get; set; }
+
+   
+  
+
+
+
 }
