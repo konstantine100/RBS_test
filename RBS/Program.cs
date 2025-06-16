@@ -19,6 +19,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<DataContext>();
 
+
+   
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
 builder.Services.AddFluentValidationAutoValidation();
@@ -40,6 +42,7 @@ builder.Services.AddCors(options =>
 
 // ტოკენის კონფიგურაცია
 builder.Services.AddScoped<IJWTService, JWTService>();
+builder.Services.AddScoped<IUserService,UserService>();
 
 builder.Services.AddAuthentication(options =>
     {

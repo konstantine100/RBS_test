@@ -55,11 +55,18 @@ public class UserController : ControllerBase
 
             if (!result.IsValid)
             {
+                string errors = "";
+
+                foreach(var error in result.Errors)
+                {
+                    errors = errors+error.ErrorMessage;
+                }
+
                 var errorResponse = new ApiResponse<UserDTO>
                 {
                     Data = null,
                     Status = StatusCodes.Status409Conflict,
-                    Message = "Invalid User Information",
+                    Message = errors//"Invalid User Information",
                 };
 
                 return BadRequest(errorResponse);

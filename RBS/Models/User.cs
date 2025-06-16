@@ -18,7 +18,7 @@ public class User
 
     public DateTime? BirthDate { get; set; }  
 
-    public DateTime VerificationCodeExpired { get; set; }
+    public DateTime? VerificationCodeExpired { get; set; }
     public DateTime? PasswordResetCodeExpired   { get; set; }
 
    
