@@ -74,18 +74,18 @@ public class GoogleOAuthController : ControllerBase
                 return BadRequest(errorResponse);
             }
 
-            // Check if user already exists
+            
             var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
 
             User user;
             if (existingUser != null)
             {
-                // User exists, update Google ID if not set
+                
                 user = existingUser;
                 if (string.IsNullOrEmpty(user.GoogleId))
                 {
                     user.GoogleId = googleId;
-                    user.Status = ACCOUNT_STATUS.VERIFIED; // Auto-verify Google users
+                    user.Status = ACCOUNT_STATUS.VERIFIED;
                     await _context.SaveChangesAsync();
                 }
             }
@@ -121,9 +121,6 @@ public class GoogleOAuthController : ControllerBase
                 Status = StatusCodes.Status200OK,
                 Message = "Google authentication successful"
             };
-
-            // You can redirect to your frontend with the token
-            // For example: return Redirect($"https://yourfrontend.com/auth/callback?token={token.Token}");
             
             return Ok(response);
         }
@@ -144,7 +141,6 @@ public class GoogleOAuthController : ControllerBase
     {
         try
         {
-            // Verify the Google token (you'll need to implement this)
             var googleUser = await VerifyGoogleToken(request.IdToken);
             
             if (googleUser == null)
