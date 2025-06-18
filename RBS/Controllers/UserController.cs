@@ -66,7 +66,6 @@ public class UserController : ControllerBase
             }
             else
             {
-                user.Password = BCrypt.Net.BCrypt.HashPassword(request.Password);
 
                 Random rand = new Random();
                 string randomCode = rand.Next(10000, 99999).ToString();
@@ -273,7 +272,6 @@ public class UserController : ControllerBase
             {
                 var newPasswordHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
                 
-                user.Password = newPasswordHash;
                 user.PasswordResetCode = null;
                 
                 _context.SaveChanges();
@@ -320,44 +318,9 @@ public class UserController : ControllerBase
 
         else
         {
-            if (BCrypt.Net.BCrypt.Verify(password, user.Password) && user.Status == ACCOUNT_STATUS.VERIFIED)
-            {
-                var response = new ApiResponse<UserToken>
-                {
-                    Data = _jwtService.GetUserToken(user),
-                    Status = 200,
-                    Message = ""
-                };
-
-                return Ok(response);
-            }
             
-            else if (BCrypt.Net.BCrypt.Verify(password, user.Password) && user.Status == ACCOUNT_STATUS.CODE_SENT)
-            {
-                var response = new ApiResponse<bool>
-                {
-                    Data = false,
-                    Status = StatusCodes.Status403Forbidden,
-                    Message = "User Not Verified",
-                };
 
-                return Unauthorized(response);
-            }
-
-            else if (!BCrypt.Net.BCrypt.Verify(password, user.Password))
-            {
-                var response = new ApiResponse<bool>
-                {
-                    Data = false,
-                    Status = StatusCodes.Status401Unauthorized,
-                    Message = "Wrong Password!",
-                };
-
-                return Unauthorized(response);
-            }
-
-            else
-            {
+            
                 var response = new ApiResponse<bool>
                 {
                     Data = false,
@@ -366,7 +329,7 @@ public class UserController : ControllerBase
                 };
             
                 return NotFound(response);
-            }
+            
         }
     }
 

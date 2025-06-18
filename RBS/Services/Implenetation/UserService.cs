@@ -133,7 +133,6 @@ public class UserService : IUserService
             }
             else if (changeParametr.ToLower() == "password")
             {
-                user.Password = toChange;
 
                 var validator = new UserValidator();
                 var result = validator.Validate(user);
@@ -152,7 +151,6 @@ public class UserService : IUserService
                 else
                 {
                     var hashedPassword = BCrypt.Net.BCrypt.HashPassword(toChange);
-                    user.Password = hashedPassword;
                     
                     _context.SaveChanges();
                     

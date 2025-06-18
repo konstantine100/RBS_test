@@ -38,7 +38,7 @@ public class GoogleOAuthController : ControllerBase
         var properties = new AuthenticationProperties { RedirectUri = redirectUrl };
         return Challenge(properties, GoogleDefaults.AuthenticationScheme);
     }
-
+    
     [HttpGet("callback")]
     public async Task<IActionResult> GoogleCallback()
     {
@@ -101,7 +101,6 @@ public class GoogleOAuthController : ControllerBase
                     GoogleId = googleId,
                     Status = ACCOUNT_STATUS.VERIFIED, // Auto-verify Google users
                     Role = ROLES.User,
-                    Password = string.Empty // No password for Google users
                 };
 
                 _context.Users.Add(user);
@@ -144,7 +143,7 @@ public class GoogleOAuthController : ControllerBase
     {
         try
         {
-            // Verify the Google token (you'll need to implement this)
+            // Verify the Google token 
             var googleUser = await VerifyGoogleToken(request.IdToken);
             
             if (googleUser == null)
@@ -183,7 +182,6 @@ public class GoogleOAuthController : ControllerBase
                     GoogleId = googleUser.GoogleId,
                     Status = ACCOUNT_STATUS.VERIFIED,
                     Role = ROLES.User,
-                    Password = string.Empty
                 };
 
                 _context.Users.Add(user);
