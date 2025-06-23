@@ -12,7 +12,7 @@ using RBS.Data;
 namespace RBS.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20250618105036_init")]
+    [Migration("20250623085734_init")]
     partial class init
     {
         /// <inheritdoc />
