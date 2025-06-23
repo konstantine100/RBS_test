@@ -68,26 +68,34 @@
                 claimsPrincipal.FindFirstValue(ClaimTypes.Email) ?? string.Empty,
                 "Google");
 
-            var loginResult = await _userManager.AddLoginAsync(user, info);
+            // Check if the login already exists for this user
+            var existingLogins = await _userManager.GetLoginsAsync(user);
+            var hasGoogleLogin = existingLogins.Any(x => x.LoginProvider == "Google" && x.ProviderKey == info.ProviderKey);
 
-            if (!loginResult.Succeeded)
+            if (!hasGoogleLogin)
             {
-                throw new ExternalLoginProviderException("Google", 
-                    $"unable to login user: {string.Join(", ", loginResult.Errors.Select(x => x.Description))}");
+                var loginResult = await _userManager.AddLoginAsync(user, info);
+
+                if (!loginResult.Succeeded)
+                {
+                    throw new ExternalLoginProviderException("Google", 
+                        $"unable to login user: {string.Join(", ", loginResult.Errors.Select(x => x.Description))}");
+                }
             }
             
-            var token = _jwtService.GetUserToken(user);
+            var jwtToken = _jwtService.GetUserToken(user);
+            var jwtTokenString = jwtToken.Token;
+            var expirationDateInUtc = DateTime.UtcNow.AddMinutes(300);
+            var refreshTokenValue = _jwtService.GenerateRefreshToken();
 
-            var response = new ApiResponse<GoogleAuthResponse>
-            {
-                Data = new GoogleAuthResponse
-                {
-                    Token = token.Token,
-                    User = _mapper.Map<UserDTO>(user)
-                },
-                Status = StatusCodes.Status200OK,
-                Message = "Google authentication successful"
-            };
-            
+            var refreshTokenExpirationDateInUtc = DateTime.UtcNow.AddDays(7);
+
+            user.RefreshToken = refreshTokenValue;
+            user.RefreshTokenExpiresAtUtc = refreshTokenExpirationDateInUtc;
+
+            await _userManager.UpdateAsync(user);
+
+            _jwtService.WriteAuthTokenAsHttpOnlyCookie("ACCESS_TOKEN", jwtTokenString, expirationDateInUtc);
+            _jwtService.WriteAuthTokenAsHttpOnlyCookie("REFRESH_TOKEN", user.RefreshToken, refreshTokenExpirationDateInUtc);
         }
     }

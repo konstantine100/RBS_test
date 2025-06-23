@@ -34,6 +34,8 @@ namespace RBS.Migrations
                     LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
                     Role = table.Column<int>(type: "int", nullable: false),
+                    RefreshToken = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    RefreshTokenExpiresAtUtc = table.Column<DateTime>(type: "datetime2", nullable: true),
                     VerificationCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     PasswordResetCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     GoogleId = table.Column<string>(type: "nvarchar(max)", nullable: true),

@@ -16,6 +16,8 @@ public class User : IdentityUser<Guid>
     // public string Password { get; set; } // Inherited as PasswordHash (handled automatically)
 
     // public List<Booking> Bookings { get; set; } = new List<Booking>();
+    public string? RefreshToken { get; set; }
+    public DateTime? RefreshTokenExpiresAtUtc { get; set; }
     public string? VerificationCode { get; set; }
     public string? PasswordResetCode { get; set; }
     public string? GoogleId { get; set; }

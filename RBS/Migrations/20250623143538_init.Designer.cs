@@ -12,7 +12,7 @@ using RBS.Data;
 namespace RBS.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20250623085734_init")]
+    [Migration("20250623143538_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -212,6 +212,12 @@ namespace RBS.Migrations
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
+
+                    b.Property<string>("RefreshToken")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("RefreshTokenExpiresAtUtc")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("Role")
                         .HasColumnType("int");
