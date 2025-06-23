@@ -12,6 +12,7 @@ public class Space
     public decimal SpacePrice { get; set; }
     
     public List<Table> Tables { get; set; } = new List<Table>();
+    public List<Booking> Bookings { get; set; } = new List<Booking>();
 
     // space -> tables list
     // tables -> chairs list

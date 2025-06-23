@@ -14,7 +14,8 @@ public class User : IdentityUser<Guid>
     // public Guid Id { get; set; }         // Inherited as Id
     // public string Email { get; set; }    // Inherited as Email
     // public string Password { get; set; } // Inherited as PasswordHash (handled automatically)
-    
+
+    // public List<Booking> Bookings { get; set; } = new List<Booking>();
     public string? VerificationCode { get; set; }
     public string? PasswordResetCode { get; set; }
     public string? GoogleId { get; set; }

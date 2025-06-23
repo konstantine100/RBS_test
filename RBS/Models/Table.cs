@@ -19,7 +19,7 @@ public class Table
     public Guid SpaceId { get; set; }
     public Space Space { get; set; }
     public List<Chair> Chairs { get; set; } = new List<Chair>();
-
+    public List<Booking> Bookings { get; set; } = new List<Booking>();
 
     public Table()
     {

@@ -12,4 +12,5 @@ public class Chair
     
     public Guid TableId { get; set; }
     public Table Table { get; set; }
+    public List<Booking> Bookings { get; set; } = new List<Booking>();
 }
