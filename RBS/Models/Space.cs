@@ -7,6 +7,7 @@ public class Space
     public Guid Id { get; set; }
     public SPACE_TYPE SpaceType { get; set; } // enum ? 
     public decimal SpacePrice { get; set; }
+    public bool IsAvailable { get; set; } = true;
     
     public Guid RestaurantId { get; set; }
     public Restaurant Restaurant { get; set; }

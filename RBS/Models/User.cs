@@ -15,7 +15,7 @@ public class User : IdentityUser<Guid>
     // public string Email { get; set; }    // Inherited as Email
     // public string Password { get; set; } // Inherited as PasswordHash (handled automatically)
 
-    // public List<Booking> MyBookings { get; set; } = new List<Booking>();
+    public List<Booking> MyBookings { get; set; } = new List<Booking>();
     public string? RefreshToken { get; set; }
     public DateTime? RefreshTokenExpiresAtUtc { get; set; }
     public string? VerificationCode { get; set; }

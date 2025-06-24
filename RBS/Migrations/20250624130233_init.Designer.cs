@@ -12,7 +12,7 @@ using RBS.Data;
 namespace RBS.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20250624100208_init")]
+    [Migration("20250624130233_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -183,8 +183,14 @@ namespace RBS.Migrations
                     b.Property<DateTime>("BookingDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<DateTime?>("BookingDateEnd")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTime>("BookingExpireDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsFinished")
+                        .HasColumnType("bit");
 
                     b.Property<bool>("IsPayed")
                         .HasColumnType("bit");
@@ -508,7 +514,7 @@ namespace RBS.Migrations
                         .HasForeignKey("TableId");
 
                     b.HasOne("RBS.Models.User", "User")
-                        .WithMany()
+                        .WithMany("MyBookings")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -570,6 +576,11 @@ namespace RBS.Migrations
                     b.Navigation("Bookings");
 
                     b.Navigation("Chairs");
+                });
+
+            modelBuilder.Entity("RBS.Models.User", b =>
+                {
+                    b.Navigation("MyBookings");
                 });
 #pragma warning restore 612, 618
         }
