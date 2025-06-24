@@ -12,7 +12,7 @@ using RBS.Data;
 namespace RBS.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20250623143538_init")]
+    [Migration("20250624100208_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -24,6 +24,21 @@ namespace RBS.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("BookingChair", b =>
+                {
+                    b.Property<Guid>("BookingsId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ChairsId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("BookingsId", "ChairsId");
+
+                    b.HasIndex("ChairsId");
+
+                    b.ToTable("BookingChair");
+                });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", b =>
                 {
@@ -156,6 +171,171 @@ namespace RBS.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("RBS.Models.Booking", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("BookedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("BookingDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("BookingExpireDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsPayed")
+                        .HasColumnType("bit");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<Guid?>("SpaceId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("TableId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SpaceId");
+
+                    b.HasIndex("TableId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Bookings");
+                });
+
+            modelBuilder.Entity("RBS.Models.Chair", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ChairNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("ChairPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<bool>("IsAvailable")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsBooked")
+                        .HasColumnType("bit");
+
+                    b.Property<decimal?>("MinSpent")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<Guid>("TableId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TableId");
+
+                    b.ToTable("Chairs");
+                });
+
+            modelBuilder.Entity("RBS.Models.Restaurant", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("Lat")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("Lon")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Restaurants");
+                });
+
+            modelBuilder.Entity("RBS.Models.Space", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("RestaurantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("SpacePrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("SpaceType")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RestaurantId");
+
+                    b.ToTable("Spaces");
+                });
+
+            modelBuilder.Entity("RBS.Models.Table", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("ChairQuantity")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsAvailable")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsFilled")
+                        .HasColumnType("bit");
+
+                    b.Property<decimal?>("MinSpent")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<Guid>("SpaceId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("TableNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("TablePrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("TableShape")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TableType")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SpaceId");
+
+                    b.ToTable("Tables");
+                });
+
             modelBuilder.Entity("RBS.Models.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -251,6 +431,21 @@ namespace RBS.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("BookingChair", b =>
+                {
+                    b.HasOne("RBS.Models.Booking", null)
+                        .WithMany()
+                        .HasForeignKey("BookingsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("RBS.Models.Chair", null)
+                        .WithMany()
+                        .HasForeignKey("ChairsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", null)
@@ -300,6 +495,81 @@ namespace RBS.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("RBS.Models.Booking", b =>
+                {
+                    b.HasOne("RBS.Models.Space", "Space")
+                        .WithMany("Bookings")
+                        .HasForeignKey("SpaceId");
+
+                    b.HasOne("RBS.Models.Table", "Table")
+                        .WithMany("Bookings")
+                        .HasForeignKey("TableId");
+
+                    b.HasOne("RBS.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Space");
+
+                    b.Navigation("Table");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("RBS.Models.Chair", b =>
+                {
+                    b.HasOne("RBS.Models.Table", "Table")
+                        .WithMany("Chairs")
+                        .HasForeignKey("TableId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Table");
+                });
+
+            modelBuilder.Entity("RBS.Models.Space", b =>
+                {
+                    b.HasOne("RBS.Models.Restaurant", "Restaurant")
+                        .WithMany("Spaces")
+                        .HasForeignKey("RestaurantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Restaurant");
+                });
+
+            modelBuilder.Entity("RBS.Models.Table", b =>
+                {
+                    b.HasOne("RBS.Models.Space", "Space")
+                        .WithMany("Tables")
+                        .HasForeignKey("SpaceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Space");
+                });
+
+            modelBuilder.Entity("RBS.Models.Restaurant", b =>
+                {
+                    b.Navigation("Spaces");
+                });
+
+            modelBuilder.Entity("RBS.Models.Space", b =>
+                {
+                    b.Navigation("Bookings");
+
+                    b.Navigation("Tables");
+                });
+
+            modelBuilder.Entity("RBS.Models.Table", b =>
+                {
+                    b.Navigation("Bookings");
+
+                    b.Navigation("Chairs");
                 });
 #pragma warning restore 612, 618
         }

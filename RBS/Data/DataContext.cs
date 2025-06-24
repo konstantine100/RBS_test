@@ -8,6 +8,11 @@ namespace RBS.Data;
 
 public class DataContext : IdentityDbContext<User, IdentityRole<Guid>, Guid>
 {
+    public DbSet<Restaurant> Restaurants { get; set; }
+    public DbSet<Space> Spaces { get; set; }
+    public DbSet<Table> Tables { get; set; }
+    public DbSet<Chair> Chairs { get; set; }
+    public DbSet<Booking> Bookings { get; set; }
     
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

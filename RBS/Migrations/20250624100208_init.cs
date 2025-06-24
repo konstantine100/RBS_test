@@ -60,6 +60,22 @@ namespace RBS.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Restaurants",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Lat = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    Lon = table.Column<decimal>(type: "decimal(18,2)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Restaurants", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AspNetRoleClaims",
                 columns: table => new
                 {
@@ -165,6 +181,134 @@ namespace RBS.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Spaces",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    SpaceType = table.Column<int>(type: "int", nullable: false),
+                    SpacePrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    RestaurantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Spaces", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Spaces_Restaurants_RestaurantId",
+                        column: x => x.RestaurantId,
+                        principalTable: "Restaurants",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Tables",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    TableType = table.Column<int>(type: "int", nullable: false),
+                    TableShape = table.Column<int>(type: "int", nullable: false),
+                    ChairQuantity = table.Column<int>(type: "int", nullable: false),
+                    TableNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsAvailable = table.Column<bool>(type: "bit", nullable: false),
+                    IsFilled = table.Column<bool>(type: "bit", nullable: false),
+                    TablePrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    MinSpent = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    SpaceId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Tables", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Tables_Spaces_SpaceId",
+                        column: x => x.SpaceId,
+                        principalTable: "Spaces",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Bookings",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    BookedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    BookingDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    BookingExpireDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsPayed = table.Column<bool>(type: "bit", nullable: false),
+                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    TableId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    SpaceId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Bookings", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Bookings_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Bookings_Spaces_SpaceId",
+                        column: x => x.SpaceId,
+                        principalTable: "Spaces",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Bookings_Tables_TableId",
+                        column: x => x.TableId,
+                        principalTable: "Tables",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Chairs",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ChairNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    MinSpent = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    IsBooked = table.Column<bool>(type: "bit", nullable: false),
+                    IsAvailable = table.Column<bool>(type: "bit", nullable: false),
+                    ChairPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    TableId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Chairs", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Chairs_Tables_TableId",
+                        column: x => x.TableId,
+                        principalTable: "Tables",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "BookingChair",
+                columns: table => new
+                {
+                    BookingsId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ChairsId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BookingChair", x => new { x.BookingsId, x.ChairsId });
+                    table.ForeignKey(
+                        name: "FK_BookingChair_Bookings_BookingsId",
+                        column: x => x.BookingsId,
+                        principalTable: "Bookings",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_BookingChair_Chairs_ChairsId",
+                        column: x => x.ChairsId,
+                        principalTable: "Chairs",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -203,6 +347,41 @@ namespace RBS.Migrations
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BookingChair_ChairsId",
+                table: "BookingChair",
+                column: "ChairsId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Bookings_SpaceId",
+                table: "Bookings",
+                column: "SpaceId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Bookings_TableId",
+                table: "Bookings",
+                column: "TableId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Bookings_UserId",
+                table: "Bookings",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Chairs_TableId",
+                table: "Chairs",
+                column: "TableId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Spaces_RestaurantId",
+                table: "Spaces",
+                column: "RestaurantId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tables_SpaceId",
+                table: "Tables",
+                column: "SpaceId");
         }
 
         /// <inheritdoc />
@@ -224,10 +403,28 @@ namespace RBS.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "BookingChair");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
+                name: "Bookings");
+
+            migrationBuilder.DropTable(
+                name: "Chairs");
+
+            migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "Tables");
+
+            migrationBuilder.DropTable(
+                name: "Spaces");
+
+            migrationBuilder.DropTable(
+                name: "Restaurants");
         }
     }
 }
