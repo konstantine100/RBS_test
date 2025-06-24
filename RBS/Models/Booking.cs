@@ -7,6 +7,7 @@ public class Booking
     public DateTime BookedAt { get; set; } = DateTime.UtcNow;
     public DateTime BookingDate { get; set; } 
     public DateTime BookingExpireDate { get; set; }
+    public bool IsPayed { get; set; } = false;
     public decimal Price { get; set; }
     
     public Guid UserId { get; set; }
