@@ -16,232 +16,11 @@ public class BookingService : IBookingService
     private readonly DataContext _context;
     private readonly IMapper _mapper;
     
-    
-    // for testing
     public BookingService(DataContext context, IMapper mapper)
     {
         _context = context;
         _mapper = mapper;
     }
-    public ApiResponse<RestaurantDTO> AddRestaurant(AddRestaurant request)
-    {
-        var restaurant = _mapper.Map<Restaurant>(request);
-        var validator = new RestaurantValidator();
-        var result = validator.Validate(restaurant);
-
-        if (!result.IsValid)
-        {
-            string errors = string.Join(", ", result.Errors.Select(x => x.ErrorMessage));
-
-            var response = ApiResponseService<RestaurantDTO>
-                .Response(null, errors, StatusCodes.Status400BadRequest);
-            return response;
-        }
-        else
-        {
-            _context.Restaurants.Add(restaurant);
-            _context.SaveChanges();
-            
-            var response = ApiResponseService<RestaurantDTO>
-                .Response(_mapper.Map<RestaurantDTO>(restaurant), null, StatusCodes.Status200OK);
-            return response;
-        }
-    }
-
-    public ApiResponse<SpaceDTO> AddSpace(Guid restaurantId, AddSpace request)
-    {
-        var restaurant = _context.Restaurants
-            .Include(x => x.Spaces)
-            .FirstOrDefault(x => x.Id == restaurantId);
-
-        if (restaurant == null)
-        {
-            var response = ApiResponseService<SpaceDTO>
-                .Response(null, "Restaurant not found", StatusCodes.Status404NotFound);
-            return response;
-        }
-        var space = _mapper.Map<Space>(request);
-        var validator = new SpaceValidator();
-        var result = validator.Validate(space);
-
-        if (!result.IsValid)
-        {
-            string errors = string.Join(", ", result.Errors.Select(x => x.ErrorMessage));
-
-            var response = ApiResponseService<SpaceDTO>
-                .Response(null, errors, StatusCodes.Status400BadRequest);
-            return response;
-        }
-        else
-        {
-            restaurant.Spaces.Add(space);
-            _context.SaveChanges();
-            
-            var response = ApiResponseService<SpaceDTO>
-                .Response(_mapper.Map<SpaceDTO>(space), null, StatusCodes.Status200OK);
-            return response;
-        }
-    }
-
-    public ApiResponse<TableDTO> AddTable(Guid spaceId, AddTable request)
-    {
-        var space = _context.Spaces
-            .Include(x => x.Tables)
-            .FirstOrDefault(x => x.Id == spaceId);
-
-        if (space == null)
-        {
-            var response = ApiResponseService<TableDTO>
-                .Response(null, "Space not found", StatusCodes.Status404NotFound);
-            return response;
-        }
-        var table = _mapper.Map<Table>(request);
-        var validator = new TableValidator();
-        var result = validator.Validate(table);
-
-        if (!result.IsValid)
-        {
-            string errors = string.Join(", ", result.Errors.Select(x => x.ErrorMessage));
-
-            var response = ApiResponseService<TableDTO>
-                .Response(null, errors, StatusCodes.Status400BadRequest);
-            return response;
-        }
-        else
-        {
-            space.Tables.Add(table);
-            _context.SaveChanges();
-            
-            var response = ApiResponseService<TableDTO>
-                .Response(_mapper.Map<TableDTO>(table), null, StatusCodes.Status200OK);
-            return response;
-        }
-    }
-
-    public ApiResponse<ChairDTO> AddChair(Guid tableId, AddChair request)
-    {
-        var table = _context.Tables
-            .Include(x => x.Chairs)
-            .FirstOrDefault(x => x.Id == tableId);
-
-        if (table == null)
-        {
-            var response = ApiResponseService<ChairDTO>
-                .Response(null, "Table not found", StatusCodes.Status404NotFound);
-            return response;
-        }
-        var chair = _mapper.Map<Chair>(request);
-        var validator = new ChairValidator();
-        var result = validator.Validate(chair);
-
-        if (!result.IsValid)
-        {
-            string errors = string.Join(", ", result.Errors.Select(x => x.ErrorMessage));
-
-            var response = ApiResponseService<ChairDTO>
-                .Response(null, errors, StatusCodes.Status400BadRequest);
-            return response;
-        }
-        else
-        {
-            table.Chairs.Add(chair);
-            _context.SaveChanges();
-            
-            var response = ApiResponseService<ChairDTO>
-                .Response(_mapper.Map<ChairDTO>(chair), null, StatusCodes.Status200OK);
-            return response;
-        }
-    }
-
-    public ApiResponse<RestaurantDTO> DeleteRestaurant(Guid restaurantId)
-    {
-        var restaurant = _context.Restaurants
-            .FirstOrDefault(x => x.Id == restaurantId);
-
-        if (restaurant == null)
-        {
-            var response = ApiResponseService<RestaurantDTO>
-                .Response(null, "Restaurant not found", StatusCodes.Status404NotFound);
-            return response;
-        }
-        else
-        {
-            _context.Restaurants.Remove(restaurant);
-            _context.SaveChanges();
-
-            var response = ApiResponseService<RestaurantDTO>
-                .Response200(_mapper.Map<RestaurantDTO>(restaurant));
-            return response;
-        }
-    }
-
-    public ApiResponse<SpaceDTO> DeleteSpace(Guid spaceId)
-    {
-        var space = _context.Spaces
-            .FirstOrDefault(x => x.Id == spaceId);
-
-        if (space == null)
-        {
-            var response = ApiResponseService<SpaceDTO>
-                .Response(null, "Space not found", StatusCodes.Status404NotFound);
-            return response;
-        }
-        else
-        {
-            _context.Spaces.Remove(space);
-            _context.SaveChanges();
-
-            var response = ApiResponseService<SpaceDTO>
-                .Response200(_mapper.Map<SpaceDTO>(space));
-            return response;
-        }
-    }
-
-    public ApiResponse<TableDTO> DeleteTable(Guid tableId)
-    {
-        var table = _context.Tables
-            .FirstOrDefault(x => x.Id == tableId);
-
-        if (table == null)
-        {
-            var response = ApiResponseService<TableDTO>
-                .Response(null, "Table not found", StatusCodes.Status404NotFound);
-            return response;
-        }
-        else
-        {
-            _context.Tables.Remove(table);
-            _context.SaveChanges();
-
-            var response = ApiResponseService<TableDTO>
-                .Response200(_mapper.Map<TableDTO>(table));
-            return response;
-        }
-    }
-
-    public ApiResponse<ChairDTO> DeleteChair(Guid chairId)
-    {
-        var chair = _context.Chairs
-            .FirstOrDefault(x => x.Id == chairId);
-
-        if (chair == null)
-        {
-            var response = ApiResponseService<ChairDTO>
-                .Response(null, "Chair not found", StatusCodes.Status404NotFound);
-            return response;
-        }
-        else
-        {
-            _context.Chairs.Remove(chair);
-            _context.SaveChanges();
-
-            var response = ApiResponseService<ChairDTO>
-                .Response200(_mapper.Map<ChairDTO>(chair));
-            return response;
-        }
-    }
-
-    // Main Part
     public ApiResponse<BookingDTO> ChooseSpace(Guid userId, Guid spaceId, AddBooking request, DateTime endDate)
     {
         var user = _context.Users
@@ -268,7 +47,7 @@ public class BookingService : IBookingService
             }
             else
             {
-                if (space.IsAvailable)
+                if (!space.IsAvailable)
                 {
                     var response = ApiResponseService<BookingDTO>
                         .Response(null, "Space is not available", StatusCodes.Status400BadRequest);
@@ -298,12 +77,12 @@ public class BookingService : IBookingService
                             .ThenInclude(x => x.Bookings)
                             .Where(x => x.SpaceId == space.Id);
                         
-                        var Bookings = tables
-                            .Where(x => x.Bookings.Any(x => x.BookingDate.Hour >= booking.BookingDate.Hour) &&
-                                             x.Chairs.Any(x => x.Bookings.Any(x => x.BookingDate.Hour >= booking.BookingDate.Hour)))
+                        var allConflictingBookings = _context.Bookings
+                            .Where(x => x.BookingDate >= booking.BookingDate && x.BookingDate <= booking.BookingDateEnd )
                             .ToList();
+                        
 
-                        if (Bookings.Count != 0)
+                        if (allConflictingBookings.Count != 0)
                         {
                             var response = ApiResponseService<BookingDTO>
                                 .Response(null, "can't book at that time!", StatusCodes.Status400BadRequest);
@@ -314,7 +93,6 @@ public class BookingService : IBookingService
                             booking.BookingExpireDate = DateTime.UtcNow.AddMinutes(10);
                             user.MyBookings.Add(booking);
                             space.Bookings.Add(booking);
-                            space.IsAvailable = false;
                             
                             _context.SaveChanges();
 
@@ -323,63 +101,6 @@ public class BookingService : IBookingService
                             return response;
                         }
                     }
-                }
-            }
-        }
-    }
-
-    public ApiResponse<BookingDTO> BookSpace(Guid userId, Guid bookingId)
-    {
-        var user = _context.Users
-            .Include(x => x.MyBookings)
-            .ThenInclude(x => x.Space)
-            .ThenInclude(x => x.Restaurant)
-            .FirstOrDefault(x => x.Id == userId);
-
-        if (user == null)
-        {
-            var response = ApiResponseService<BookingDTO>
-                .Response(null, "User not found", StatusCodes.Status404NotFound);
-            return response;
-        }
-        else
-        {
-            var booking = user.MyBookings.FirstOrDefault(x => x.Id == bookingId);
-
-            if (booking == null)
-            {
-                var response = ApiResponseService<BookingDTO>
-                    .Response(null, "Booking not found", StatusCodes.Status404NotFound);
-                return response;
-            }
-            else
-            {
-                if (DateTime.UtcNow > booking.BookingExpireDate)
-                {
-                    booking.Space.IsAvailable = true;
-                    _context.Bookings.Remove(booking);
-                    _context.SaveChanges();
-                    
-                    var response = ApiResponseService<BookingDTO>
-                        .Response(null, "booking time expired", StatusCodes.Status410Gone);
-                    return response;
-                }
-                else
-                {
-                    // aq iqneba payment
-                    
-                    booking.Space.IsAvailable = true;
-                    booking.IsPayed = true;
-                    _context.SaveChanges();
-                    
-                    SMTPService smtpService = new SMTPService();
-
-                    smtpService.SendEmail(user.Email, "Space Booked", $"<p>at restaurant {booking.Space.Restaurant.Title}, space {booking.Space.SpaceType} was booked at {booking.BookingDate} - {booking.BookingDateEnd}</p>");
-
-                    
-                    var response = ApiResponseService<BookingDTO>
-                        .Response200(_mapper.Map<BookingDTO>(booking));
-                    return response;
                 }
             }
         }
@@ -404,10 +125,6 @@ public class BookingService : IBookingService
                 .Include(x => x.Chairs)
                 .ThenInclude(x => x.Bookings)
                 .FirstOrDefault(x => x.Id == tableId);
-            
-            var space = _context.Spaces
-                .Include(x => x.Bookings)
-                .FirstOrDefault(x => x.Id == table.SpaceId);
 
             if (table == null)
             {
@@ -417,7 +134,7 @@ public class BookingService : IBookingService
             }
             else
             {
-                if (table.IsAvailable == false)
+                if (!table.IsAvailable)
                 {
                     var response = ApiResponseService<BookingDTO>
                         .Response(null, "Table is not available", StatusCodes.Status400BadRequest);
@@ -439,26 +156,40 @@ public class BookingService : IBookingService
                     }
                     else
                     {
-                        var tableBooking = table.Bookings
-                            .Where(x => x.BookingDate > booking.BookingDate ||
-                                        x.Chairs.Any(x => x.Bookings.Any(x => x.BookingDate > booking.BookingDate)))
+                        TimeSpan after18Hour = new TimeSpan(18, 0, 0);
+                        List<Booking> conflictBookings = _context.Bookings
+                            .Include(x => x.Table)
+                            .ThenInclude(x => x.Chairs)
+                            .ThenInclude(x => x.Bookings)
+                            .Where(x => (x.TableId == tableId || x.Chairs.Any(y => y.TableId == tableId)) &&
+                                        x.BookingDate.Day == booking.BookingDate.Day)
                             .ToList();
                         
-                        var spaceBooking = space.Bookings
-                            .Where(x => x.BookingDate > booking.BookingDate &&
-                                                x.BookingDateEnd < booking.BookingDateEnd)
-                            .ToList();
+                        if (booking.BookingDate.Hour < after18Hour.Hours)
+                        {
+                            //new code
+                            conflictBookings = conflictBookings
+                                .Where(x => (x.BookingDate - booking.BookingDate).Duration() < TimeSpan.FromHours(1) &&
+                                            (x.BookingDate - booking.BookingDate).Duration() > TimeSpan.FromHours(-1))
+                                .ToList();
+                            
+                        }
 
-                        if (tableBooking.Count != 0)
+                        else if (booking.BookingDate.Hour > after18Hour.Hours)
+                        {
+                            //new code
+                            conflictBookings = conflictBookings
+                                .Where(x => x.BookingDate.Hour > after18Hour.Hours &&
+                                                    (x.BookingDate <= booking.BookingDate ||
+                                                     (x.BookingDate - booking.BookingDate).Duration() < TimeSpan.FromHours(-1)))
+                                .ToList();
+                            
+                        }
+
+                        if (conflictBookings.Count != 0)
                         {
                             var response = ApiResponseService<BookingDTO>
                                 .Response(null, "table not available", StatusCodes.Status400BadRequest);
-                            return response;
-                        }
-                        else if (spaceBooking.Count != 0)
-                        {
-                            var response = ApiResponseService<BookingDTO>
-                                .Response(null, "table and space not available", StatusCodes.Status400BadRequest);
                             return response;
                         }
                         else
@@ -466,7 +197,6 @@ public class BookingService : IBookingService
                             booking.BookingExpireDate = DateTime.UtcNow.AddMinutes(10);
                             user.MyBookings.Add(booking);
                             table.Bookings.Add(booking);
-                            table.IsAvailable = false;
                             _context.SaveChanges();
                         
                             var response = ApiResponseService<BookingDTO>
@@ -478,65 +208,7 @@ public class BookingService : IBookingService
             }
         }
     }
-
-    public ApiResponse<BookingDTO> BookTable(Guid userId, Guid bookingId)
-    {
-        var user = _context.Users
-            .Include(x => x.MyBookings)
-            .ThenInclude(x => x.Table)
-            .ThenInclude(x => x.Space)
-            .ThenInclude(x => x.Restaurant)
-            .FirstOrDefault(x => x.Id == userId);
-
-        if (user == null)
-        {
-            var response = ApiResponseService<BookingDTO>
-                .Response(null, "User not found", StatusCodes.Status404NotFound);
-            return response;
-        }
-        else
-        {
-            var booking = user.MyBookings.FirstOrDefault(x => x.Id == bookingId);
-
-            if (booking == null)
-            {
-                var response = ApiResponseService<BookingDTO>
-                    .Response(null, "Booking not found", StatusCodes.Status404NotFound);
-                return response;
-            }
-            else
-            {
-                if (DateTime.UtcNow > booking.BookingExpireDate)
-                {
-                    booking.Table.IsAvailable = true;
-                    _context.Bookings.Remove(booking);
-                    _context.SaveChanges();
-                    
-                    var response = ApiResponseService<BookingDTO>
-                        .Response(null, "booking time expired", StatusCodes.Status410Gone);
-                    return response;
-                }
-                else
-                {
-                    // aq iqneba payment
-                    
-                    booking.Table.IsAvailable = true;
-                    booking.IsPayed = true;
-                    _context.SaveChanges();
-                    
-                    SMTPService smtpService = new SMTPService();
-
-                    smtpService.SendEmail(user.Email, "Table Booked", $"<p>at restaurant {booking.Table.Space.Restaurant.Title}, space {booking.Table.TableNumber} was booked at {booking.BookingDate} - {booking.BookingDateEnd}</p>");
-
-                    
-                    var response = ApiResponseService<BookingDTO>
-                        .Response200(_mapper.Map<BookingDTO>(booking));
-                    return response;
-                }
-            }
-        }
-    }
-
+    
     public ApiResponse<BookingDTO> ChooseChair(Guid userId, Guid chairId, AddBooking request)
     {
         var user = _context.Users
@@ -556,10 +228,6 @@ public class BookingService : IBookingService
                 .Include(x => x.Table)
                 .ThenInclude(x => x.Bookings)
                 .FirstOrDefault(x => x.Id == chairId);
-            
-            var space = _context.Spaces
-                .Include(x => x.Bookings)
-                .FirstOrDefault(x => x.Id == chair.Table.SpaceId);
 
             if (chair == null)
             {
@@ -591,26 +259,45 @@ public class BookingService : IBookingService
                     }
                     else
                     {
-                        var chairBooking = chair.Bookings
-                            .Where(x => x.BookingDate > booking.BookingDate || 
-                                        x.Table.Bookings.Any(x => x.BookingDate > booking.BookingDate))
-                            .ToList();
-                        
-                        var spaceBooking = space.Bookings
-                            .Where(x => x.BookingDate > booking.BookingDate &&
-                                                x.BookingDateEnd < booking.BookingDateEnd)
+                        TimeSpan after18Hour = new TimeSpan(18, 0, 0);
+                        List<Booking> conflictBookings = _context.Bookings
+                            .Include(x => x.Chairs)
+                            .Include(x => x.Table)
+                            .ThenInclude(x => x.Bookings)
+                            .Where(x => (x.Chairs.Any(x => x.Id == chairId)) &&
+                                                x.BookingDate.Day == booking.BookingDate.Day)
                             .ToList();
 
-                        if (chairBooking.Count != 0)
+                        List<Booking> tableConflicts = _context.Bookings
+                            .Where(x => x.TableId == chair.TableId &&
+                                                x.BookingDate.Day == booking.BookingDate.Day)
+                            .ToList();
+
+                        List<Booking> allConflicts = new List<Booking>();
+                        allConflicts.AddRange(conflictBookings);
+                        allConflicts.AddRange(tableConflicts);
+                        
+                        if (booking.BookingDate.Hour < after18Hour.Hours)
+                        {
+                            allConflicts = allConflicts
+                                .Where(x => (x.BookingDate - booking.BookingDate).Duration() < TimeSpan.FromHours(1) &&
+                                            (x.BookingDate - booking.BookingDate).Duration() > TimeSpan.FromHours(-1))
+                                .ToList();
+                        }
+                        else if (booking.BookingDate.Hour > after18Hour.Hours)
+                        {
+                            allConflicts = allConflicts
+                                .Where(x => x.BookingDate.Hour > after18Hour.Hours &&
+                                            (x.BookingDate <= booking.BookingDate ||
+                                             (x.BookingDate - booking.BookingDate).Duration() < TimeSpan.FromHours(-1)))
+                                .ToList();
+                            
+                        }
+
+                        if (conflictBookings.Count != 0)
                         {
                             var response = ApiResponseService<BookingDTO>
                                 .Response(null, "chair not available", StatusCodes.Status400BadRequest);
-                            return response;
-                        }
-                        else if (spaceBooking.Count != 0)
-                        {
-                            var response = ApiResponseService<BookingDTO>
-                                .Response(null, "chair and space not available", StatusCodes.Status400BadRequest);
                             return response;
                         }
                         else
@@ -618,7 +305,6 @@ public class BookingService : IBookingService
                             booking.BookingExpireDate = DateTime.UtcNow.AddMinutes(10);
                             user.MyBookings.Add(booking);
                             chair.Bookings.Add(booking);
-                            chair.IsAvailable = false;
                             _context.SaveChanges();
                         
                             var response = ApiResponseService<BookingDTO>
@@ -630,14 +316,16 @@ public class BookingService : IBookingService
             }
         }
     }
-
-    public ApiResponse<BookingDTO> BookChair(Guid userId, Guid bookingId)
+    
+    public ApiResponse<BookingDTO> CompleteBooking(Guid userId, Guid bookingId)
     {
         var user = _context.Users
             .Include(x => x.MyBookings)
-            .ThenInclude(x => x.Table)
             .ThenInclude(x => x.Space)
-            .ThenInclude(x => x.Restaurant)
+            .Include(x => x.MyBookings)
+            .ThenInclude(x => x.Table)
+            .Include(x => x.MyBookings)
+            .ThenInclude(x => x.Chairs)
             .FirstOrDefault(x => x.Id == userId);
 
         if (user == null)
@@ -660,7 +348,6 @@ public class BookingService : IBookingService
             {
                 if (DateTime.UtcNow > booking.BookingExpireDate)
                 {
-                    booking.Table.IsAvailable = true;
                     _context.Bookings.Remove(booking);
                     _context.SaveChanges();
                     
@@ -671,15 +358,46 @@ public class BookingService : IBookingService
                 else
                 {
                     // aq iqneba payment
+                    if (booking.Space != null)
+                    {
+                        var space = _context.Spaces
+                            .Include(x => x.Restaurant)
+                            .FirstOrDefault(x => x.Id == booking.Space.Id);
+                        
+                        SMTPService smtpService = new SMTPService();
+
+                        smtpService.SendEmail(user.Email, "Space Booked", $"<p>at restaurant {space.Restaurant.Title}, space {space.SpaceType} was booked at {booking.BookingDate} - {booking.BookingDateEnd}</p>");
+
+                    }
+                    else if (booking.Table != null)
+                    {
+                        var table = _context.Tables
+                            .Include(x => x.Space)
+                            .ThenInclude(x => x.Restaurant)
+                            .FirstOrDefault(x => x.Id == booking.Table.Id);
+                        
+                        SMTPService smtpService = new SMTPService();
+
+                        smtpService.SendEmail(user.Email, "Table Booked", $"<p>at restaurant {table.Space.Restaurant.Title}, table {table.TableNumber} was booked at {booking.BookingDate} - {booking.BookingDateEnd}</p>");
+
+                    }
                     
-                    booking.Table.IsAvailable = true;
+                    else if (booking.Table != null)
+                    {
+                        var chair = _context.Chairs
+                            .Include(x => x.Table)
+                            .ThenInclude(x => x.Space)
+                            .ThenInclude(x => x.Restaurant)
+                            .FirstOrDefault(x => x.Id == booking.Table.Id);
+                        
+                        SMTPService smtpService = new SMTPService();
+
+                        smtpService.SendEmail(user.Email, "Chair Booked", $"<p>at restaurant {booking.Space.Restaurant.Title}, chair {chair.ChairNumber} was booked at {booking.BookingDate} - {booking.BookingDateEnd}</p>");
+
+                    }
+                    
                     booking.IsPayed = true;
                     _context.SaveChanges();
-                    
-                    SMTPService smtpService = new SMTPService();
-
-                    smtpService.SendEmail(user.Email, "Table Booked", $"<p>at restaurant {booking.Table.Space.Restaurant.Title}, space {booking.Table.TableNumber} was booked at {booking.BookingDate} - {booking.BookingDateEnd}</p>");
-
                     
                     var response = ApiResponseService<BookingDTO>
                         .Response200(_mapper.Map<BookingDTO>(booking));

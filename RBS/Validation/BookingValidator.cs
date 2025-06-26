@@ -11,6 +11,6 @@ public class BookingValidator : AbstractValidator<Booking>
             .NotEmpty().WithMessage("date cannot be empty")
             .GreaterThan(DateTime.UtcNow).WithMessage("invalid date");
         RuleFor(x => x.BookingDateEnd)
-            .GreaterThan(x => x.BookingDate.AddHours(1)).WithMessage("invalid date");
+            .GreaterThanOrEqualTo(x => x.BookingDate.AddHours(2)).WithMessage("minimal time is 2 hours");
     }
 }

@@ -24,24 +24,10 @@ public class BookingController : ControllerBase
         return Ok(response);
     }
     
-    [HttpPut("book-space")]
-    public ActionResult BookSpace(Guid userId ,Guid bookingId)
-    {
-        var response = _bookingService.BookSpace(userId, bookingId);
-        return Ok(response);
-    }
-    
     [HttpPost("choose-table")]
     public ActionResult ChooseTable(Guid userId ,Guid tableId, AddBooking request)
     {
         var response = _bookingService.ChooseTable(userId, tableId, request);
-        return Ok(response);
-    }
-    
-    [HttpPut("book-table")]
-    public ActionResult BookTable(Guid userId ,Guid bookingId)
-    {
-        var response = _bookingService.BookTable(userId, bookingId);
         return Ok(response);
     }
     
@@ -52,10 +38,10 @@ public class BookingController : ControllerBase
         return Ok(response);
     }
     
-    [HttpPut("book-chair")]
-    public ActionResult BookChair(Guid userId ,Guid bookingId)
+    [HttpPut("complete-booking")]
+    public ActionResult CompleteBooking(Guid userId ,Guid bookingId)
     {
-        var response = _bookingService.BookChair(userId, bookingId);
+        var response = _bookingService.CompleteBooking(userId, bookingId);
         return Ok(response);
     }
 }
