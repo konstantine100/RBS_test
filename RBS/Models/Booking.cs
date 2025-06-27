@@ -15,10 +15,10 @@ public class Booking
     
     public Guid UserId { get; set; }
     public User User { get; set; }
-    public Guid? TableId { get; set; }
-    public Table? Table { get; set; }
+
+    public List<Table> Tables { get; set; } = new List<Table>();
     public List<Chair> Chairs { get; set; } = new List<Chair>();
-    public Guid? SpaceId { get; set; }
-    public Space? Space { get; set; }
-    
+
+    public List<Space> Spaces { get; set; } = new List<Space>();
+
 }

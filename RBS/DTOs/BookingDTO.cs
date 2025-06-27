@@ -11,7 +11,7 @@ public class BookingDTO
     public bool IsPayed { get; set; }
     public bool IsFinished { get; set; }
     public UserDTO User { get; set; }
-    public TableDTO? Table { get; set; }
-    public SpaceDTO? Space { get; set; }
+    public List<SpaceDTO> Spaces { get; set; }
+    public List<TableDTO> Tables { get; set; }
     public List<ChairDTO> Chairs { get; set; }
 }

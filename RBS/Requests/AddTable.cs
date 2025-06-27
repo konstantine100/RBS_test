@@ -9,4 +9,6 @@ public class AddTable
     public string TableNumber { get; set; }
     public decimal TablePrice { get; set; }
     public decimal? MinSpent { get; set; }
+    public int Xlocation { get; set; }
+    public int Ylocation { get; set; }
 }

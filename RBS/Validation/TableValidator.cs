@@ -18,6 +18,14 @@ public class TableValidator : AbstractValidator<Table>
             .NotEmpty().WithMessage("Min Price is required")
             .GreaterThan(0).WithMessage("Min Price must be greater than 0")
             .LessThanOrEqualTo(400).WithMessage("Min Price must be less than 400");
+        RuleFor(x=> x.Xlocation)
+            .NotEmpty().WithMessage("X location is required")
+            .GreaterThanOrEqualTo(-1000).WithMessage("X location must be greater than -1001")
+            .LessThanOrEqualTo(1000).WithMessage("X location must be less than 1001");
+        RuleFor(x=> x.Ylocation)
+            .NotEmpty().WithMessage("Y location is required")
+            .GreaterThanOrEqualTo(-1000).WithMessage("Y location must be greater than -1001")
+            .LessThanOrEqualTo(1000).WithMessage("Y location must be less than 1001");
 
     }
 }

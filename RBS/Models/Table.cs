@@ -13,8 +13,9 @@ public class Table
     public bool IsAvailable { get; set; } = true;
     public bool IsFilled { get; set; } = false;
     public decimal TablePrice { get; set; }
-
     public decimal? MinSpent { get; set; }
+    public int Xlocation { get; set; }
+    public int Ylocation { get; set; }
     
     public Guid SpaceId { get; set; }
     public Space Space { get; set; }

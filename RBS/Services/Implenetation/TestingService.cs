@@ -5,11 +5,12 @@ using RBS.Data;
 using RBS.DTOs;
 using RBS.Models;
 using RBS.Requests;
+using RBS.Services.Interfaces;
 using RBS.Validation;
 
 namespace RBS.Services.Implenetation;
 
-public class TestingService
+public class TestingService : ITestingService
 {
     // for testing
     private readonly DataContext _context;

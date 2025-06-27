@@ -17,6 +17,13 @@ public class BookingController : ControllerBase
         _bookingService = bookingService;
     }
     
+    [HttpGet("get-status-by-date")]
+    public ActionResult GetReservationsByHour(Guid spaceId, DateTime Date)
+    {
+        var response = _bookingService.GetReservationsByHour(spaceId, Date);
+        return Ok(response);
+    }
+    
     [HttpPost("choose-space")]
     public ActionResult ChooseSpace(Guid userId, Guid spaceId, AddBooking request, DateTime endDate)
     {

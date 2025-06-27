@@ -9,4 +9,6 @@ public class ChairDTO
     public bool IsBooked { get; set; } 
     public bool IsAvailable { get; set; }
     public decimal ChairPrice { get; set; }
+    public int Xlocation { get; set; }
+    public int Ylocation { get; set; }
 }

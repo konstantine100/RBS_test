@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using RBS.CORE;
 using RBS.Data;
 using RBS.DTOs;
+using RBS.Enums;
+using RBS.Helpers;
 using RBS.Models;
 using RBS.Requests;
 using RBS.Services.Interfaces;
@@ -21,6 +23,175 @@ public class BookingService : IBookingService
         _context = context;
         _mapper = mapper;
     }
+    public ApiResponse<List<LayoutByHour>> GetReservationsByHour(Guid spaceId, DateTime Date)
+    {
+        var space = _context.Spaces
+            .Include(x => x.Bookings)
+            .Include(x => x.Tables)
+            .ThenInclude(x => x.Bookings)
+            .Include(x => x.Tables)
+            .ThenInclude(x => x.Chairs)
+            .ThenInclude(x => x.Bookings)
+            .FirstOrDefault(x => x.Id == spaceId);
+
+        var spaceBooking = space.Bookings
+            .Where(x => x.BookingDate.Day == Date.Day &&
+                                x.BookingDate.Hour == Date.Hour)
+            .ToList();
+        
+        var tableBookings = space.Tables
+            .Where(x => x.Bookings
+                .Any(x => x.BookingDate.Day == Date.Day &&
+                          x.BookingDate.Hour == Date.Hour))
+            .ToList();
+        
+        var chairBookings = space.Tables
+            .Where(x => x.Chairs
+                .Any(x => x.Bookings
+                    .Any(x => x.BookingDate.Day == Date.Day &&
+                              x.BookingDate.Hour == Date.Hour)))
+            .ToList();
+        
+        var noSpaceBooking = _context.Spaces
+            .Include(x => x.Bookings)
+            .FirstOrDefault(x => x.Id == spaceId && (x.Bookings
+                .Any(x => x.BookingDate.Day == Date.Day && 
+                          x.BookingDate.Hour == Date.Hour)) == null);
+
+        var noTableBookings = _context.Tables
+            .Include(x => x.Bookings)
+            .Where(x => x.SpaceId == spaceId && (x.Bookings
+                .Any(x => x.BookingDate.Day == Date.Day && 
+                          x.BookingDate.Hour == Date.Hour)) == null)
+            .ToList();
+        
+        var noChairBookings = _context.Chairs
+            .Include(x => x.Table)
+            .Include(x => x.Bookings)
+            .Where(x => x.Table.SpaceId == spaceId && (x.Bookings
+                .Any(x => x.BookingDate.Day == Date.Day && 
+                          x.BookingDate.Hour == Date.Hour)) == null)
+            .ToList();
+        
+
+        List<LayoutByHour> allLayout = new List<LayoutByHour>();
+
+        foreach (var booking in spaceBooking)
+        {
+            var layout = new LayoutByHour();
+            
+            if (!booking.IsPayed)
+            {
+                layout.SpaceId = spaceId;
+                layout.Space = _mapper.Map<SpaceDTO>(space);
+                layout.Booking = _mapper.Map<BookingDTO>(booking);
+                layout.Status = AVAILABLE_STATUS.Reserved;
+            }
+            else
+            {
+                layout.SpaceId = spaceId;
+                layout.Space = _mapper.Map<SpaceDTO>(space);
+                layout.Booking = _mapper.Map<BookingDTO>(booking);
+                layout.Status = AVAILABLE_STATUS.Booked;
+            }
+            allLayout.Add(layout);
+            
+        }
+
+        foreach (var table in tableBookings)
+        {
+            foreach (var booking in table.Bookings)
+            {
+                var layout = new LayoutByHour();
+            
+                if (!booking.IsPayed)
+                {
+                    layout.TableId = table.Id;
+                    layout.Table = _mapper.Map<TableDTO>(table);
+                    layout.Booking = _mapper.Map<BookingDTO>(booking);
+                    layout.Status = AVAILABLE_STATUS.Reserved;
+                }
+                else
+                {
+                    layout.TableId = table.Id;
+                    layout.Table = _mapper.Map<TableDTO>(table);
+                    layout.Booking = _mapper.Map<BookingDTO>(booking);
+                    layout.Status = AVAILABLE_STATUS.Booked;
+                }
+                allLayout.Add(layout);
+            }
+            
+        }
+        
+        foreach (var table in chairBookings)
+        {
+            foreach (var chair in table.Chairs)
+            {
+                foreach (var booking in chair.Bookings)
+                {
+                    var layout = new LayoutByHour();
+            
+                    if (!booking.IsPayed)
+                    {
+                        layout.ChairId = chair.Id;
+                        layout.Chair = _mapper.Map<ChairDTO>(chair);
+                        layout.Booking = _mapper.Map<BookingDTO>(booking);
+                        layout.Status = AVAILABLE_STATUS.Reserved;
+                    }
+                    else
+                    {
+                        layout.ChairId = chair.Id;
+                        layout.Chair = _mapper.Map<ChairDTO>(chair);
+                        layout.Booking = _mapper.Map<BookingDTO>(booking);
+                        layout.Status = AVAILABLE_STATUS.Booked;
+                    }
+                    allLayout.Add(layout);
+                }
+                
+            }
+            
+        }
+
+        if (noSpaceBooking == null)
+        {
+            var notBookedSpaceLayout = new LayoutByHour
+            {
+                SpaceId = spaceId,
+                Space = _mapper.Map<SpaceDTO>(noSpaceBooking),
+                Status = AVAILABLE_STATUS.None,
+            };
+            allLayout.Add(notBookedSpaceLayout);
+        }
+        
+        foreach (var table in noTableBookings)
+        {
+            var layout = new LayoutByHour
+            {
+                TableId = table.Id,
+                Table = _mapper.Map<TableDTO>(table),
+                Status = AVAILABLE_STATUS.None
+            };
+                
+            allLayout.Add(layout);
+        }
+        
+        foreach (var chair in noChairBookings)
+        {
+            var layout = new LayoutByHour
+            {
+                ChairId = chair.Id,
+                Chair = _mapper.Map<ChairDTO>(chair),
+                Status = AVAILABLE_STATUS.None,
+            };
+                
+            allLayout.Add(layout);
+        }
+        
+        var response = ApiResponseService<List<LayoutByHour>>
+            .Response200(allLayout);
+        return response;
+    }
+
     public ApiResponse<BookingDTO> ChooseSpace(Guid userId, Guid spaceId, AddBooking request, DateTime endDate)
     {
         var user = _context.Users
@@ -157,11 +328,20 @@ public class BookingService : IBookingService
                     else
                     {
                         TimeSpan after18Hour = new TimeSpan(18, 0, 0);
+                        // List<Booking> conflictBookings1 = _context.Bookings
+                        //     .Include(x => x.Tables)
+                        //     .ThenInclude(x => x.Chairs)
+                        //     .ThenInclude(x => x.Bookings)
+                        //     .Where(x => (x.TableId == tableId || x.Chairs.Any(y => y.TableId == tableId)) &&
+                        //                 x.BookingDate.Day == booking.BookingDate.Day)
+                        //     .ToList();
+                        
                         List<Booking> conflictBookings = _context.Bookings
-                            .Include(x => x.Table)
+                            .Include(x => x.Tables)
                             .ThenInclude(x => x.Chairs)
                             .ThenInclude(x => x.Bookings)
-                            .Where(x => (x.TableId == tableId || x.Chairs.Any(y => y.TableId == tableId)) &&
+                            .Where(x => x.Tables
+                                .Any(x => (x.Id == tableId || x.Chairs.Any(y => y.TableId == tableId)))&&
                                         x.BookingDate.Day == booking.BookingDate.Day)
                             .ToList();
                         
@@ -262,15 +442,16 @@ public class BookingService : IBookingService
                         TimeSpan after18Hour = new TimeSpan(18, 0, 0);
                         List<Booking> conflictBookings = _context.Bookings
                             .Include(x => x.Chairs)
-                            .Include(x => x.Table)
+                            .Include(x => x.Tables)
                             .ThenInclude(x => x.Bookings)
                             .Where(x => (x.Chairs.Any(x => x.Id == chairId)) &&
                                                 x.BookingDate.Day == booking.BookingDate.Day)
                             .ToList();
-
+                        
                         List<Booking> tableConflicts = _context.Bookings
-                            .Where(x => x.TableId == chair.TableId &&
-                                                x.BookingDate.Day == booking.BookingDate.Day)
+                            .Where(x => x.Tables
+                                .Any(x => x.Id == chair.TableId) &&
+                                        x.BookingDate.Day == booking.BookingDate.Day)
                             .ToList();
 
                         List<Booking> allConflicts = new List<Booking>();
@@ -321,13 +502,13 @@ public class BookingService : IBookingService
     {
         var user = _context.Users
             .Include(x => x.MyBookings)
-            .ThenInclude(x => x.Space)
+            .ThenInclude(x => x.Spaces)
             .Include(x => x.MyBookings)
-            .ThenInclude(x => x.Table)
+            .ThenInclude(x => x.Tables)
             .Include(x => x.MyBookings)
             .ThenInclude(x => x.Chairs)
             .FirstOrDefault(x => x.Id == userId);
-
+    
         if (user == null)
         {
             var response = ApiResponseService<BookingDTO>
@@ -337,7 +518,7 @@ public class BookingService : IBookingService
         else
         {
             var booking = user.MyBookings.FirstOrDefault(x => x.Id == bookingId);
-
+    
             if (booking == null)
             {
                 var response = ApiResponseService<BookingDTO>
@@ -357,44 +538,10 @@ public class BookingService : IBookingService
                 }
                 else
                 {
-                    // aq iqneba payment
-                    if (booking.Space != null)
-                    {
-                        var space = _context.Spaces
-                            .Include(x => x.Restaurant)
-                            .FirstOrDefault(x => x.Id == booking.Space.Id);
-                        
-                        SMTPService smtpService = new SMTPService();
+                    SMTPService smtpService = new SMTPService();
+    
+                    smtpService.SendEmail(user.Email, "Booking completed", $"<p>aq mere vitom qr kodi an sxva ram gamochndeba aha dzmao dajavshnili gaq</p>");
 
-                        smtpService.SendEmail(user.Email, "Space Booked", $"<p>at restaurant {space.Restaurant.Title}, space {space.SpaceType} was booked at {booking.BookingDate} - {booking.BookingDateEnd}</p>");
-
-                    }
-                    else if (booking.Table != null)
-                    {
-                        var table = _context.Tables
-                            .Include(x => x.Space)
-                            .ThenInclude(x => x.Restaurant)
-                            .FirstOrDefault(x => x.Id == booking.Table.Id);
-                        
-                        SMTPService smtpService = new SMTPService();
-
-                        smtpService.SendEmail(user.Email, "Table Booked", $"<p>at restaurant {table.Space.Restaurant.Title}, table {table.TableNumber} was booked at {booking.BookingDate} - {booking.BookingDateEnd}</p>");
-
-                    }
-                    
-                    else if (booking.Table != null)
-                    {
-                        var chair = _context.Chairs
-                            .Include(x => x.Table)
-                            .ThenInclude(x => x.Space)
-                            .ThenInclude(x => x.Restaurant)
-                            .FirstOrDefault(x => x.Id == booking.Table.Id);
-                        
-                        SMTPService smtpService = new SMTPService();
-
-                        smtpService.SendEmail(user.Email, "Chair Booked", $"<p>at restaurant {booking.Space.Restaurant.Title}, chair {chair.ChairNumber} was booked at {booking.BookingDate} - {booking.BookingDateEnd}</p>");
-
-                    }
                     
                     booking.IsPayed = true;
                     _context.SaveChanges();

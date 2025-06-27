@@ -37,6 +37,36 @@ namespace RBS.Migrations
                     b.ToTable("BookingChair");
                 });
 
+            modelBuilder.Entity("BookingSpace", b =>
+                {
+                    b.Property<Guid>("BookingsId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("SpacesId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("BookingsId", "SpacesId");
+
+                    b.HasIndex("SpacesId");
+
+                    b.ToTable("BookingSpace");
+                });
+
+            modelBuilder.Entity("BookingTable", b =>
+                {
+                    b.Property<Guid>("BookingsId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("TablesId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("BookingsId", "TablesId");
+
+                    b.HasIndex("TablesId");
+
+                    b.ToTable("BookingTable");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", b =>
                 {
                     b.Property<Guid>("Id")
@@ -195,20 +225,10 @@ namespace RBS.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<Guid?>("SpaceId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("TableId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("SpaceId");
-
-                    b.HasIndex("TableId");
 
                     b.HasIndex("UserId");
 
@@ -239,6 +259,12 @@ namespace RBS.Migrations
 
                     b.Property<Guid>("TableId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Xlocation")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Ylocation")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -333,6 +359,12 @@ namespace RBS.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("TableType")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Xlocation")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Ylocation")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -452,6 +484,36 @@ namespace RBS.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("BookingSpace", b =>
+                {
+                    b.HasOne("RBS.Models.Booking", null)
+                        .WithMany()
+                        .HasForeignKey("BookingsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("RBS.Models.Space", null)
+                        .WithMany()
+                        .HasForeignKey("SpacesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("BookingTable", b =>
+                {
+                    b.HasOne("RBS.Models.Booking", null)
+                        .WithMany()
+                        .HasForeignKey("BookingsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("RBS.Models.Table", null)
+                        .WithMany()
+                        .HasForeignKey("TablesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", null)
@@ -505,23 +567,11 @@ namespace RBS.Migrations
 
             modelBuilder.Entity("RBS.Models.Booking", b =>
                 {
-                    b.HasOne("RBS.Models.Space", "Space")
-                        .WithMany("Bookings")
-                        .HasForeignKey("SpaceId");
-
-                    b.HasOne("RBS.Models.Table", "Table")
-                        .WithMany("Bookings")
-                        .HasForeignKey("TableId");
-
                     b.HasOne("RBS.Models.User", "User")
                         .WithMany("MyBookings")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Space");
-
-                    b.Navigation("Table");
 
                     b.Navigation("User");
                 });
@@ -566,15 +616,11 @@ namespace RBS.Migrations
 
             modelBuilder.Entity("RBS.Models.Space", b =>
                 {
-                    b.Navigation("Bookings");
-
                     b.Navigation("Tables");
                 });
 
             modelBuilder.Entity("RBS.Models.Table", b =>
                 {
-                    b.Navigation("Bookings");
-
                     b.Navigation("Chairs");
                 });
 
