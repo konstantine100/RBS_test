@@ -45,10 +45,59 @@ public class BookingController : ControllerBase
         return Ok(response);
     }
     
+    [HttpPut("choose-another-space")]
+    public ActionResult ChooseAnotherSpace(Guid userId, Guid bookingId, Guid spaceId)
+    {
+        var response = _bookingService.ChooseAnotherSpace(userId, bookingId, spaceId);
+        return Ok(response);
+    }
+    
+    [HttpPut("choose-another-table")]
+    public ActionResult ChooseAnotherTable(Guid userId, Guid bookingId, Guid tableId)
+    {
+        var response = _bookingService.ChooseAnotherTable(userId, bookingId, tableId);
+        return Ok(response);
+    }
+    
+    [HttpPut("choose-another-chair")]
+    public ActionResult ChooseAnotherChair(Guid userId, Guid bookingId, Guid chairId)
+    {
+        var response = _bookingService.ChooseAnotherChair(userId, bookingId, chairId);
+        return Ok(response);
+    }
+    
     [HttpPut("complete-booking")]
     public ActionResult CompleteBooking(Guid userId ,Guid bookingId)
     {
         var response = _bookingService.CompleteBooking(userId, bookingId);
+        return Ok(response);
+    }
+    
+    [HttpDelete("remove-booking-space")]
+    public ActionResult RemoveBookingSpace(Guid userId, Guid bookingId, Guid spaceId)
+    {
+        var response = _bookingService.RemoveBookingSpace(userId, bookingId, spaceId);
+        return Ok(response);
+    }
+    
+    [HttpDelete("remove-booking-table")]
+    public ActionResult RemoveBookingTable(Guid userId, Guid bookingId, Guid tableId)
+    {
+        var response = _bookingService.RemoveBookingTable(userId, bookingId, tableId);
+        return Ok(response);
+    }
+    
+    [HttpDelete("remove-booking-chair")]
+    public ActionResult RemoveBookingChair(Guid userId, Guid bookingId, Guid chairId)
+    {
+        var response = _bookingService.RemoveBookingChair(userId, bookingId, chairId);
+        return Ok(response);
+    }
+    
+    [HttpDelete("remove/cancel-booking")]
+    public ActionResult RemoveBooking(Guid userId, Guid bookingId)
+    {
+        var response = _bookingService.RemoveBooking(userId, bookingId);
         return Ok(response);
     }
 }
