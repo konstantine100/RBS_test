@@ -12,6 +12,5 @@ public class LayoutByHour
     public TableDTO? Table { get; set; }
     public Guid? ChairId { get; set; }
     public ChairDTO? Chair { get; set; }
-    public BookingDTO? Booking { get; set; }
     public AVAILABLE_STATUS Status { get; set; }
 }

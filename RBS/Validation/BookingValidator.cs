@@ -3,7 +3,7 @@ using RBS.Models;
 
 namespace RBS.Validation;
 
-public class BookingValidator : AbstractValidator<Booking>
+public class BookingValidator : AbstractValidator<ReservationBooking>
 {
     public BookingValidator()
     {

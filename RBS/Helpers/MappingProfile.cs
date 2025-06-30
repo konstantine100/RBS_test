@@ -30,5 +30,8 @@ public class MappingProfile : Profile
         
         CreateMap<AddBooking, Booking>().ReverseMap();
         CreateMap<Booking, BookingDTO>().ReverseMap();
+        
+        CreateMap<AddBooking, ReservationBooking>().ReverseMap();
+        CreateMap<ReservationBooking, ReservationBookingDTO>().ReverseMap();
     }
 }

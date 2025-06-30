@@ -67,37 +67,44 @@ public class BookingController : ControllerBase
     }
     
     [HttpPut("complete-booking")]
-    public ActionResult CompleteBooking(Guid userId ,Guid bookingId)
+    public ActionResult CompleteBooking(Guid userId ,Guid reservationId)
     {
-        var response = _bookingService.CompleteBooking(userId, bookingId);
+        var response = _bookingService.CompleteBooking(userId, reservationId);
         return Ok(response);
     }
     
-    [HttpDelete("remove-booking-space")]
-    public ActionResult RemoveBookingSpace(Guid userId, Guid bookingId, Guid spaceId)
+    [HttpDelete("remove-reservation-space")]
+    public ActionResult RemoveReservationSpace(Guid userId, Guid bookingId, Guid spaceId)
     {
-        var response = _bookingService.RemoveBookingSpace(userId, bookingId, spaceId);
+        var response = _bookingService.RemoveReservationSpace(userId, bookingId, spaceId);
         return Ok(response);
     }
     
-    [HttpDelete("remove-booking-table")]
-    public ActionResult RemoveBookingTable(Guid userId, Guid bookingId, Guid tableId)
+    [HttpDelete("remove-reservation-table")]
+    public ActionResult RemoveReservationTable(Guid userId, Guid bookingId, Guid tableId)
     {
-        var response = _bookingService.RemoveBookingTable(userId, bookingId, tableId);
+        var response = _bookingService.RemoveReservationTable(userId, bookingId, tableId);
         return Ok(response);
     }
     
-    [HttpDelete("remove-booking-chair")]
-    public ActionResult RemoveBookingChair(Guid userId, Guid bookingId, Guid chairId)
+    [HttpDelete("remove-reservation-chair")]
+    public ActionResult RemoveReservationChair(Guid userId, Guid bookingId, Guid chairId)
     {
-        var response = _bookingService.RemoveBookingChair(userId, bookingId, chairId);
+        var response = _bookingService.RemoveReservationChair(userId, bookingId, chairId);
         return Ok(response);
     }
     
-    [HttpDelete("remove/cancel-booking")]
-    public ActionResult RemoveBooking(Guid userId, Guid bookingId)
+    [HttpDelete("remove-reservation")]
+    public ActionResult RemoveReservation(Guid userId, Guid reservationId)
     {
-        var response = _bookingService.RemoveBooking(userId, bookingId);
+        var response = _bookingService.RemoveReservation(userId, reservationId);
+        return Ok(response);
+    }
+    
+    [HttpDelete("cancel-booking")]
+    public ActionResult CancelBooking(Guid userId, Guid bookingId)
+    {
+        var response = _bookingService.CancelBooking(userId, bookingId);
         return Ok(response);
     }
 }
