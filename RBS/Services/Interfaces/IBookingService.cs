@@ -9,6 +9,13 @@ namespace RBS.Services.Interfaces;
 public interface IBookingService
 {
     ApiResponse<List<LayoutByHour>> GetReservationsByHour (Guid spaceId, DateTime Date);
+    ApiResponse<List<ReservationBookingDTO>> MyReservations(Guid userId);
+    ApiResponse<ReservationBookingDTO> GetMyReservationById(Guid userId, Guid reservationId);
+    ApiResponse<List<BookingDTO>> MyBookings(Guid userId);
+    ApiResponse<BookingDTO> GetMyBookingById(Guid userId, Guid bookingId);
+    ApiResponse<BookingDTO> ClosestBookingReminder(Guid userId);
+    ApiResponse<List<BookingDTO>> MyCurrentBookings(Guid userId);
+    ApiResponse<List<BookingDTO>> MyOldBookings(Guid userId);
     ApiResponse<ReservationBookingDTO> ChooseSpace(Guid userId ,Guid spaceId, AddBooking request, DateTime endDate);
     ApiResponse<ReservationBookingDTO> ChooseTable(Guid userId ,Guid tableId, AddBooking request);
     ApiResponse<ReservationBookingDTO> ChooseChair(Guid userId ,Guid chairId, AddBooking request);

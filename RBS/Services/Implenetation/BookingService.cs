@@ -320,6 +320,220 @@ public class BookingService : IBookingService
         return response;
     }
 
+    public ApiResponse<List<ReservationBookingDTO>> MyReservations(Guid userId)
+    {
+        var user = _context.Users
+            .Include(x => x.MyBookingReservations)
+            .ThenInclude(x => x.Spaces)
+            .Include(x => x.MyBookingReservations)
+            .ThenInclude(x => x.Tables)
+            .Include(x => x.MyBookingReservations)
+            .ThenInclude(x => x.Chairs)
+            .FirstOrDefault(x => x.Id == userId);
+
+        if (user == null)
+        {
+            var response = ApiResponseService<List<ReservationBookingDTO>>
+                .Response(null, "User not found", StatusCodes.Status404NotFound);
+            return response;
+        }
+        else
+        {
+            var response = ApiResponseService<List<ReservationBookingDTO>>
+                .Response200(_mapper.Map<List<ReservationBookingDTO>>(user.MyBookingReservations));
+            return response;
+        }
+    }
+
+    public ApiResponse<ReservationBookingDTO> GetMyReservationById(Guid userId, Guid reservationId)
+    {
+        var user = _context.Users
+            .Include(x => x.MyBookingReservations)
+            .ThenInclude(x => x.Spaces)
+            .Include(x => x.MyBookingReservations)
+            .ThenInclude(x => x.Tables)
+            .Include(x => x.MyBookingReservations)
+            .ThenInclude(x => x.Chairs)
+            .FirstOrDefault(x => x.Id == userId);
+
+        if (user == null)
+        {
+            var response = ApiResponseService<ReservationBookingDTO>
+                .Response(null, "User not found", StatusCodes.Status404NotFound);
+            return response;
+        }
+        else
+        {
+            var reservation = user.MyBookingReservations
+                .FirstOrDefault(x => x.Id == reservationId);
+
+            if (reservation == null)
+            {
+                var response = ApiResponseService<ReservationBookingDTO>
+                    .Response(null, "Reservation not found", StatusCodes.Status404NotFound);
+                return response;
+            }
+            else
+            {
+                var response = ApiResponseService<ReservationBookingDTO>
+                    .Response200(_mapper.Map<ReservationBookingDTO>(reservation));
+                return response;
+            }
+        }
+    }
+
+    public ApiResponse<List<BookingDTO>> MyBookings(Guid userId)
+    {
+        var user = _context.Users
+            .Include(x => x.MyBookings)
+            .ThenInclude(x => x.Spaces)
+            .Include(x => x.MyBookings)
+            .ThenInclude(x => x.Tables)
+            .Include(x => x.MyBookings)
+            .ThenInclude(x => x.Chairs)
+            .FirstOrDefault(x => x.Id == userId);
+
+        if (user == null)
+        {
+            var response = ApiResponseService<List<BookingDTO>>
+                .Response(null, "User not found", StatusCodes.Status404NotFound);
+            return response;
+        }
+        else
+        {
+            var response = ApiResponseService<List<BookingDTO>>
+                .Response200(_mapper.Map<List<BookingDTO>>(user.MyBookings));
+            return response;
+        }
+    }
+
+    public ApiResponse<BookingDTO> GetMyBookingById(Guid userId, Guid bookingId)
+    {
+        var user = _context.Users
+            .Include(x => x.MyBookings)
+            .ThenInclude(x => x.Spaces)
+            .Include(x => x.MyBookings)
+            .ThenInclude(x => x.Tables)
+            .Include(x => x.MyBookings)
+            .ThenInclude(x => x.Chairs)
+            .FirstOrDefault(x => x.Id == userId);
+
+        if (user == null)
+        {
+            var response = ApiResponseService<BookingDTO>
+                .Response(null, "User not found", StatusCodes.Status404NotFound);
+            return response;
+        }
+        else
+        {
+            var booking = user.MyBookings
+                .FirstOrDefault(x => x.Id == bookingId);
+
+            if (booking == null)
+            {
+                var response = ApiResponseService<BookingDTO>
+                    .Response(null, "Booking not found", StatusCodes.Status404NotFound);
+                return response;
+            }
+            else
+            {
+                var response = ApiResponseService<BookingDTO>
+                    .Response200(_mapper.Map<BookingDTO>(booking));
+                return response;
+            }
+        }
+    }
+
+    public ApiResponse<BookingDTO> ClosestBookingReminder(Guid userId)
+    {
+        var user = _context.Users
+            .Include(x => x.MyBookings)
+            .ThenInclude(x => x.Spaces)
+            .Include(x => x.MyBookings)
+            .ThenInclude(x => x.Tables)
+            .Include(x => x.MyBookings)
+            .ThenInclude(x => x.Chairs)
+            .FirstOrDefault(x => x.Id == userId);
+
+        if (user == null)
+        {
+            var response = ApiResponseService<BookingDTO>
+                .Response(null, "User not found", StatusCodes.Status404NotFound);
+            return response;
+        }
+        else
+        {
+                var booking = user.MyBookings
+                    .Where(x => x.BookingDate > DateTime.UtcNow)
+                    .OrderBy(x => x.BookingDate)
+                    .FirstOrDefault();
+                
+                var response = ApiResponseService<BookingDTO>
+                    .Response200(_mapper.Map<BookingDTO>(booking));
+                return response;
+        }
+    }
+
+    public ApiResponse<List<BookingDTO>> MyCurrentBookings(Guid userId)
+    {
+        var user = _context.Users
+            .Include(x => x.MyBookings)
+            .ThenInclude(x => x.Spaces)
+            .Include(x => x.MyBookings)
+            .ThenInclude(x => x.Tables)
+            .Include(x => x.MyBookings)
+            .ThenInclude(x => x.Chairs)
+            .FirstOrDefault(x => x.Id == userId);
+
+        if (user == null)
+        {
+            var response = ApiResponseService<List<BookingDTO>>
+                .Response(null, "User not found", StatusCodes.Status404NotFound);
+            return response;
+        }
+        else 
+        {
+            var bookings = user.MyBookings
+                .Where(x => x.BookingDate > DateTime.UtcNow && !x.IsFinished)
+                .OrderBy(x => x.BookingDate)
+                .ToList();
+                
+            var response = ApiResponseService<List<BookingDTO>>
+                .Response200(_mapper.Map<List<BookingDTO>>(bookings));
+            return response;
+        }
+    }
+
+    public ApiResponse<List<BookingDTO>> MyOldBookings(Guid userId)
+    {
+        var user = _context.Users
+            .Include(x => x.MyBookings)
+            .ThenInclude(x => x.Spaces)
+            .Include(x => x.MyBookings)
+            .ThenInclude(x => x.Tables)
+            .Include(x => x.MyBookings)
+            .ThenInclude(x => x.Chairs)
+            .FirstOrDefault(x => x.Id == userId);
+
+        if (user == null)
+        {
+            var response = ApiResponseService<List<BookingDTO>>
+                .Response(null, "User not found", StatusCodes.Status404NotFound);
+            return response;
+        }
+        else 
+        {
+            var bookings = user.MyBookings
+                .Where(x => x.BookingDate < DateTime.UtcNow && x.IsFinished)
+                .OrderBy(x => x.BookingDate)
+                .ToList();
+                
+            var response = ApiResponseService<List<BookingDTO>>
+                .Response200(_mapper.Map<List<BookingDTO>>(bookings));
+            return response;
+        }
+    }
+
     public ApiResponse<ReservationBookingDTO> ChooseSpace(Guid userId, Guid spaceId, AddBooking request, DateTime endDate)
     {
         var user = _context.Users

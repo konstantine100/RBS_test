@@ -24,6 +24,55 @@ public class BookingController : ControllerBase
         return Ok(response);
     }
     
+    [HttpGet("get-my-reservations")]
+    public ActionResult MyReservations(Guid userId)
+    {
+        var response = _bookingService.MyReservations(userId);
+        return Ok(response);
+    }
+    
+    [HttpGet("get-my-reservation-by-id")]
+    public ActionResult GetMyReservationById(Guid userId, Guid reservationId)
+    {
+        var response = _bookingService.GetMyReservationById(userId, reservationId);
+        return Ok(response);
+    }
+    
+    [HttpGet("get-my-booking")]
+    public ActionResult MyBookings(Guid userId)
+    {
+        var response = _bookingService.MyBookings(userId);
+        return Ok(response);
+    }
+    
+    [HttpGet("get-my-booking-by-id")]
+    public ActionResult GetMyBookingById(Guid userId, Guid bookingId)
+    {
+        var response = _bookingService.GetMyBookingById(userId, bookingId);
+        return Ok(response);
+    }
+    
+    [HttpGet("get-my-booking-reminder")]
+    public ActionResult ClosestBookingReminder(Guid userId)
+    {
+        var response = _bookingService.ClosestBookingReminder(userId);
+        return Ok(response);
+    }
+    
+    [HttpGet("get-my-current-bookings")]
+    public ActionResult MyCurrentBookings(Guid userId)
+    {
+        var response = _bookingService.MyCurrentBookings(userId);
+        return Ok(response);
+    }
+    
+    [HttpGet("get-my-old-bookings")]
+    public ActionResult MyOldBookings(Guid userId)
+    {
+        var response = _bookingService.MyOldBookings(userId);
+        return Ok(response);
+    }
+    
     [HttpPost("choose-space")]
     public ActionResult ChooseSpace(Guid userId, Guid spaceId, AddBooking request, DateTime endDate)
     {
