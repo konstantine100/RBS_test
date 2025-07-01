@@ -23,10 +23,10 @@ public class BookingService : IBookingService
         _context = context;
         _mapper = mapper;
     }
-    public ApiResponse<List<LayoutByHour>> GetReservationsByHour(Guid spaceId, DateTime Date)
+    public async Task<ApiResponse<List<LayoutByHour>>> GetReservationsByHour(Guid spaceId, DateTime Date)
     {
         // restaurant space layout that includes all booked, reserved and empty spaces
-        var space = _context.Spaces
+        var space = await _context.Spaces
             .Include(x => x.Bookings)
             .Include(x => x.Tables)
             .ThenInclude(x => x.Bookings)
@@ -40,7 +40,7 @@ public class BookingService : IBookingService
             .Include(x => x.Tables)
             .ThenInclude(x => x.Chairs)
             .ThenInclude(x => x.BookingReservations)
-            .FirstOrDefault(x => x.Id == spaceId);
+            .FirstOrDefaultAsync(x => x.Id == spaceId);
 
         // booking entities
         var spaceBooking = space.Bookings
@@ -94,16 +94,16 @@ public class BookingService : IBookingService
         
         // empty entities
 
-        var noTableBookings = _context.Tables
+        var noTableBookings = await _context.Tables
             .Include(x => x.Bookings)
             .Where(x => x.SpaceId == spaceId && !x.Bookings
                 .Any(x => x.BookingDate.Year == Date.Year &&
                                   x.BookingDate.Month == Date.Month &&
                                   x.BookingDate.Day == Date.Day &&
                                   x.BookingDate.Hour == Date.Hour))
-            .ToList();
+            .ToListAsync();
         
-        var noChairBookings = _context.Chairs
+        var noChairBookings = await _context.Chairs
             .Include(x => x.Table)
             .Include(x => x.Bookings)
             .Where(x => x.Table.SpaceId == spaceId && !x.Bookings
@@ -111,7 +111,7 @@ public class BookingService : IBookingService
                                   x.BookingDate.Month == Date.Month &&
                                   x.BookingDate.Day == Date.Day &&
                                   x.BookingDate.Hour == Date.Hour))
-            .ToList();
+            .ToListAsync();
         
 
         List<LayoutByHour> allLayout = new List<LayoutByHour>();
@@ -320,16 +320,16 @@ public class BookingService : IBookingService
         return response;
     }
 
-    public ApiResponse<List<ReservationBookingDTO>> MyReservations(Guid userId)
+    public async Task<ApiResponse<List<ReservationBookingDTO>>> MyReservations(Guid userId)
     {
-        var user = _context.Users
+        var user = await _context.Users
             .Include(x => x.MyBookingReservations)
             .ThenInclude(x => x.Spaces)
             .Include(x => x.MyBookingReservations)
             .ThenInclude(x => x.Tables)
             .Include(x => x.MyBookingReservations)
             .ThenInclude(x => x.Chairs)
-            .FirstOrDefault(x => x.Id == userId);
+            .FirstOrDefaultAsync(x => x.Id == userId);
 
         if (user == null)
         {
@@ -345,16 +345,16 @@ public class BookingService : IBookingService
         }
     }
 
-    public ApiResponse<ReservationBookingDTO> GetMyReservationById(Guid userId, Guid reservationId)
+    public async Task<ApiResponse<ReservationBookingDTO>> GetMyReservationById(Guid userId, Guid reservationId)
     {
-        var user = _context.Users
+        var user = await _context.Users
             .Include(x => x.MyBookingReservations)
             .ThenInclude(x => x.Spaces)
             .Include(x => x.MyBookingReservations)
             .ThenInclude(x => x.Tables)
             .Include(x => x.MyBookingReservations)
             .ThenInclude(x => x.Chairs)
-            .FirstOrDefault(x => x.Id == userId);
+            .FirstOrDefaultAsync(x => x.Id == userId);
 
         if (user == null)
         {
@@ -382,16 +382,16 @@ public class BookingService : IBookingService
         }
     }
 
-    public ApiResponse<List<BookingDTO>> MyBookings(Guid userId)
+    public async Task<ApiResponse<List<BookingDTO>>> MyBookings(Guid userId)
     {
-        var user = _context.Users
+        var user = await _context.Users
             .Include(x => x.MyBookings)
             .ThenInclude(x => x.Spaces)
             .Include(x => x.MyBookings)
             .ThenInclude(x => x.Tables)
             .Include(x => x.MyBookings)
             .ThenInclude(x => x.Chairs)
-            .FirstOrDefault(x => x.Id == userId);
+            .FirstOrDefaultAsync(x => x.Id == userId);
 
         if (user == null)
         {
@@ -407,16 +407,16 @@ public class BookingService : IBookingService
         }
     }
 
-    public ApiResponse<BookingDTO> GetMyBookingById(Guid userId, Guid bookingId)
+    public async Task<ApiResponse<BookingDTO>> GetMyBookingById(Guid userId, Guid bookingId)
     {
-        var user = _context.Users
+        var user = await _context.Users
             .Include(x => x.MyBookings)
             .ThenInclude(x => x.Spaces)
             .Include(x => x.MyBookings)
             .ThenInclude(x => x.Tables)
             .Include(x => x.MyBookings)
             .ThenInclude(x => x.Chairs)
-            .FirstOrDefault(x => x.Id == userId);
+            .FirstOrDefaultAsync(x => x.Id == userId);
 
         if (user == null)
         {
@@ -444,16 +444,16 @@ public class BookingService : IBookingService
         }
     }
 
-    public ApiResponse<BookingDTO> ClosestBookingReminder(Guid userId)
+    public async Task<ApiResponse<BookingDTO>> ClosestBookingReminder(Guid userId)
     {
-        var user = _context.Users
+        var user = await _context.Users
             .Include(x => x.MyBookings)
             .ThenInclude(x => x.Spaces)
             .Include(x => x.MyBookings)
             .ThenInclude(x => x.Tables)
             .Include(x => x.MyBookings)
             .ThenInclude(x => x.Chairs)
-            .FirstOrDefault(x => x.Id == userId);
+            .FirstOrDefaultAsync(x => x.Id == userId);
 
         if (user == null)
         {
@@ -474,16 +474,16 @@ public class BookingService : IBookingService
         }
     }
 
-    public ApiResponse<List<BookingDTO>> MyCurrentBookings(Guid userId)
+    public async Task<ApiResponse<List<BookingDTO>>> MyCurrentBookings(Guid userId)
     {
-        var user = _context.Users
+        var user = await _context.Users
             .Include(x => x.MyBookings)
             .ThenInclude(x => x.Spaces)
             .Include(x => x.MyBookings)
             .ThenInclude(x => x.Tables)
             .Include(x => x.MyBookings)
             .ThenInclude(x => x.Chairs)
-            .FirstOrDefault(x => x.Id == userId);
+            .FirstOrDefaultAsync(x => x.Id == userId);
 
         if (user == null)
         {
@@ -504,16 +504,16 @@ public class BookingService : IBookingService
         }
     }
 
-    public ApiResponse<List<BookingDTO>> MyOldBookings(Guid userId)
+    public async Task<ApiResponse<List<BookingDTO>>> MyOldBookings(Guid userId)
     {
-        var user = _context.Users
+        var user = await _context.Users
             .Include(x => x.MyBookings)
             .ThenInclude(x => x.Spaces)
             .Include(x => x.MyBookings)
             .ThenInclude(x => x.Tables)
             .Include(x => x.MyBookings)
             .ThenInclude(x => x.Chairs)
-            .FirstOrDefault(x => x.Id == userId);
+            .FirstOrDefaultAsync(x => x.Id == userId);
 
         if (user == null)
         {
@@ -534,11 +534,11 @@ public class BookingService : IBookingService
         }
     }
 
-    public ApiResponse<ReservationBookingDTO> ChooseSpace(Guid userId, Guid spaceId, AddBooking request, DateTime endDate)
+    public async Task<ApiResponse<ReservationBookingDTO>> ChooseSpace(Guid userId, Guid spaceId, AddBooking request, DateTime endDate)
     {
-        var user = _context.Users
+        var user = await _context.Users
             .Include(x => x.MyBookingReservations)
-            .FirstOrDefault(x => x.Id == userId);
+            .FirstOrDefaultAsync(x => x.Id == userId);
 
         if (user == null)
         {
@@ -548,10 +548,10 @@ public class BookingService : IBookingService
         }
         else
         {
-            var space = _context.Spaces
+            var space = await _context.Spaces
                 .Include(x => x.Bookings)
                 .Include(x => x.BookingReservations)
-                .FirstOrDefault(x => x.Id == spaceId);
+                .FirstOrDefaultAsync(x => x.Id == spaceId);
 
             if (space == null)
             {
@@ -585,7 +585,7 @@ public class BookingService : IBookingService
                     }
                     else
                     {
-                        var allConflictingBookings = _context.Bookings
+                        var allConflictingBookings = await _context.Bookings
                             .Include(x => x.Spaces)
                             .Include(x => x.Tables)
                             .Include(x => x.Chairs)
@@ -593,9 +593,9 @@ public class BookingService : IBookingService
                                                 (x.Tables.Any(x => x.SpaceId == spaceId)) ||
                                                 (x.Chairs.Any(x => x.Table.SpaceId == spaceId))) &&
                                 (x.BookingDate >= booking.BookingDate && x.BookingDate <= booking.BookingDateEnd) )
-                            .ToList();
+                            .ToListAsync();
                         
-                        var allConflictingReservations = _context.ReservationBookings
+                        var allConflictingReservations = await _context.ReservationBookings
                             .Include(x => x.Spaces)
                             .Include(x => x.Tables)
                             .Include(x => x.Chairs)
@@ -603,7 +603,7 @@ public class BookingService : IBookingService
                                          (x.Tables.Any(x => x.SpaceId == spaceId)) ||
                                          (x.Chairs.Any(x => x.Table.SpaceId == spaceId))) &&
                                         (x.BookingDate >= booking.BookingDate && x.BookingDate <= booking.BookingDateEnd) )
-                            .ToList();
+                            .ToListAsync();
                         
                         if (allConflictingBookings.Count != 0 || allConflictingReservations.Count != 0)
                         {
@@ -619,7 +619,7 @@ public class BookingService : IBookingService
                             user.MyBookingReservations.Add(booking);
                             space.BookingReservations.Add(booking);
                             
-                            _context.SaveChanges();
+                            await _context.SaveChangesAsync();
 
                             var response = ApiResponseService<ReservationBookingDTO>
                                 .Response200(_mapper.Map<ReservationBookingDTO>(booking));
@@ -631,11 +631,11 @@ public class BookingService : IBookingService
         }
     }
 
-    public ApiResponse<ReservationBookingDTO> ChooseTable(Guid userId, Guid tableId, AddBooking request)
+    public async Task<ApiResponse<ReservationBookingDTO>> ChooseTable(Guid userId, Guid tableId, AddBooking request)
     {
-        var user = _context.Users
+        var user = await _context.Users
             .Include(x => x.MyBookingReservations)
-            .FirstOrDefault(x => x.Id == userId);
+            .FirstOrDefaultAsync(x => x.Id == userId);
 
         if (user == null)
         {
@@ -645,14 +645,14 @@ public class BookingService : IBookingService
         }
         else
         {
-            var table = _context.Tables
+            var table = await _context.Tables
                 .Include(x => x.Bookings)
                 .Include(x => x.Chairs)
                 .ThenInclude(x => x.Bookings)
                 .Include(x => x.BookingReservations)
                 .Include(x => x.Chairs)
                 .ThenInclude(x => x.BookingReservations)
-                .FirstOrDefault(x => x.Id == tableId);
+                .FirstOrDefaultAsync(x => x.Id == tableId);
 
             if (table == null)
             {
@@ -662,7 +662,7 @@ public class BookingService : IBookingService
             }
             else
             {
-                if (!table.IsAvailable)
+                if (!table.IsAvailable) 
                 {
                     var response = ApiResponseService<ReservationBookingDTO>
                         .Response(null, "Table is not available", StatusCodes.Status400BadRequest);
@@ -686,39 +686,39 @@ public class BookingService : IBookingService
                     {
                         TimeSpan after18Hour = new TimeSpan(18, 0, 0);
                         
-                        List<Booking> conflictBookings = _context.Bookings
+                        List<Booking> conflictBookings = await _context.Bookings
                             .Include(x => x.Tables)
                             .ThenInclude(x => x.Chairs)
                             .ThenInclude(x => x.Bookings)
                             .Where(x => x.Tables
                                 .Any(x => (x.Id == tableId || x.Chairs.Any(y => y.TableId == tableId)))&&
                                         x.BookingDate.Day == booking.BookingDate.Day)
-                            .ToList();
+                            .ToListAsync();
 
-                        List<Booking> conflictSpace = _context.Bookings
+                        List<Booking> conflictSpace = await _context.Bookings
                             .Include(x => x.Spaces)
                             .ThenInclude(x => x.Bookings)
                             .Where(x => x.Spaces
                                 .Any(x => x.Id == table.SpaceId && x.Bookings
                                     .Any(x => x.BookingDate.Day == booking.BookingDate.Day)))
-                            .ToList();
+                            .ToListAsync();
                         
-                        List<ReservationBooking> conflictReservations = _context.ReservationBookings
+                        List<ReservationBooking> conflictReservations = await _context.ReservationBookings
                             .Include(x => x.Tables)
                             .ThenInclude(x => x.Chairs)
                             .ThenInclude(x => x.Bookings)
                             .Where(x => x.Tables
                                             .Any(x => (x.Id == tableId || x.Chairs.Any(y => y.TableId == tableId)))&&
                                         x.BookingDate.Day == booking.BookingDate.Day)
-                            .ToList();
+                            .ToListAsync();
 
-                        List<ReservationBooking> conflictSpaceReservations = _context.ReservationBookings
+                        List<ReservationBooking> conflictSpaceReservations = await _context.ReservationBookings
                             .Include(x => x.Spaces)
                             .ThenInclude(x => x.Bookings)
                             .Where(x => x.Spaces
                                 .Any(x => x.Id == table.SpaceId && x.Bookings
                                     .Any(x => x.BookingDate.Day == booking.BookingDate.Day)))
-                            .ToList();
+                            .ToListAsync();
                         
                         if (booking.BookingDate.Hour < after18Hour.Hours)
                         {
@@ -787,7 +787,7 @@ public class BookingService : IBookingService
                             booking.Tables.Add(table);
                             user.MyBookingReservations.Add(booking);
                             table.BookingReservations.Add(booking);
-                            _context.SaveChanges();
+                            await _context.SaveChangesAsync();
                         
                             var response = ApiResponseService<ReservationBookingDTO>
                                 .Response200(_mapper.Map<ReservationBookingDTO>(booking));
@@ -799,11 +799,11 @@ public class BookingService : IBookingService
         }
     }
     
-    public ApiResponse<ReservationBookingDTO> ChooseChair(Guid userId, Guid chairId, AddBooking request) 
+    public async Task<ApiResponse<ReservationBookingDTO>> ChooseChair(Guid userId, Guid chairId, AddBooking request) 
     {
-        var user = _context.Users
+        var user = await _context.Users
             .Include(x => x.MyBookings)
-            .FirstOrDefault(x => x.Id == userId);
+            .FirstOrDefaultAsync(x => x.Id == userId);
 
         if (user == null)
         {
@@ -813,11 +813,11 @@ public class BookingService : IBookingService
         }
         else
         {
-            var chair = _context.Chairs
+            var chair = await _context.Chairs
                 .Include(x => x.Bookings)
                 .Include(x => x.Table)
                 .ThenInclude(x => x.Bookings)
-                .FirstOrDefault(x => x.Id == chairId);
+                .FirstOrDefaultAsync(x => x.Id == chairId);
 
             if (chair == null)
             {
@@ -850,49 +850,49 @@ public class BookingService : IBookingService
                     else
                     {
                         TimeSpan after18Hour = new TimeSpan(18, 0, 0);
-                        List<Booking> conflictBookings = _context.Bookings
+                        List<Booking> conflictBookings = await _context.Bookings
                             .Include(x => x.Chairs)
                             .Include(x => x.Tables)
                             .ThenInclude(x => x.Bookings)
                             .Where(x => (x.Chairs.Any(x => x.Id == chairId)) &&
                                                 x.BookingDate.Day == booking.BookingDate.Day)
-                            .ToList();
+                            .ToListAsync();
                         
-                        List<Booking> tableConflicts = _context.Bookings
+                        List<Booking> tableConflicts = await _context.Bookings
                             .Where(x => x.Tables
                                 .Any(x => x.Id == chair.TableId) &&
                                         x.BookingDate.Day == booking.BookingDate.Day)
-                            .ToList();
+                            .ToListAsync();
                         
-                        List<Booking> conflictSpace = _context.Bookings
+                        List<Booking> conflictSpace = await _context.Bookings
                             .Include(x => x.Spaces)
                             .ThenInclude(x => x.Bookings)
                             .Where(x => x.Spaces
                                 .Any(x => x.Id == chair.Table.SpaceId && x.Bookings
                                     .Any(x => x.BookingDate.Day == booking.BookingDate.Day)))
-                            .ToList();
+                            .ToListAsync();
                         
-                        List<ReservationBooking> conflictReservationBookings = _context.ReservationBookings
+                        List<ReservationBooking> conflictReservationBookings = await _context.ReservationBookings
                             .Include(x => x.Chairs)
                             .Include(x => x.Tables)
                             .ThenInclude(x => x.Bookings)
                             .Where(x => (x.Chairs.Any(x => x.Id == chairId)) &&
                                         x.BookingDate.Day == booking.BookingDate.Day)
-                            .ToList();
+                            .ToListAsync();
                         
-                        List<ReservationBooking> tableReservationConflicts = _context.ReservationBookings
+                        List<ReservationBooking> tableReservationConflicts = await _context.ReservationBookings
                             .Where(x => x.Tables
                                             .Any(x => x.Id == chair.TableId) &&
                                         x.BookingDate.Day == booking.BookingDate.Day)
-                            .ToList();
+                            .ToListAsync();
                         
-                        List<ReservationBooking> conflictReservationSpace = _context.ReservationBookings
+                        List<ReservationBooking> conflictReservationSpace = await _context.ReservationBookings
                             .Include(x => x.Spaces)
                             .ThenInclude(x => x.Bookings)
                             .Where(x => x.Spaces
                                 .Any(x => x.Id == chair.Table.SpaceId && x.Bookings
                                     .Any(x => x.BookingDate.Day == booking.BookingDate.Day)))
-                            .ToList();
+                            .ToListAsync();
 
                         List<Booking> allConflicts = new List<Booking>();
                         List<ReservationBooking> allReservationConflicts = new List<ReservationBooking>();
@@ -944,7 +944,7 @@ public class BookingService : IBookingService
                             booking.Chairs.Add(chair);
                             user.MyBookingReservations.Add(booking);
                             chair.BookingReservations.Add(booking);
-                            _context.SaveChanges();
+                            await _context.SaveChangesAsync();
                         
                             var response = ApiResponseService<ReservationBookingDTO>
                                 .Response200(_mapper.Map<ReservationBookingDTO>(booking));
@@ -956,12 +956,12 @@ public class BookingService : IBookingService
         }
     }
 
-    public ApiResponse<ReservationBookingDTO> ChooseAnotherSpace(Guid userId, Guid bookingId, Guid spaceId)
+    public async Task<ApiResponse<ReservationBookingDTO>> ChooseAnotherSpace(Guid userId, Guid bookingId, Guid spaceId)
     {
-        var user = _context.Users
+        var user = await _context.Users
             .Include(x => x.MyBookingReservations)
             .ThenInclude(x => x.Spaces)
-            .FirstOrDefault(x => x.Id == userId);
+            .FirstOrDefaultAsync(x => x.Id == userId);
 
         if (user == null)
         {
@@ -982,9 +982,9 @@ public class BookingService : IBookingService
             }
             else
             {
-                var space = _context.Spaces
+                var space = await _context.Spaces
                     .Include(x => x.Bookings)
-                    .FirstOrDefault(x => x.Id == spaceId);
+                    .FirstOrDefaultAsync(x => x.Id == spaceId);
 
                 if (space == null)
                 {
@@ -1000,7 +1000,7 @@ public class BookingService : IBookingService
                 }
                 else
                 {
-                    var allConflictingBookings = _context.Bookings
+                    var allConflictingBookings = await _context.Bookings
                         .Include(x => x.Spaces)
                         .Include(x => x.Tables)
                         .Include(x => x.Chairs)
@@ -1008,9 +1008,9 @@ public class BookingService : IBookingService
                                      (x.Tables.Any(x => x.SpaceId == spaceId)) ||
                                      (x.Chairs.Any(x => x.Table.SpaceId == spaceId))) &&
                                     (x.BookingDate >= booking.BookingDate && x.BookingDate <= booking.BookingDateEnd) )
-                        .ToList();
+                        .ToListAsync();
                         
-                    var allConflictingReservations = _context.ReservationBookings
+                    var allConflictingReservations = await _context.ReservationBookings
                         .Include(x => x.Spaces)
                         .Include(x => x.Tables)
                         .Include(x => x.Chairs)
@@ -1018,7 +1018,7 @@ public class BookingService : IBookingService
                                      (x.Tables.Any(x => x.SpaceId == spaceId)) ||
                                      (x.Chairs.Any(x => x.Table.SpaceId == spaceId))) &&
                                     (x.BookingDate >= booking.BookingDate && x.BookingDate <= booking.BookingDateEnd) )
-                        .ToList();
+                        .ToListAsync();
                         
                     if (allConflictingBookings.Count != 0 || allConflictingReservations.Count != 0)
                     {
@@ -1033,7 +1033,7 @@ public class BookingService : IBookingService
                         booking.Spaces.Add(space);
                         space.BookingReservations.Add(booking);
                             
-                        _context.SaveChanges();
+                        await _context.SaveChangesAsync();
 
                         var response = ApiResponseService<ReservationBookingDTO>
                             .Response200(_mapper.Map<ReservationBookingDTO>(booking));
@@ -1044,12 +1044,12 @@ public class BookingService : IBookingService
         }
     }
     
-    public ApiResponse<ReservationBookingDTO> ChooseAnotherTable(Guid userId, Guid bookingId, Guid tableId)
+    public async Task<ApiResponse<ReservationBookingDTO>> ChooseAnotherTable(Guid userId, Guid bookingId, Guid tableId)
     {
-        var user = _context.Users
+        var user = await _context.Users
             .Include(x => x.MyBookingReservations)
             .ThenInclude(x => x.Tables)
-            .FirstOrDefault(x => x.Id == userId);
+            .FirstOrDefaultAsync(x => x.Id == userId);
 
         if (user == null)
         {
@@ -1070,9 +1070,9 @@ public class BookingService : IBookingService
             }
             else
             {
-                var table = _context.Tables
+                var table = await _context.Tables
                     .Include(x => x.Bookings)
-                    .FirstOrDefault(x => x.Id == tableId);
+                    .FirstOrDefaultAsync(x => x.Id == tableId);
 
                 if (table == null)
                 {
@@ -1098,39 +1098,39 @@ public class BookingService : IBookingService
                     {
                         TimeSpan after18Hour = new TimeSpan(18, 0, 0);
                         
-                        List<Booking> conflictBookings = _context.Bookings
+                        List<Booking> conflictBookings = await _context.Bookings
                             .Include(x => x.Tables)
                             .ThenInclude(x => x.Chairs)
                             .ThenInclude(x => x.Bookings)
                             .Where(x => x.Tables
                                 .Any(x => (x.Id == tableId || x.Chairs.Any(y => y.TableId == tableId)))&&
                                         x.BookingDate.Day == booking.BookingDate.Day)
-                            .ToList();
+                            .ToListAsync();
                         
-                        List<Booking> conflictSpace = _context.Bookings
+                        List<Booking> conflictSpace = await _context.Bookings
                             .Include(x => x.Spaces)
                             .ThenInclude(x => x.Bookings)
                             .Where(x => x.Spaces
                                 .Any(x => x.Id == table.SpaceId && x.Bookings
                                     .Any(x => x.BookingDate.Day == booking.BookingDate.Day)))
-                            .ToList();
+                            .ToListAsync();
                         
-                        List<ReservationBooking> conflictReservations = _context.ReservationBookings
+                        List<ReservationBooking> conflictReservations = await _context.ReservationBookings
                             .Include(x => x.Tables)
                             .ThenInclude(x => x.Chairs)
                             .ThenInclude(x => x.Bookings)
                             .Where(x => x.Tables
                                             .Any(x => (x.Id == tableId || x.Chairs.Any(y => y.TableId == tableId)))&&
                                         x.BookingDate.Day == booking.BookingDate.Day)
-                            .ToList();
+                            .ToListAsync();
 
-                        List<ReservationBooking> conflictSpaceReservations = _context.ReservationBookings
+                        List<ReservationBooking> conflictSpaceReservations = await _context.ReservationBookings
                             .Include(x => x.Spaces)
                             .ThenInclude(x => x.Bookings)
                             .Where(x => x.Spaces
                                 .Any(x => x.Id == table.SpaceId && x.Bookings
                                     .Any(x => x.BookingDate.Day == booking.BookingDate.Day)))
-                            .ToList();
+                            .ToListAsync();
                         
                         if (booking.BookingDate.Hour < after18Hour.Hours)
                         {
@@ -1198,7 +1198,7 @@ public class BookingService : IBookingService
                             booking.BookingExpireDate = DateTime.UtcNow.AddMinutes(10);
                             booking.Tables.Add(table);
                             table.BookingReservations.Add(booking);
-                            _context.SaveChanges();
+                            await _context.SaveChangesAsync();
                         
                             var response = ApiResponseService<ReservationBookingDTO>
                                 .Response200(_mapper.Map<ReservationBookingDTO>(booking));
@@ -1211,12 +1211,12 @@ public class BookingService : IBookingService
         }
     }
 
-    public ApiResponse<ReservationBookingDTO> ChooseAnotherChair(Guid userId, Guid bookingId, Guid chairId)
+    public async Task<ApiResponse<ReservationBookingDTO>> ChooseAnotherChair(Guid userId, Guid bookingId, Guid chairId)
     {
-        var user = _context.Users
+        var user = await _context.Users
             .Include(x => x.MyBookingReservations)
             .ThenInclude(x => x.Chairs)
-            .FirstOrDefault(x => x.Id == userId);
+            .FirstOrDefaultAsync(x => x.Id == userId);
 
         if (user == null)
         {
@@ -1237,9 +1237,9 @@ public class BookingService : IBookingService
             }
             else
             {
-                var chair = _context.Chairs
+                var chair = await _context.Chairs
                     .Include(x => x.Bookings)
-                    .FirstOrDefault(x => x.Id == chairId);
+                    .FirstOrDefaultAsync(x => x.Id == chairId);
 
                 if (chair == null)
                 {
@@ -1264,49 +1264,49 @@ public class BookingService : IBookingService
                     else
                     {
                         TimeSpan after18Hour = new TimeSpan(18, 0, 0);
-                        List<Booking> conflictBookings = _context.Bookings
+                        List<Booking> conflictBookings = await _context.Bookings
                             .Include(x => x.Chairs)
                             .Include(x => x.Tables)
                             .ThenInclude(x => x.Bookings)
                             .Where(x => (x.Chairs.Any(x => x.Id == chairId)) &&
                                                 x.BookingDate.Day == booking.BookingDate.Day)
-                            .ToList();
+                            .ToListAsync();
                         
-                        List<Booking> tableConflicts = _context.Bookings
+                        List<Booking> tableConflicts = await _context.Bookings
                             .Where(x => x.Tables
                                 .Any(x => x.Id == chair.TableId) &&
                                         x.BookingDate.Day == booking.BookingDate.Day)
-                            .ToList();
+                            .ToListAsync();
                         
-                        List<Booking> conflictSpace = _context.Bookings
+                        List<Booking> conflictSpace = await _context.Bookings
                             .Include(x => x.Spaces)
                             .ThenInclude(x => x.Bookings)
                             .Where(x => x.Spaces
                                 .Any(x => x.Id == chair.Table.SpaceId && x.Bookings
                                     .Any(x => x.BookingDate.Day == booking.BookingDate.Day)))
-                            .ToList();
+                            .ToListAsync();
 
-                        List<ReservationBooking> conflictReservationBookings = _context.ReservationBookings
+                        List<ReservationBooking> conflictReservationBookings = await _context.ReservationBookings
                             .Include(x => x.Chairs)
                             .Include(x => x.Tables)
                             .ThenInclude(x => x.Bookings)
                             .Where(x => (x.Chairs.Any(x => x.Id == chairId)) &&
                                         x.BookingDate.Day == booking.BookingDate.Day)
-                            .ToList();
+                            .ToListAsync();
                         
-                        List<ReservationBooking> tableReservationConflicts = _context.ReservationBookings
+                        List<ReservationBooking> tableReservationConflicts = await _context.ReservationBookings
                             .Where(x => x.Tables
                                             .Any(x => x.Id == chair.TableId) &&
                                         x.BookingDate.Day == booking.BookingDate.Day)
-                            .ToList();
+                            .ToListAsync();
                         
-                        List<ReservationBooking> conflictReservationSpace = _context.ReservationBookings
+                        List<ReservationBooking> conflictReservationSpace = await _context.ReservationBookings
                             .Include(x => x.Spaces)
                             .ThenInclude(x => x.Bookings)
                             .Where(x => x.Spaces
                                 .Any(x => x.Id == chair.Table.SpaceId && x.Bookings
                                     .Any(x => x.BookingDate.Day == booking.BookingDate.Day)))
-                            .ToList();
+                            .ToListAsync();
 
                         List<Booking> allConflicts = new List<Booking>();
                         List<ReservationBooking> allReservationConflicts = new List<ReservationBooking>();
@@ -1357,7 +1357,7 @@ public class BookingService : IBookingService
                             booking.BookingExpireDate = DateTime.UtcNow.AddMinutes(10);
                             booking.Chairs.Add(chair);
                             chair.BookingReservations.Add(booking);
-                            _context.SaveChanges();
+                            await _context.SaveChangesAsync();
                         
                             var response = ApiResponseService<ReservationBookingDTO>
                                 .Response200(_mapper.Map<ReservationBookingDTO>(booking));
@@ -1369,9 +1369,9 @@ public class BookingService : IBookingService
         }
     }
     
-    public ApiResponse<BookingDTO> CompleteBooking(Guid userId, Guid reservationId)
+    public async Task<ApiResponse<BookingDTO>> CompleteBooking(Guid userId, Guid reservationId)
     {
-        var user = _context.Users
+        var user = await _context.Users
             .Include(x => x.MyBookingReservations)
             .ThenInclude(x => x.Spaces)
             .ThenInclude(x => x.Bookings)
@@ -1382,7 +1382,7 @@ public class BookingService : IBookingService
             .ThenInclude(x => x.Chairs)
             .ThenInclude(x => x.Bookings)
             .Include(x => x.MyBookings)
-            .FirstOrDefault(x => x.Id == userId);
+            .FirstOrDefaultAsync(x => x.Id == userId);
     
         if (user == null)
         {
@@ -1405,7 +1405,7 @@ public class BookingService : IBookingService
                 if (DateTime.UtcNow > reservation.BookingExpireDate)
                 {
                     _context.ReservationBookings.Remove(reservation);
-                    _context.SaveChanges();
+                    await _context.SaveChangesAsync();
                     
                     var response = ApiResponseService<BookingDTO>
                         .Response(null, "Reservation time expired", StatusCodes.Status410Gone);
@@ -1450,7 +1450,7 @@ public class BookingService : IBookingService
                         chair.Bookings.Add(bookingToAdd);
                     }
                     
-                    _context.SaveChanges();
+                    await _context.SaveChangesAsync();
                     
                     var response = ApiResponseService<BookingDTO>
                         .Response200(_mapper.Map<BookingDTO>(bookingToAdd));
@@ -1460,9 +1460,9 @@ public class BookingService : IBookingService
         }
     }
 
-    public ApiResponse<ReservationBookingDTO> RemoveReservationSpace(Guid userId, Guid bookingId, Guid spaceId)
+    public async Task<ApiResponse<ReservationBookingDTO>> RemoveReservationSpace(Guid userId, Guid bookingId, Guid spaceId)
     {
-        var user = _context.Users
+        var user = await _context.Users
             .Include(x => x.MyBookingReservations)
             .ThenInclude(x => x.Spaces)
             .ThenInclude(x => x.BookingReservations)
@@ -1470,7 +1470,7 @@ public class BookingService : IBookingService
             .ThenInclude(x => x.Tables)
             .Include(x => x.MyBookingReservations)
             .ThenInclude(x => x.Chairs)
-            .FirstOrDefault(x => x.Id == userId);
+            .FirstOrDefaultAsync(x => x.Id == userId);
 
         if (user == null)
         {
@@ -1504,11 +1504,12 @@ public class BookingService : IBookingService
                     
                     booking.Spaces.Remove(space);
                     space.BookingReservations.Remove(booking);
-                    _context.SaveChanges();
+                    await _context.SaveChangesAsync();
 
                     if (booking.Spaces.Count == 0 && booking.Tables.Count == 0 && booking.Chairs.Count == 0)
                     {
                         _context.ReservationBookings.Remove(booking);
+                        await _context.SaveChangesAsync();
                         
                         var response = ApiResponseService<ReservationBookingDTO>
                             .Response200(_mapper.Map<ReservationBookingDTO>(booking));
@@ -1525,9 +1526,9 @@ public class BookingService : IBookingService
         }
     }
 
-    public ApiResponse<ReservationBookingDTO> RemoveReservationTable(Guid userId, Guid bookingId, Guid tableId)
+    public async Task<ApiResponse<ReservationBookingDTO>> RemoveReservationTable(Guid userId, Guid bookingId, Guid tableId)
     {
-        var user = _context.Users
+        var user = await _context.Users
             .Include(x => x.MyBookingReservations)
             .ThenInclude(x => x.Spaces)
             .Include(x => x.MyBookingReservations)
@@ -1535,7 +1536,7 @@ public class BookingService : IBookingService
             .ThenInclude(x => x.BookingReservations)
             .Include(x => x.MyBookingReservations)
             .ThenInclude(x => x.Chairs)
-            .FirstOrDefault(x => x.Id == userId);
+            .FirstOrDefaultAsync(x => x.Id == userId);
 
         if (user == null)
         {
@@ -1569,12 +1570,12 @@ public class BookingService : IBookingService
                     
                     booking.Tables.Remove(table);
                     table.BookingReservations.Remove(booking);
-                    _context.SaveChanges();
+                    await _context.SaveChangesAsync();
 
                     if (booking.Spaces.Count == 0 && booking.Tables.Count == 0 && booking.Chairs.Count == 0)
                     {
                         _context.ReservationBookings.Remove(booking);
-                        _context.SaveChanges();
+                        await _context.SaveChangesAsync();
                         
                         var response = ApiResponseService<ReservationBookingDTO>
                             .Response200(_mapper.Map<ReservationBookingDTO>(booking));
@@ -1591,9 +1592,9 @@ public class BookingService : IBookingService
         }
     }
 
-    public ApiResponse<ReservationBookingDTO> RemoveReservationChair(Guid userId, Guid bookingId, Guid chairId)
+    public async Task<ApiResponse<ReservationBookingDTO>> RemoveReservationChair(Guid userId, Guid bookingId, Guid chairId)
     {
-        var user = _context.Users
+        var user = await _context.Users
             .Include(x => x.MyBookingReservations)
             .ThenInclude(x => x.Spaces)
             .Include(x => x.MyBookingReservations)
@@ -1601,7 +1602,7 @@ public class BookingService : IBookingService
             .Include(x => x.MyBookingReservations)
             .ThenInclude(x => x.Chairs)
             .ThenInclude(x => x.BookingReservations)
-            .FirstOrDefault(x => x.Id == userId);
+            .FirstOrDefaultAsync(x => x.Id == userId);
 
         if (user == null)
         {
@@ -1635,12 +1636,12 @@ public class BookingService : IBookingService
                     
                     booking.Chairs.Remove(chair);
                     chair.BookingReservations.Remove(booking);
-                    _context.SaveChanges();
+                    await _context.SaveChangesAsync();
 
                     if (booking.Spaces.Count == 0 && booking.Tables.Count == 0 && booking.Chairs.Count == 0)
                     {
                         _context.ReservationBookings.Remove(booking);
-                        _context.SaveChanges();
+                        await _context.SaveChangesAsync();
                         
                         var response = ApiResponseService<ReservationBookingDTO>
                             .Response200(_mapper.Map<ReservationBookingDTO>(booking));
@@ -1657,11 +1658,11 @@ public class BookingService : IBookingService
         }
     }
 
-    public ApiResponse<ReservationBookingDTO> RemoveReservation(Guid userId, Guid reservationId)
+    public async Task<ApiResponse<ReservationBookingDTO>> RemoveReservation(Guid userId, Guid reservationId)
     {
-        var user = _context.Users
+        var user = await _context.Users
             .Include(x => x.MyBookingReservations)
-            .FirstOrDefault(x => x.Id == userId);
+            .FirstOrDefaultAsync(x => x.Id == userId);
 
         if (user == null)
         {
@@ -1671,7 +1672,8 @@ public class BookingService : IBookingService
         }
         else
         {
-            var booking = user.MyBookingReservations.FirstOrDefault(x => x.Id == reservationId);
+            var booking = user.MyBookingReservations
+                .FirstOrDefault(x => x.Id == reservationId);
 
             if (booking == null)
             {
@@ -1682,7 +1684,7 @@ public class BookingService : IBookingService
             else
             {
                 _context.ReservationBookings.Remove(booking);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
                         
                 var response = ApiResponseService<ReservationBookingDTO>
                     .Response200(_mapper.Map<ReservationBookingDTO>(booking));
@@ -1691,11 +1693,11 @@ public class BookingService : IBookingService
         }
     }
 
-    public ApiResponse<BookingDTO> CancelBooking(Guid userId, Guid bookingId)
+    public async Task<ApiResponse<BookingDTO>> CancelBooking(Guid userId, Guid bookingId)
     {
-        var user = _context.Users
+        var user = await _context.Users
             .Include(x => x.MyBookings)
-            .FirstOrDefault(x => x.Id == userId);
+            .FirstOrDefaultAsync(x => x.Id == userId);
 
         if (user == null)
         {
@@ -1720,7 +1722,7 @@ public class BookingService : IBookingService
                     if ((booking.BookingDate - DateTime.UtcNow).Duration().TotalHours <= 6 )
                     {
                         _context.Bookings.Remove(booking);
-                        _context.SaveChanges();
+                        await _context.SaveChangesAsync();
                         
                         var response = ApiResponseService<BookingDTO>
                             .Response(_mapper.Map<BookingDTO>(booking), "yuradgeba radgan javshnamde darchenilia 6 saatze naklebi, sawmuxarod tanxa ar dagibrundebat", StatusCodes.Status200OK);
@@ -1731,7 +1733,7 @@ public class BookingService : IBookingService
                         // fulis ukan dabrunebis funqcionali
                         
                         _context.Bookings.Remove(booking);
-                        _context.SaveChanges();
+                        await _context.SaveChangesAsync();
                         
                         var response = ApiResponseService<BookingDTO>
                             .Response200(_mapper.Map<BookingDTO>(booking));
@@ -1741,7 +1743,7 @@ public class BookingService : IBookingService
                 else 
                 {
                     _context.Bookings.Remove(booking);
-                    _context.SaveChanges();
+                    await _context.SaveChangesAsync();
                         
                     var response = ApiResponseService<BookingDTO>
                         .Response200(_mapper.Map<BookingDTO>(booking));
