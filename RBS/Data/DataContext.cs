@@ -14,6 +14,7 @@ public class DataContext : IdentityDbContext<User, IdentityRole<Guid>, Guid>
     public DbSet<Chair> Chairs { get; set; }
     public DbSet<Booking> Bookings { get; set; }
     public DbSet<ReservationBooking> ReservationBookings { get; set; }
+    public DbSet<Receipt> Receipts{ get; set; }
     
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
