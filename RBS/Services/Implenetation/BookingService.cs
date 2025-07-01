@@ -1450,6 +1450,7 @@ public class BookingService : IBookingService
                         chair.Bookings.Add(bookingToAdd);
                     }
                     
+                    _context.ReservationBookings.Remove(reservation);
                     await _context.SaveChangesAsync();
                     
                     var response = ApiResponseService<BookingDTO>
