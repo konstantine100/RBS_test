@@ -12,7 +12,7 @@ using RBS.Data;
 namespace RBS.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20250630120954_init")]
+    [Migration("20250702084257_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -278,6 +278,9 @@ namespace RBS.Migrations
                     b.Property<decimal?>("MinSpent")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<Guid?>("ReceiptId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid>("TableId")
                         .HasColumnType("uniqueidentifier");
 
@@ -289,9 +292,42 @@ namespace RBS.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ReceiptId");
+
                     b.HasIndex("TableId");
 
                     b.ToTable("Chairs");
+                });
+
+            modelBuilder.Entity("RBS.Models.Receipt", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("BookingId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("CustomerDetailsId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ReceiptNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("TotalAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerDetailsId");
+
+                    b.ToTable("Receipts");
                 });
 
             modelBuilder.Entity("RBS.Models.ReservationBooking", b =>
@@ -363,6 +399,9 @@ namespace RBS.Migrations
                     b.Property<bool>("IsAvailable")
                         .HasColumnType("bit");
 
+                    b.Property<Guid?>("ReceiptId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid>("RestaurantId")
                         .HasColumnType("uniqueidentifier");
 
@@ -373,6 +412,8 @@ namespace RBS.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ReceiptId");
 
                     b.HasIndex("RestaurantId");
 
@@ -397,6 +438,9 @@ namespace RBS.Migrations
                     b.Property<decimal?>("MinSpent")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<Guid?>("ReceiptId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid>("SpaceId")
                         .HasColumnType("uniqueidentifier");
 
@@ -420,6 +464,8 @@ namespace RBS.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ReceiptId");
 
                     b.HasIndex("SpaceId");
 
@@ -675,6 +721,10 @@ namespace RBS.Migrations
 
             modelBuilder.Entity("RBS.Models.Chair", b =>
                 {
+                    b.HasOne("RBS.Models.Receipt", null)
+                        .WithMany("ChairItems")
+                        .HasForeignKey("ReceiptId");
+
                     b.HasOne("RBS.Models.Table", "Table")
                         .WithMany("Chairs")
                         .HasForeignKey("TableId")
@@ -682,6 +732,15 @@ namespace RBS.Migrations
                         .IsRequired();
 
                     b.Navigation("Table");
+                });
+
+            modelBuilder.Entity("RBS.Models.Receipt", b =>
+                {
+                    b.HasOne("RBS.Models.User", "CustomerDetails")
+                        .WithMany()
+                        .HasForeignKey("CustomerDetailsId");
+
+                    b.Navigation("CustomerDetails");
                 });
 
             modelBuilder.Entity("RBS.Models.ReservationBooking", b =>
@@ -697,6 +756,10 @@ namespace RBS.Migrations
 
             modelBuilder.Entity("RBS.Models.Space", b =>
                 {
+                    b.HasOne("RBS.Models.Receipt", null)
+                        .WithMany("SpaceItems")
+                        .HasForeignKey("ReceiptId");
+
                     b.HasOne("RBS.Models.Restaurant", "Restaurant")
                         .WithMany("Spaces")
                         .HasForeignKey("RestaurantId")
@@ -708,6 +771,10 @@ namespace RBS.Migrations
 
             modelBuilder.Entity("RBS.Models.Table", b =>
                 {
+                    b.HasOne("RBS.Models.Receipt", null)
+                        .WithMany("TableItems")
+                        .HasForeignKey("ReceiptId");
+
                     b.HasOne("RBS.Models.Space", "Space")
                         .WithMany("Tables")
                         .HasForeignKey("SpaceId")
@@ -745,6 +812,15 @@ namespace RBS.Migrations
                         .HasForeignKey("TablesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("RBS.Models.Receipt", b =>
+                {
+                    b.Navigation("ChairItems");
+
+                    b.Navigation("SpaceItems");
+
+                    b.Navigation("TableItems");
                 });
 
             modelBuilder.Entity("RBS.Models.Restaurant", b =>

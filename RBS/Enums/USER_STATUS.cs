@@ -2,10 +2,11 @@
 
 public enum USER_STATUS
 {
-    ACTIVE,
-    INACTIVE,
-    SUSPENDED,
-    PENDING,
-    BLOCKED,
+    ACTIVE ,
+    VERIFIED,
+    INACTIVE ,
+    SUSPENDED ,
+    PENDING_VERIFICATION ,
+    BLOCKED, 
     
 }

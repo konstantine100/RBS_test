@@ -208,6 +208,28 @@ namespace RBS.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Receipts",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    BookingId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ReceiptNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    TotalAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    CustomerDetailsId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Notes = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Receipts", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Receipts_AspNetUsers_CustomerDetailsId",
+                        column: x => x.CustomerDetailsId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ReservationBookings",
                 columns: table => new
                 {
@@ -238,11 +260,17 @@ namespace RBS.Migrations
                     SpaceType = table.Column<int>(type: "int", nullable: false),
                     SpacePrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     IsAvailable = table.Column<bool>(type: "bit", nullable: false),
-                    RestaurantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    RestaurantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ReceiptId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Spaces", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Spaces_Receipts_ReceiptId",
+                        column: x => x.ReceiptId,
+                        principalTable: "Receipts",
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Spaces_Restaurants_RestaurantId",
                         column: x => x.RestaurantId,
@@ -314,11 +342,17 @@ namespace RBS.Migrations
                     MinSpent = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
                     Xlocation = table.Column<int>(type: "int", nullable: false),
                     Ylocation = table.Column<int>(type: "int", nullable: false),
-                    SpaceId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    SpaceId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ReceiptId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Tables", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Tables_Receipts_ReceiptId",
+                        column: x => x.ReceiptId,
+                        principalTable: "Receipts",
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Tables_Spaces_SpaceId",
                         column: x => x.SpaceId,
@@ -363,11 +397,17 @@ namespace RBS.Migrations
                     ChairPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Xlocation = table.Column<int>(type: "int", nullable: false),
                     Ylocation = table.Column<int>(type: "int", nullable: false),
-                    TableId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    TableId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ReceiptId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Chairs", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Chairs_Receipts_ReceiptId",
+                        column: x => x.ReceiptId,
+                        principalTable: "Receipts",
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Chairs_Tables_TableId",
                         column: x => x.TableId,
@@ -513,9 +553,19 @@ namespace RBS.Migrations
                 column: "ChairsId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Chairs_ReceiptId",
+                table: "Chairs",
+                column: "ReceiptId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Chairs_TableId",
                 table: "Chairs",
                 column: "TableId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Receipts_CustomerDetailsId",
+                table: "Receipts",
+                column: "CustomerDetailsId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ReservationBookings_UserId",
@@ -533,9 +583,19 @@ namespace RBS.Migrations
                 column: "TablesId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Spaces_ReceiptId",
+                table: "Spaces",
+                column: "ReceiptId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Spaces_RestaurantId",
                 table: "Spaces",
                 column: "RestaurantId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tables_ReceiptId",
+                table: "Tables",
+                column: "ReceiptId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Tables_SpaceId",
@@ -595,13 +655,16 @@ namespace RBS.Migrations
                 name: "Tables");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
-
-            migrationBuilder.DropTable(
                 name: "Spaces");
 
             migrationBuilder.DropTable(
+                name: "Receipts");
+
+            migrationBuilder.DropTable(
                 name: "Restaurants");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUsers");
         }
     }
 }
