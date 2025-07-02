@@ -1,6 +1,6 @@
 ﻿namespace RBS.Models;
 
-public class Booking
+public class SpaceReservation
 {
     public int Id { get; set; }
 
@@ -9,17 +9,11 @@ public class Booking
     public DateTime? BookingDateEnd { get; set; } // marto roca mtlian sivrces qiraobs!!!
     public DateTime BookingExpireDate { get; set; }
     
-    public bool IsPayed { get; set; } = false;
-    public bool IsPending { get; set; } = false;
-    public bool IsFinished { get; set; } = false;
     public decimal Price { get; set; }
     
     public int UserId { get; set; }
     public User User { get; set; }
-
-    public List<Table> Tables { get; set; } = new List<Table>();
-    public List<Chair> Chairs { get; set; } = new List<Chair>();
-
-    public List<Space> Spaces { get; set; } = new List<Space>();
-
+    
+    public int SpaceId { get; set; }
+    public Space Space { get; set; }
 }

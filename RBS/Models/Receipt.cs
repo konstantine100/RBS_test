@@ -2,8 +2,8 @@
 
 public class Receipt
 {
-    public Guid Id { get; set; }
-    public Guid BookingId { get; set; }
+    public int Id { get; set; }
+    public int BookingId { get; set; }
     public string? ReceiptNumber { get; set; }
     public DateTime Date { get; set; }
     public decimal TotalAmount { get; set; }

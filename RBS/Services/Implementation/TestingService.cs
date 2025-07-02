@@ -48,7 +48,7 @@ public class TestingService : ITestingService
         }
     }
 
-    public ApiResponse<SpaceDTO> AddSpace(Guid restaurantId, AddSpace request)
+    public ApiResponse<SpaceDTO> AddSpace(int restaurantId, AddSpace request)
     {
         var restaurant = _context.Restaurants
             .Include(x => x.Spaces)
@@ -83,7 +83,7 @@ public class TestingService : ITestingService
         }
     }
 
-    public ApiResponse<TableDTO> AddTable(Guid spaceId, AddTable request)
+    public ApiResponse<TableDTO> AddTable(int spaceId, AddTable request)
     {
         var space = _context.Spaces
             .Include(x => x.Tables)
@@ -118,7 +118,7 @@ public class TestingService : ITestingService
         }
     }
 
-    public ApiResponse<ChairDTO> AddChair(Guid tableId, AddChair request)
+    public ApiResponse<ChairDTO> AddChair(int tableId, AddChair request)
     {
         var table = _context.Tables
             .Include(x => x.Chairs)
@@ -153,7 +153,7 @@ public class TestingService : ITestingService
         }
     }
 
-    public ApiResponse<RestaurantDTO> DeleteRestaurant(Guid restaurantId)
+    public ApiResponse<RestaurantDTO> DeleteRestaurant(int restaurantId)
     {
         var restaurant = _context.Restaurants
             .FirstOrDefault(x => x.Id == restaurantId);
@@ -175,7 +175,7 @@ public class TestingService : ITestingService
         }
     }
 
-    public ApiResponse<SpaceDTO> DeleteSpace(Guid spaceId)
+    public ApiResponse<SpaceDTO> DeleteSpace(int spaceId)
     {
         var space = _context.Spaces
             .FirstOrDefault(x => x.Id == spaceId);
@@ -197,7 +197,7 @@ public class TestingService : ITestingService
         }
     }
 
-    public ApiResponse<TableDTO> DeleteTable(Guid tableId)
+    public ApiResponse<TableDTO> DeleteTable(int tableId)
     {
         var table = _context.Tables
             .FirstOrDefault(x => x.Id == tableId);
@@ -219,7 +219,7 @@ public class TestingService : ITestingService
         }
     }
 
-    public ApiResponse<ChairDTO> DeleteChair(Guid chairId)
+    public ApiResponse<ChairDTO> DeleteChair(int chairId)
     {
         var chair = _context.Chairs
             .FirstOrDefault(x => x.Id == chairId);

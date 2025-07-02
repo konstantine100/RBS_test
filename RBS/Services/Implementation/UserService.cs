@@ -18,7 +18,7 @@ public class UserService : IUserService
         _mapper = mapper;
     }
     
-    public ApiResponse<UserDTO> UpdateUser(Guid id, string changeParametr, string toChange)
+    public ApiResponse<UserDTO> UpdateUser(int id, string changeParametr, string toChange)
     {
         var user = _context.Users.FirstOrDefault(x => x.Id == id);
 
@@ -178,7 +178,7 @@ public class UserService : IUserService
         }
     }
 
-    public ApiResponse<UserDTO> DeleteUser(Guid id)
+    public ApiResponse<UserDTO> DeleteUser(int id)
     {
         var user = _context.Users.FirstOrDefault(x => x.Id == id);
 

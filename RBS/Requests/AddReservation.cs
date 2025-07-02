@@ -1,6 +1,6 @@
 ﻿namespace RBS.Requests;
 
-public class AddBooking
+public class AddReservation
 {
     public DateTime BookingDate { get; set; } 
 }

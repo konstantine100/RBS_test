@@ -28,10 +28,20 @@ public class MappingProfile : Profile
         CreateMap<AddChair, Chair>().ReverseMap();
         CreateMap<Chair, ChairDTO>().ReverseMap();
         
-        CreateMap<AddBooking, Booking>().ReverseMap();
+        CreateMap<AddReservation, Booking>().ReverseMap();
         CreateMap<Booking, BookingDTO>().ReverseMap();
         
-        CreateMap<AddBooking, ReservationBooking>().ReverseMap();
-        CreateMap<ReservationBooking, ReservationBookingDTO>().ReverseMap();
+        CreateMap<AddReservation, ReservationBooking>().ReverseMap();
+        CreateMap<ReservationBooking, ReservationBookingDTO>().ReverseMap(); // not using 
+        
+        CreateMap<AddReservation, SpaceReservation>().ReverseMap();
+        CreateMap<SpaceReservation, SpaceReservationDTO>().ReverseMap();
+        
+        CreateMap<AddReservation, TableReservation>().ReverseMap();
+        CreateMap<TableReservation, TableReservationDTO>().ReverseMap();
+        
+        CreateMap<AddReservation, ChairReservation>().ReverseMap();
+        CreateMap<ChairReservation, ChairReservationDTO>().ReverseMap();
+        
     }
 }

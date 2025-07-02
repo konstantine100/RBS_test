@@ -46,6 +46,10 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IBookingService, BookingService>();
 builder.Services.AddScoped<ITestingService, TestingService>();
+builder.Services.AddScoped<IReceiptService, ReceiptService>();
+builder.Services.AddScoped<IConflictSpaceService, ConflictSpaceService>();
+builder.Services.AddScoped<IConflictTableService, ConflictTableService>();
+builder.Services.AddScoped<IConflictChairService, ConflictChairService>();
 
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 

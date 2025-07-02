@@ -36,7 +36,7 @@ public class ReceiptController : ControllerBase
     }
 
     [HttpGet("get-receipts-by-user-id/{userId}")]
-    public async Task<ActionResult<IEnumerable<ReceiptDTO>>> GetReceiptsByUserIdAsync(Guid userId)
+    public async Task<ActionResult<IEnumerable<ReceiptDTO>>> GetReceiptsByUserIdAsync(int userId)
     {
         try
         {
@@ -54,7 +54,7 @@ public class ReceiptController : ControllerBase
     }
 
     [HttpGet("get-receipts-by-space-id/{spaceId}")]
-    public async Task<ActionResult<IEnumerable<ReceiptDTO>>> GetReceiptsBySpaceIdAsync(Guid spaceId)
+    public async Task<ActionResult<IEnumerable<ReceiptDTO>>> GetReceiptsBySpaceIdAsync(int spaceId)
     {
         try
         {
@@ -72,7 +72,7 @@ public class ReceiptController : ControllerBase
     }
 
     [HttpGet("get-receipts-by-table-id/{tableId}")]
-    public async Task<ActionResult<IEnumerable<ReceiptDTO>>> GetReceiptsByTableIdAsync(Guid tableId)
+    public async Task<ActionResult<IEnumerable<ReceiptDTO>>> GetReceiptsByTableIdAsync(int tableId)
     {
         try
         {
@@ -90,7 +90,7 @@ public class ReceiptController : ControllerBase
     }
 
     [HttpGet("get-receipts-by-chair-id/{chairId}")]
-    public async Task<ActionResult<IEnumerable<ReceiptDTO>>> GetReceiptsByChairIdAsync(Guid chairId)
+    public async Task<ActionResult<IEnumerable<ReceiptDTO>>> GetReceiptsByChairIdAsync(int chairId)
     {
         try
         {
@@ -108,7 +108,7 @@ public class ReceiptController : ControllerBase
     }
 
     [HttpGet("get-receipts-by-booking-id/{bookingId}")]
-    public async Task<ActionResult<IEnumerable<ReceiptDTO>>> GetReceiptsByBookingIdAsync(Guid bookingId)
+    public async Task<ActionResult<IEnumerable<ReceiptDTO>>> GetReceiptsByBookingIdAsync(int bookingId)
     {
         try
         {
@@ -162,7 +162,7 @@ public class ReceiptController : ControllerBase
     }
 
     [HttpGet("get-receipt-by-id/{id}")]
-    public async Task<ActionResult<ReceiptDTO>> GetReceiptByIdAsync(Guid id)
+    public async Task<ActionResult<ReceiptDTO>> GetReceiptByIdAsync(int id)
     {
         try
         {
@@ -194,7 +194,7 @@ public class ReceiptController : ControllerBase
     }
 
     [HttpPut("update-receipt/{id}")]
-    public async Task<ActionResult<ReceiptDTO>> UpdateReceiptAsync(Guid id, ReceiptDTO receiptDto)
+    public async Task<ActionResult<ReceiptDTO>> UpdateReceiptAsync(int id, ReceiptDTO receiptDto)
     {
         try
         {
@@ -212,7 +212,7 @@ public class ReceiptController : ControllerBase
     }
 
     [HttpDelete("delete-receipt/{id}")]
-    public async Task<ActionResult<bool>> DeleteReceiptAsync(Guid id)
+    public async Task<ActionResult<bool>> DeleteReceiptAsync(int id)
     {
         try
         {

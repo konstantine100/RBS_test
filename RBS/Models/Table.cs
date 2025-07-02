@@ -4,7 +4,7 @@ namespace RBS.Models;
 
 public class Table
 {
-    public Guid Id { get; set; }
+    public int Id { get; set; }
     
     public TABLE_TYPE TableType { get; set; }
     public TABLE_SHAPE TableShape { get; set; }
@@ -17,11 +17,12 @@ public class Table
     public int Xlocation { get; set; }
     public int Ylocation { get; set; }
     
-    public Guid SpaceId { get; set; }
+    public int SpaceId { get; set; }
     public Space Space { get; set; }
     public List<Chair> Chairs { get; set; } = new List<Chair>();
     public List<Booking> Bookings { get; set; } = new List<Booking>();
     public List<ReservationBooking> BookingReservations { get; set; } = new List<ReservationBooking>();
+    public List<TableReservation> TableReservations { get; set; } = new List<TableReservation>();
 
     public Table()
     {

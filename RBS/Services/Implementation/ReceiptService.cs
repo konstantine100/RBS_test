@@ -32,7 +32,7 @@ namespace RBS.Services.Implenetation
             return receiptDtos;
         }
 
-        public async Task<ReceiptDTO> GetReceiptByIdAsync(Guid id)
+        public async Task<ReceiptDTO> GetReceiptByIdAsync(int id)
         {
             var receipt = await _context.Receipts
                 .Include(x => x.CustomerDetails)
@@ -61,7 +61,7 @@ namespace RBS.Services.Implenetation
             return receiptDtos;
         }
 
-        public async Task<IEnumerable<ReceiptDTO>> GetReceiptsByBookingIdAsync(Guid bookingId)
+        public async Task<IEnumerable<ReceiptDTO>> GetReceiptsByBookingIdAsync(int bookingId)
         {
             var receipts = await _context.Receipts
                 .Where(r => r.BookingId == bookingId)
@@ -76,7 +76,7 @@ namespace RBS.Services.Implenetation
             return receiptDtos;
         }
 
-        public async Task<IEnumerable<ReceiptDTO>> GetReceiptsByChairIdAsync(Guid chairId)
+        public async Task<IEnumerable<ReceiptDTO>> GetReceiptsByChairIdAsync(int chairId)
         {
             var receipts = await _context.Receipts
                 .Include(x => x.CustomerDetails)
@@ -106,7 +106,7 @@ namespace RBS.Services.Implenetation
             return receiptDtos;
         }
 
-        public async Task<IEnumerable<ReceiptDTO>> GetReceiptsBySpaceIdAsync(Guid spaceId)
+        public async Task<IEnumerable<ReceiptDTO>> GetReceiptsBySpaceIdAsync(int spaceId)
         {
             var receipts = await _context.Receipts
                 .Include(x => x.CustomerDetails)
@@ -121,7 +121,7 @@ namespace RBS.Services.Implenetation
             return receiptDtos;
         }
 
-        public async Task<IEnumerable<ReceiptDTO>> GetReceiptsByTableIdAsync(Guid tableId)
+        public async Task<IEnumerable<ReceiptDTO>> GetReceiptsByTableIdAsync(int tableId)
         {
             var receipts = await _context.Receipts
                 .Include(x => x.CustomerDetails)
@@ -136,7 +136,7 @@ namespace RBS.Services.Implenetation
             return receiptDtos;
         }
 
-        public async Task<IEnumerable<ReceiptDTO>> GetReceiptsByUserIdAsync(Guid userId)
+        public async Task<IEnumerable<ReceiptDTO>> GetReceiptsByUserIdAsync(int userId)
         {
             var receipts = await _context.Receipts
                 .Include(x => x.CustomerDetails)
@@ -160,7 +160,7 @@ namespace RBS.Services.Implenetation
             return _mapper.Map<ReceiptDTO>(receipt);
         }
 
-        public async Task<ReceiptDTO> UpdateReceiptAsync(Guid id, ReceiptDTO receiptDto)
+        public async Task<ReceiptDTO> UpdateReceiptAsync(int id, ReceiptDTO receiptDto)
         {
             var receipt = await _context.Receipts.FindAsync(id) ?? throw new KeyNotFoundException($"Receipt with ID {id} not found.");
             _mapper.Map(receiptDto, receipt);
@@ -170,7 +170,7 @@ namespace RBS.Services.Implenetation
             return _mapper.Map<ReceiptDTO>(receipt);
         }
 
-        public async Task<bool> DeleteReceiptAsync(Guid id)
+        public async Task<bool> DeleteReceiptAsync(int id)
         {
             var receipt = await _context.Receipts.FindAsync(id) ?? throw new KeyNotFoundException($"Receipt with ID {id} not found.");
             _context.Receipts.Remove(receipt);

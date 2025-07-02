@@ -8,24 +8,22 @@ namespace RBS.Services.Interfaces;
 
 public interface IBookingService
 {
-    Task<ApiResponse<List<LayoutByHour>>> GetReservationsByHour (Guid spaceId, DateTime Date);
-    Task<ApiResponse<List<ReservationBookingDTO>>> MyReservations(Guid userId);
-    Task<ApiResponse<ReservationBookingDTO>> GetMyReservationById(Guid userId, Guid reservationId);
-    Task<ApiResponse<List<BookingDTO>>> MyBookings(Guid userId);
-    Task<ApiResponse<BookingDTO>> GetMyBookingById(Guid userId, Guid bookingId);
-    Task<ApiResponse<BookingDTO>> ClosestBookingReminder(Guid userId);
-    Task<ApiResponse<List<BookingDTO>>> MyCurrentBookings(Guid userId);
-    Task<ApiResponse<List<BookingDTO>>> MyOldBookings(Guid userId);
-    Task<ApiResponse<ReservationBookingDTO>> ChooseSpace(Guid userId ,Guid spaceId, AddBooking request, DateTime endDate);
-    Task<ApiResponse<ReservationBookingDTO>> ChooseTable(Guid userId ,Guid tableId, AddBooking request);
-    Task<ApiResponse<ReservationBookingDTO>> ChooseChair(Guid userId ,Guid chairId, AddBooking request);
-    Task<ApiResponse<ReservationBookingDTO>> ChooseAnotherSpace(Guid userId, Guid reservationId, Guid spaceId);
-    Task<ApiResponse<ReservationBookingDTO>> ChooseAnotherTable(Guid userId, Guid reservationId, Guid tableId);
-    Task<ApiResponse<ReservationBookingDTO>> ChooseAnotherChair(Guid userId, Guid reservationId, Guid chairId);
-    Task<ApiResponse<BookingDTO>> CompleteBooking(Guid userId, Guid reservationId);
-    Task<ApiResponse<ReservationBookingDTO>> RemoveReservationSpace(Guid userId, Guid bookingId, Guid spaceId);
-    Task<ApiResponse<ReservationBookingDTO>> RemoveReservationTable(Guid userId, Guid bookingId, Guid tableId);
-    Task<ApiResponse<ReservationBookingDTO>> RemoveReservationChair(Guid userId, Guid bookingId, Guid chairId);
-    Task<ApiResponse<ReservationBookingDTO>> RemoveReservation(Guid userId, Guid reservationId);
-    Task<ApiResponse<BookingDTO>> CancelBooking(Guid userId, Guid bookingId);
+    Task<ApiResponse<BookingDTO>> CompleteBooking(int userId, int reservationId);
+    Task<ApiResponse<List<LayoutByHour>>> GetReservationsByHour (int spaceId, DateTime Date);
+    Task<ApiResponse<List<ReservationBookingDTO>>> MyReservations(int userId);
+    Task<ApiResponse<ReservationBookingDTO>> GetMyReservationById(int userId, int reservationId);
+    Task<ApiResponse<List<BookingDTO>>> MyBookings(int userId);
+    Task<ApiResponse<BookingDTO>> GetMyBookingById(int userId, int bookingId);
+    Task<ApiResponse<BookingDTO>> ClosestBookingReminder(int userId);
+    Task<ApiResponse<List<BookingDTO>>> MyCurrentBookings(int userId);
+    Task<ApiResponse<List<BookingDTO>>> MyOldBookings(int userId);
+    Task<ApiResponse<SpaceReservationDTO>> ChooseSpace(int userId ,int spaceId, AddReservation request, DateTime endDate);
+    Task<ApiResponse<TableReservationDTO>> ChooseTable(int userId ,int tableId, AddReservation request);
+    Task<ApiResponse<ChairReservationDTO>> ChooseChair(int userId ,int chairId, AddReservation request);
+    
+    Task<ApiResponse<ReservationBookingDTO>> RemoveReservationSpace(int userId, int bookingId, int spaceId);
+    Task<ApiResponse<ReservationBookingDTO>> RemoveReservationTable(int userId, int bookingId, int tableId);
+    Task<ApiResponse<ReservationBookingDTO>> RemoveReservationChair(int userId, int bookingId, int chairId);
+    Task<ApiResponse<ReservationBookingDTO>> RemoveReservation(int userId, int reservationId);
+    Task<ApiResponse<BookingDTO>> CancelBooking(int userId, int bookingId);
 }

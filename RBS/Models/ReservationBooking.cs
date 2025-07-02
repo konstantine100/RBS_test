@@ -2,7 +2,8 @@
 
 public class ReservationBooking
 {
-    public Guid Id { get; set; }
+    //not using right now, need to improve
+    public int Id { get; set; }
 
     public DateTime BookedAt { get; set; } = DateTime.UtcNow;
     public DateTime BookingDate { get; set; } 
@@ -11,7 +12,7 @@ public class ReservationBooking
     
     public decimal Price { get; set; }
     
-    public Guid UserId { get; set; }
+    public int UserId { get; set; }
     public User User { get; set; }
 
     public List<Table> Tables { get; set; } = new List<Table>();

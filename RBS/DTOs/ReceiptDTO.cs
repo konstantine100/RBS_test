@@ -10,7 +10,7 @@ public class ReceiptDTO
     public string? Notes { get; set; }
 
     // Navigation properties
-    public IEnumerable<SpaceDTO> SpaceItems { get; set; } = new List<SpaceDTO>();
-    public IEnumerable<TableDTO> TableItems { get; set; } = new List<TableDTO>();
-    public IEnumerable<ChairDTO> ChairItems { get; set; } = new List<ChairDTO>();
+    public IEnumerable<SpaceDTO>? SpaceItems { get; set; } = new List<SpaceDTO>();
+    public IEnumerable<TableDTO>? TableItems { get; set; } = new List<TableDTO>();
+    public IEnumerable<ChairDTO>? ChairItems { get; set; } = new List<ChairDTO>();
 }

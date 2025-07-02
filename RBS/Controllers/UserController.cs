@@ -152,7 +152,7 @@ public class UserController : ControllerBase
 
     [HttpGet("get-profile")]
     [Authorize]
-    public ActionResult GetProfile(Guid id)
+    public ActionResult GetProfile(int id)
     {
         var user = _context.Users.FirstOrDefault(x => x.Id == id);
 
@@ -334,7 +334,7 @@ public class UserController : ControllerBase
     }
 
     [HttpPut("update-user")]
-    public ActionResult UpdateUser(Guid id, string changeParamert, string changeTo)
+    public ActionResult UpdateUser(int id, string changeParamert, string changeTo)
     {
         var user = _userService.UpdateUser(id, changeParamert, changeTo);
 
@@ -342,7 +342,7 @@ public class UserController : ControllerBase
     }
 
     [HttpDelete]
-    public ActionResult DeleteUser(Guid id)
+    public ActionResult DeleteUser(int id)
     {
         var user = _userService.DeleteUser(id);
 

@@ -3,7 +3,7 @@ using RBS.Enums;
 
 namespace RBS.Models;
 
-public class User : IdentityUser<Guid>  
+public class User : IdentityUser<int>  
 {
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
@@ -16,7 +16,13 @@ public class User : IdentityUser<Guid>
     // public string Password { get; set; } // Inherited as PasswordHash (handled automatically)
 
     public List<Booking> MyBookings { get; set; } = new List<Booking>();
+    
+    //booking reservation for now is not usable peace of garbage
     public List<ReservationBooking> MyBookingReservations { get; set; } = new List<ReservationBooking>();
+    
+    public List<SpaceReservation> SpaceReservations { get; set; } = new List<SpaceReservation>();
+    public List<TableReservation> TableReservations { get; set; } = new List<TableReservation>();
+    public List<ChairReservation> ChairReservations { get; set; } = new List<ChairReservation>();
     public string? RefreshToken { get; set; }
     public DateTime? RefreshTokenExpiresAtUtc { get; set; }
     public string? VerificationCode { get; set; }

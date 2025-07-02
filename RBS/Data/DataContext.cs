@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace RBS.Data;
 
-public class DataContext : IdentityDbContext<User, IdentityRole<Guid>, Guid>
+public class DataContext : IdentityDbContext<User, IdentityRole<int>, int>
 {
     private readonly IConfiguration _configuration;
 
@@ -21,7 +21,10 @@ public class DataContext : IdentityDbContext<User, IdentityRole<Guid>, Guid>
     public DbSet<Table> Tables { get; set; }
     public DbSet<Chair> Chairs { get; set; }
     public DbSet<Booking> Bookings { get; set; }
-    public DbSet<ReservationBooking> ReservationBookings { get; set; }
+    public DbSet<ReservationBooking> ReservationBookings { get; set; } // must be deleted
+    public DbSet<SpaceReservation> SpaceReservations { get; set; }
+    public DbSet<TableReservation> TableReservations { get; set; }
+    public DbSet<ChairReservation> ChairReservations { get; set; }
     public DbSet<Receipt> Receipts { get; set; }
     
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
