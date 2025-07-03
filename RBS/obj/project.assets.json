@@ -6358,24 +6358,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\khule\\.nuget\\packages\\": {},
-    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
+    "C:\\Users\\kmami\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\khule\\OneDrive\\Desktop\\WebApplication1\\RBS_test\\RBS\\RBS.csproj",
+      "projectUniqueName": "C:\\Users\\kmami\\RiderProjects\\RBS\\RBS\\RBS.csproj",
       "projectName": "RBS",
-      "projectPath": "C:\\Users\\khule\\OneDrive\\Desktop\\WebApplication1\\RBS_test\\RBS\\RBS.csproj",
-      "packagesPath": "C:\\Users\\khule\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\khule\\OneDrive\\Desktop\\WebApplication1\\RBS_test\\RBS\\obj\\",
+      "projectPath": "C:\\Users\\kmami\\RiderProjects\\RBS\\RBS\\RBS.csproj",
+      "packagesPath": "C:\\Users\\kmami\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\kmami\\RiderProjects\\RBS\\RBS\\obj\\",
       "projectStyle": "PackageReference",
-      "fallbackFolders": [
-        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-      ],
       "configFilePaths": [
-        "C:\\Users\\khule\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+        "C:\\Users\\kmami\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -6401,8 +6396,7 @@
         "enableAudit": "true",
         "auditLevel": "low",
         "auditMode": "direct"
-      },
-      "SdkAnalysisLevel": "9.0.300"
+      }
     },
     "frameworks": {
       "net8.0": {
@@ -6482,7 +6476,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.301/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.300/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

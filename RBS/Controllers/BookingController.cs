@@ -18,9 +18,9 @@ public class BookingController : ControllerBase
     }
     
     [HttpGet("complete-booking")]
-    public async Task<ActionResult> CompleteBooking(int userId)
+    public async Task<ActionResult> CompleteBooking(int userId, int restaurantId)
     {
-        var response = await _bookingService.CompleteBooking(userId);
+        var response = await _bookingService.CompleteBooking(userId, restaurantId);
         return Ok(response);
     }
     

@@ -341,7 +341,7 @@ public class UserController : ControllerBase
         return Ok(user);
     }
 
-    [HttpDelete]
+    [HttpDelete("delete-user")]
     public ActionResult DeleteUser(int id)
     {
         var user = _userService.DeleteUser(id);

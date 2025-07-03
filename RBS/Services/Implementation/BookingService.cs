@@ -33,7 +33,7 @@ public class BookingService : IBookingService
     }
     
     
-    public async Task<ApiResponse<AllBookings>> CompleteBooking(int userId)
+    public async Task<ApiResponse<AllBookings>> CompleteBooking(int userId, int restaurantId)
     {
         var user = await _context.Users
             .Include(x => x.MyBookings)
@@ -99,9 +99,9 @@ public class BookingService : IBookingService
                 
                 List<Booking> allBookings = new List<Booking>();
                 
-                allBookings.AddRange(CreateBookingsFromSpaceReservations(spaceReservations, user));
-                allBookings.AddRange(CreateBookingsFromTableReservations(tableReservations, user));
-                allBookings.AddRange(CreateBookingsFromChairReservations(chairReservations, user));
+                allBookings.AddRange(CreateBookingsFromSpaceReservations(spaceReservations, user, restaurantId));
+                allBookings.AddRange(CreateBookingsFromTableReservations(tableReservations, user, restaurantId));
+                allBookings.AddRange(CreateBookingsFromChairReservations(chairReservations, user, restaurantId));
                 
                 _context.SpaceReservations.RemoveRange(spaceReservations);
                 _context.TableReservations.RemoveRange(tableReservations);
@@ -333,7 +333,7 @@ public class BookingService : IBookingService
         }
     }
     
-    private List<Booking> CreateBookingsFromSpaceReservations(List<SpaceReservation> reservations, User user)
+    private List<Booking> CreateBookingsFromSpaceReservations(List<SpaceReservation> reservations, User user, int restaurantId)
     {
         return reservations.Select(reservation => 
         {
@@ -341,20 +341,25 @@ public class BookingService : IBookingService
             {
                 BookingDate = reservation.BookingDate,
                 BookingDateEnd = reservation.BookingDateEnd,
+                BookingDateExpiration = reservation.BookingDate.AddMinutes(30),
                 BookedAt = DateTime.UtcNow,
                 IsPayed = true,
                 IsPending = true,
                 Price = reservation.Price,
                 UserId = reservation.UserId,
+                RestaurantId = restaurantId,
+                
             };
         
             user.MyBookings.Add(booking);
             reservation.Space.Bookings.Add(booking);
+            var restaurant = _context.Restaurants.FirstOrDefault(x => x.Id == restaurantId);
+            restaurant.Bookings.Add(booking);
             return booking;
         }).ToList();
     }
 
-    private List<Booking> CreateBookingsFromTableReservations(List<TableReservation> reservations, User user)
+    private List<Booking> CreateBookingsFromTableReservations(List<TableReservation> reservations, User user, int restaurantId)
     {
         return reservations.Select(reservation => 
         {
@@ -362,20 +367,24 @@ public class BookingService : IBookingService
             {
                 BookingDate = reservation.BookingDate,
                 BookingDateEnd = null,
+                BookingDateExpiration = reservation.BookingDate.AddMinutes(30),
                 BookedAt = DateTime.UtcNow,
                 IsPayed = true,
                 IsPending = true,
                 Price = reservation.Price,
                 UserId = reservation.UserId,
+                RestaurantId = restaurantId
             };
         
             user.MyBookings.Add(booking);
             reservation.Table.Bookings.Add(booking);
+            var restaurant = _context.Restaurants.FirstOrDefault(x => x.Id == restaurantId);
+            restaurant.Bookings.Add(booking);
             return booking;
         }).ToList();
     }
 
-    private List<Booking> CreateBookingsFromChairReservations(List<ChairReservation> reservations, User user)
+    private List<Booking> CreateBookingsFromChairReservations(List<ChairReservation> reservations, User user, int restaurantId)
     {
         return reservations.Select(reservation => 
         {
@@ -383,15 +392,19 @@ public class BookingService : IBookingService
             {
                 BookingDate = reservation.BookingDate,
                 BookingDateEnd = null,
+                BookingDateExpiration = reservation.BookingDate.AddMinutes(30),
                 BookedAt = DateTime.UtcNow,
                 IsPayed = true,
                 IsPending = true,
                 Price = reservation.Price,
                 UserId = reservation.UserId,
+                RestaurantId = restaurantId
             };
         
             user.MyBookings.Add(booking);
             reservation.Chair.Bookings.Add(booking);
+            var restaurant = _context.Restaurants.FirstOrDefault(x => x.Id == restaurantId);
+            restaurant.Bookings.Add(booking);
             return booking;
         }).ToList();
     }

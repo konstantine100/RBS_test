@@ -10,6 +10,7 @@ public class Restaurant
     public decimal? Lon { get; set; }
 
     public List<Space> Spaces { get; set; } = new List<Space>();
+    public List<Booking> Bookings { get; set; } = new List<Booking>();
 
     // navigation properties
     // restaurant -> schedule ???

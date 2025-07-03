@@ -8,7 +8,7 @@ namespace RBS.Services.Interfaces;
 
 public interface IBookingService
 {
-    Task<ApiResponse<AllBookings>> CompleteBooking(int userId);
+    Task<ApiResponse<AllBookings>> CompleteBooking(int userId, int restaurantId);
     Task<ApiResponse<List<BookingDTO>>> MyBookings(int userId);
     Task<ApiResponse<BookingDTO>> GetMyBookingById(int userId, int bookingId);
     Task<ApiResponse<BookingDTO>> ClosestBookingReminder(int userId);
