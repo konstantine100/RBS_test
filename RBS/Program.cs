@@ -56,6 +56,7 @@ builder.Services.AddScoped<ILayoutService, LayoutService>();
 builder.Services.AddScoped<ISpaceReservationService, SpaceReservationService>();
 builder.Services.AddScoped<ITableReservationService, TableReservationService>();
 builder.Services.AddScoped<IChairReservationService, ChairReservationService>();
+builder.Services.AddScoped<IHostService, HostService>();
 
 // for Apple payment service 
 builder.Services.AddScoped<IApplePaymentService, ApplePaymentService>();
