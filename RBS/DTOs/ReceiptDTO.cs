@@ -2,7 +2,7 @@
 
 public class ReceiptDTO
 {
-    public Guid BookingId { get; set; } // rorame int iyo tavdapirvelad
+    public int BookingId { get; set; } // rorame int iyo tavdapirvelad
     public string? ReceiptNumber { get; set; }
     public DateTime Date { get; set; }
     public decimal TotalAmount { get; set; }

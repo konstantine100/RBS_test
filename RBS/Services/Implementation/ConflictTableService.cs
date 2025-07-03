@@ -40,7 +40,6 @@ public class ConflictTableService : IConflictTableService
                         x.BookingDate.Day == startDate.Day)
             .ToListAsync();
         
-        allConflicts.AddRange(conflictSpaceBookings);
         allConflicts.AddRange(conflictTableAndChairBookings);
         
         if (startDate.Hour < after18Hour.Hours)
@@ -59,6 +58,12 @@ public class ConflictTableService : IConflictTableService
                                      (x.BookingDate - startDate).Duration() < TimeSpan.FromHours(-1)))
                 .ToList();
         }
+        conflictSpaceBookings = conflictSpaceBookings
+            .Where(x => x.BookingDateEnd > startDate &&
+                        (x.BookingDate - startDate).Duration() > TimeSpan.FromHours(-1))
+            .ToList();
+        
+        allConflicts.AddRange(conflictSpaceBookings);
         
         return allConflicts;
     }

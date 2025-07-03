@@ -26,7 +26,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<DataContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddIdentity<User, IdentityRole<Guid>>(options =>
+builder.Services.AddIdentity<User, IdentityRole<int>>(options =>
     {
         // Configure password requirements
         options.Password.RequireDigit = true;
@@ -50,6 +50,11 @@ builder.Services.AddScoped<IReceiptService, ReceiptService>();
 builder.Services.AddScoped<IConflictSpaceService, ConflictSpaceService>();
 builder.Services.AddScoped<IConflictTableService, ConflictTableService>();
 builder.Services.AddScoped<IConflictChairService, ConflictChairService>();
+builder.Services.AddScoped<IReservationService, ReservationService>();
+builder.Services.AddScoped<ILayoutService, LayoutService>();
+builder.Services.AddScoped<ISpaceReservationService, SpaceReservationService>();
+builder.Services.AddScoped<ITableReservationService, TableReservationService>();
+builder.Services.AddScoped<IChairReservationService, ChairReservationService>();
 
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 

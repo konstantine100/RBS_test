@@ -4,7 +4,7 @@ namespace RBS.DTOs;
 
 public class SpaceDTO
 {
-    public Guid Id { get; set; }
+    public int Id { get; set; }
     public SPACE_TYPE SpaceType { get; set; }
     public decimal SpacePrice { get; set; }
     public bool IsAvailable { get; set; }

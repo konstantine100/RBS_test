@@ -12,7 +12,7 @@ using RBS.Data;
 namespace RBS.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20250702084257_init")]
+    [Migration("20250703121048_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -27,11 +27,11 @@ namespace RBS.Migrations
 
             modelBuilder.Entity("BookingChair", b =>
                 {
-                    b.Property<Guid>("BookingsId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("BookingsId")
+                        .HasColumnType("int");
 
-                    b.Property<Guid>("ChairsId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("ChairsId")
+                        .HasColumnType("int");
 
                     b.HasKey("BookingsId", "ChairsId");
 
@@ -42,11 +42,11 @@ namespace RBS.Migrations
 
             modelBuilder.Entity("BookingSpace", b =>
                 {
-                    b.Property<Guid>("BookingsId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("BookingsId")
+                        .HasColumnType("int");
 
-                    b.Property<Guid>("SpacesId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("SpacesId")
+                        .HasColumnType("int");
 
                     b.HasKey("BookingsId", "SpacesId");
 
@@ -57,11 +57,11 @@ namespace RBS.Migrations
 
             modelBuilder.Entity("BookingTable", b =>
                 {
-                    b.Property<Guid>("BookingsId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("BookingsId")
+                        .HasColumnType("int");
 
-                    b.Property<Guid>("TablesId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("TablesId")
+                        .HasColumnType("int");
 
                     b.HasKey("BookingsId", "TablesId");
 
@@ -70,26 +70,13 @@ namespace RBS.Migrations
                     b.ToTable("BookingTable");
                 });
 
-            modelBuilder.Entity("ChairReservationBooking", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<int>", b =>
                 {
-                    b.Property<Guid>("BookingReservationsId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ChairsId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("BookingReservationsId", "ChairsId");
-
-                    b.HasIndex("ChairsId");
-
-                    b.ToTable("ChairReservationBooking");
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", b =>
-                {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -113,7 +100,7 @@ namespace RBS.Migrations
                     b.ToTable("AspNetRoles", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -127,8 +114,8 @@ namespace RBS.Migrations
                     b.Property<string>("ClaimValue")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("RoleId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("RoleId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -137,7 +124,7 @@ namespace RBS.Migrations
                     b.ToTable("AspNetRoleClaims", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<int>", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -151,8 +138,8 @@ namespace RBS.Migrations
                     b.Property<string>("ClaimValue")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -161,7 +148,7 @@ namespace RBS.Migrations
                     b.ToTable("AspNetUserClaims", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<int>", b =>
                 {
                     b.Property<string>("LoginProvider")
                         .HasColumnType("nvarchar(450)");
@@ -172,8 +159,8 @@ namespace RBS.Migrations
                     b.Property<string>("ProviderDisplayName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
 
                     b.HasKey("LoginProvider", "ProviderKey");
 
@@ -182,13 +169,13 @@ namespace RBS.Migrations
                     b.ToTable("AspNetUserLogins", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<int>", b =>
                 {
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
 
-                    b.Property<Guid>("RoleId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("RoleId")
+                        .HasColumnType("int");
 
                     b.HasKey("UserId", "RoleId");
 
@@ -197,10 +184,10 @@ namespace RBS.Migrations
                     b.ToTable("AspNetUserRoles", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<int>", b =>
                 {
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
 
                     b.Property<string>("LoginProvider")
                         .HasColumnType("nvarchar(450)");
@@ -218,9 +205,11 @@ namespace RBS.Migrations
 
             modelBuilder.Entity("RBS.Models.Booking", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("BookedAt")
                         .HasColumnType("datetime2");
@@ -229,9 +218,6 @@ namespace RBS.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("BookingDateEnd")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("BookingExpireDate")
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("IsFinished")
@@ -246,8 +232,8 @@ namespace RBS.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -258,9 +244,11 @@ namespace RBS.Migrations
 
             modelBuilder.Entity("RBS.Models.Chair", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ChairNumber")
                         .IsRequired()
@@ -272,17 +260,14 @@ namespace RBS.Migrations
                     b.Property<bool>("IsAvailable")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsBooked")
-                        .HasColumnType("bit");
-
                     b.Property<decimal?>("MinSpent")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<Guid?>("ReceiptId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int?>("ReceiptId")
+                        .HasColumnType("int");
 
-                    b.Property<Guid>("TableId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("TableId")
+                        .HasColumnType("int");
 
                     b.Property<int>("Xlocation")
                         .HasColumnType("int");
@@ -299,17 +284,57 @@ namespace RBS.Migrations
                     b.ToTable("Chairs");
                 });
 
+            modelBuilder.Entity("RBS.Models.ChairReservation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("BookedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("BookingDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("BookingExpireDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ChairId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PaymentStatus")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ChairId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ChairReservations");
+                });
+
             modelBuilder.Entity("RBS.Models.Receipt", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
 
-                    b.Property<Guid>("BookingId")
-                        .HasColumnType("uniqueidentifier");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<Guid?>("CustomerDetailsId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("BookingId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CustomerDetailsId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
@@ -330,42 +355,13 @@ namespace RBS.Migrations
                     b.ToTable("Receipts");
                 });
 
-            modelBuilder.Entity("RBS.Models.ReservationBooking", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("BookedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("BookingDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("BookingDateEnd")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("BookingExpireDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("ReservationBookings");
-                });
-
             modelBuilder.Entity("RBS.Models.Restaurant", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Address")
                         .IsRequired()
@@ -392,18 +388,20 @@ namespace RBS.Migrations
 
             modelBuilder.Entity("RBS.Models.Space", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<bool>("IsAvailable")
                         .HasColumnType("bit");
 
-                    b.Property<Guid?>("ReceiptId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int?>("ReceiptId")
+                        .HasColumnType("int");
 
-                    b.Property<Guid>("RestaurantId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("RestaurantId")
+                        .HasColumnType("int");
 
                     b.Property<decimal>("SpacePrice")
                         .HasColumnType("decimal(18,2)");
@@ -420,11 +418,54 @@ namespace RBS.Migrations
                     b.ToTable("Spaces");
                 });
 
+            modelBuilder.Entity("RBS.Models.SpaceReservation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("BookedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("BookingDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("BookingDateEnd")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("BookingExpireDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("PaymentStatus")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("SpaceId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SpaceId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("SpaceReservations");
+                });
+
             modelBuilder.Entity("RBS.Models.Table", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("ChairQuantity")
                         .HasColumnType("int");
@@ -438,11 +479,11 @@ namespace RBS.Migrations
                     b.Property<decimal?>("MinSpent")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<Guid?>("ReceiptId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int?>("ReceiptId")
+                        .HasColumnType("int");
 
-                    b.Property<Guid>("SpaceId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("SpaceId")
+                        .HasColumnType("int");
 
                     b.Property<string>("TableNumber")
                         .IsRequired()
@@ -472,11 +513,51 @@ namespace RBS.Migrations
                     b.ToTable("Tables");
                 });
 
+            modelBuilder.Entity("RBS.Models.TableReservation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("BookedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("BookingDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("BookingExpireDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("PaymentStatus")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("TableId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TableId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("TableReservations");
+                });
+
             modelBuilder.Entity("RBS.Models.User", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
@@ -567,36 +648,6 @@ namespace RBS.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("ReservationBookingSpace", b =>
-                {
-                    b.Property<Guid>("BookingReservationsId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("SpacesId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("BookingReservationsId", "SpacesId");
-
-                    b.HasIndex("SpacesId");
-
-                    b.ToTable("ReservationBookingSpace");
-                });
-
-            modelBuilder.Entity("ReservationBookingTable", b =>
-                {
-                    b.Property<Guid>("BookingReservationsId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("TablesId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("BookingReservationsId", "TablesId");
-
-                    b.HasIndex("TablesId");
-
-                    b.ToTable("ReservationBookingTable");
-                });
-
             modelBuilder.Entity("BookingChair", b =>
                 {
                     b.HasOne("RBS.Models.Booking", null)
@@ -642,31 +693,16 @@ namespace RBS.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("ChairReservationBooking", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
                 {
-                    b.HasOne("RBS.Models.ReservationBooking", null)
-                        .WithMany()
-                        .HasForeignKey("BookingReservationsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("RBS.Models.Chair", null)
-                        .WithMany()
-                        .HasForeignKey("ChairsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
-                {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", null)
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<int>", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<int>", b =>
                 {
                     b.HasOne("RBS.Models.User", null)
                         .WithMany()
@@ -675,7 +711,7 @@ namespace RBS.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<int>", b =>
                 {
                     b.HasOne("RBS.Models.User", null)
                         .WithMany()
@@ -684,9 +720,9 @@ namespace RBS.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<int>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", null)
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<int>", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -699,7 +735,7 @@ namespace RBS.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<int>", b =>
                 {
                     b.HasOne("RBS.Models.User", null)
                         .WithMany()
@@ -734,6 +770,25 @@ namespace RBS.Migrations
                     b.Navigation("Table");
                 });
 
+            modelBuilder.Entity("RBS.Models.ChairReservation", b =>
+                {
+                    b.HasOne("RBS.Models.Chair", "Chair")
+                        .WithMany("ChairReservations")
+                        .HasForeignKey("ChairId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("RBS.Models.User", "User")
+                        .WithMany("ChairReservations")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Chair");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("RBS.Models.Receipt", b =>
                 {
                     b.HasOne("RBS.Models.User", "CustomerDetails")
@@ -741,17 +796,6 @@ namespace RBS.Migrations
                         .HasForeignKey("CustomerDetailsId");
 
                     b.Navigation("CustomerDetails");
-                });
-
-            modelBuilder.Entity("RBS.Models.ReservationBooking", b =>
-                {
-                    b.HasOne("RBS.Models.User", "User")
-                        .WithMany("MyBookingReservations")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("RBS.Models.Space", b =>
@@ -769,6 +813,25 @@ namespace RBS.Migrations
                     b.Navigation("Restaurant");
                 });
 
+            modelBuilder.Entity("RBS.Models.SpaceReservation", b =>
+                {
+                    b.HasOne("RBS.Models.Space", "Space")
+                        .WithMany("SpaceReservations")
+                        .HasForeignKey("SpaceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("RBS.Models.User", "User")
+                        .WithMany("SpaceReservations")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Space");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("RBS.Models.Table", b =>
                 {
                     b.HasOne("RBS.Models.Receipt", null)
@@ -784,34 +847,28 @@ namespace RBS.Migrations
                     b.Navigation("Space");
                 });
 
-            modelBuilder.Entity("ReservationBookingSpace", b =>
+            modelBuilder.Entity("RBS.Models.TableReservation", b =>
                 {
-                    b.HasOne("RBS.Models.ReservationBooking", null)
-                        .WithMany()
-                        .HasForeignKey("BookingReservationsId")
+                    b.HasOne("RBS.Models.Table", "Table")
+                        .WithMany("TableReservations")
+                        .HasForeignKey("TableId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("RBS.Models.Space", null)
-                        .WithMany()
-                        .HasForeignKey("SpacesId")
+                    b.HasOne("RBS.Models.User", "User")
+                        .WithMany("TableReservations")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Table");
+
+                    b.Navigation("User");
                 });
 
-            modelBuilder.Entity("ReservationBookingTable", b =>
+            modelBuilder.Entity("RBS.Models.Chair", b =>
                 {
-                    b.HasOne("RBS.Models.ReservationBooking", null)
-                        .WithMany()
-                        .HasForeignKey("BookingReservationsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("RBS.Models.Table", null)
-                        .WithMany()
-                        .HasForeignKey("TablesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("ChairReservations");
                 });
 
             modelBuilder.Entity("RBS.Models.Receipt", b =>
@@ -830,19 +887,27 @@ namespace RBS.Migrations
 
             modelBuilder.Entity("RBS.Models.Space", b =>
                 {
+                    b.Navigation("SpaceReservations");
+
                     b.Navigation("Tables");
                 });
 
             modelBuilder.Entity("RBS.Models.Table", b =>
                 {
                     b.Navigation("Chairs");
+
+                    b.Navigation("TableReservations");
                 });
 
             modelBuilder.Entity("RBS.Models.User", b =>
                 {
-                    b.Navigation("MyBookingReservations");
+                    b.Navigation("ChairReservations");
 
                     b.Navigation("MyBookings");
+
+                    b.Navigation("SpaceReservations");
+
+                    b.Navigation("TableReservations");
                 });
 #pragma warning restore 612, 618
         }

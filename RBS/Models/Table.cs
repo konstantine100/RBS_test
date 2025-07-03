@@ -21,7 +21,6 @@ public class Table
     public Space Space { get; set; }
     public List<Chair> Chairs { get; set; } = new List<Chair>();
     public List<Booking> Bookings { get; set; } = new List<Booking>();
-    public List<ReservationBooking> BookingReservations { get; set; } = new List<ReservationBooking>();
     public List<TableReservation> TableReservations { get; set; } = new List<TableReservation>();
 
     public Table()

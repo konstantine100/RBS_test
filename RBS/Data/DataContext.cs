@@ -21,7 +21,6 @@ public class DataContext : IdentityDbContext<User, IdentityRole<int>, int>
     public DbSet<Table> Tables { get; set; }
     public DbSet<Chair> Chairs { get; set; }
     public DbSet<Booking> Bookings { get; set; }
-    public DbSet<ReservationBooking> ReservationBookings { get; set; } // must be deleted
     public DbSet<SpaceReservation> SpaceReservations { get; set; }
     public DbSet<TableReservation> TableReservations { get; set; }
     public DbSet<ChairReservation> ChairReservations { get; set; }

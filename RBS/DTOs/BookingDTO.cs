@@ -2,7 +2,7 @@
 
 public class BookingDTO
 {
-    public Guid Id { get; set; }
+    public int Id { get; set; }
     public DateTime BookedAt { get; set; } 
     public DateTime BookingDate { get; set; } 
     public DateTime? BookingDateEnd { get; set; }

@@ -4,7 +4,7 @@ namespace RBS.DTOs;
 
 public class UserDTO
 {
-    public Guid Id { get; set; }
+    public int Id { get; set; }
     public string FirstName { get; set; }
     public string LastName { get; set; }
     public ACCOUNT_STATUS Status { get; set; } 

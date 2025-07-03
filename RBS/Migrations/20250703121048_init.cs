@@ -15,7 +15,8 @@ namespace RBS.Migrations
                 name: "AspNetRoles",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true)
@@ -29,7 +30,8 @@ namespace RBS.Migrations
                 name: "AspNetUsers",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
@@ -63,7 +65,8 @@ namespace RBS.Migrations
                 name: "Restaurants",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -81,7 +84,7 @@ namespace RBS.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    RoleId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    RoleId = table.Column<int>(type: "int", nullable: false),
                     ClaimType = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ClaimValue = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
@@ -102,7 +105,7 @@ namespace RBS.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: false),
                     ClaimType = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ClaimValue = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
@@ -124,7 +127,7 @@ namespace RBS.Migrations
                     LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     ProviderKey = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     ProviderDisplayName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    UserId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -141,8 +144,8 @@ namespace RBS.Migrations
                 name: "AspNetUserRoles",
                 columns: table => new
                 {
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    RoleId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    RoleId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -165,7 +168,7 @@ namespace RBS.Migrations
                 name: "AspNetUserTokens",
                 columns: table => new
                 {
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: false),
                     LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Value = table.Column<string>(type: "nvarchar(max)", nullable: true)
@@ -185,16 +188,16 @@ namespace RBS.Migrations
                 name: "Bookings",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     BookedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     BookingDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     BookingDateEnd = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    BookingExpireDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     IsPayed = table.Column<bool>(type: "bit", nullable: false),
                     IsPending = table.Column<bool>(type: "bit", nullable: false),
                     IsFinished = table.Column<bool>(type: "bit", nullable: false),
                     Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    UserId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -211,12 +214,13 @@ namespace RBS.Migrations
                 name: "Receipts",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    BookingId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    BookingId = table.Column<int>(type: "int", nullable: false),
                     ReceiptNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Date = table.Column<DateTime>(type: "datetime2", nullable: false),
                     TotalAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    CustomerDetailsId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    CustomerDetailsId = table.Column<int>(type: "int", nullable: true),
                     Notes = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
@@ -230,38 +234,16 @@ namespace RBS.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ReservationBookings",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    BookedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    BookingDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    BookingDateEnd = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    BookingExpireDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ReservationBookings", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ReservationBookings_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Spaces",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     SpaceType = table.Column<int>(type: "int", nullable: false),
                     SpacePrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     IsAvailable = table.Column<bool>(type: "bit", nullable: false),
-                    RestaurantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ReceiptId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    RestaurantId = table.Column<int>(type: "int", nullable: false),
+                    ReceiptId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -283,8 +265,8 @@ namespace RBS.Migrations
                 name: "BookingSpace",
                 columns: table => new
                 {
-                    BookingsId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    SpacesId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    BookingsId = table.Column<int>(type: "int", nullable: false),
+                    SpacesId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -304,24 +286,32 @@ namespace RBS.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ReservationBookingSpace",
+                name: "SpaceReservations",
                 columns: table => new
                 {
-                    BookingReservationsId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    SpacesId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    BookedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    BookingDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    BookingDateEnd = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    BookingExpireDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    PaymentStatus = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    SpaceId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ReservationBookingSpace", x => new { x.BookingReservationsId, x.SpacesId });
+                    table.PrimaryKey("PK_SpaceReservations", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ReservationBookingSpace_ReservationBookings_BookingReservationsId",
-                        column: x => x.BookingReservationsId,
-                        principalTable: "ReservationBookings",
+                        name: "FK_SpaceReservations_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ReservationBookingSpace_Spaces_SpacesId",
-                        column: x => x.SpacesId,
+                        name: "FK_SpaceReservations_Spaces_SpaceId",
+                        column: x => x.SpaceId,
                         principalTable: "Spaces",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -331,7 +321,8 @@ namespace RBS.Migrations
                 name: "Tables",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     TableType = table.Column<int>(type: "int", nullable: false),
                     TableShape = table.Column<int>(type: "int", nullable: false),
                     ChairQuantity = table.Column<int>(type: "int", nullable: false),
@@ -342,8 +333,8 @@ namespace RBS.Migrations
                     MinSpent = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
                     Xlocation = table.Column<int>(type: "int", nullable: false),
                     Ylocation = table.Column<int>(type: "int", nullable: false),
-                    SpaceId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ReceiptId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    SpaceId = table.Column<int>(type: "int", nullable: false),
+                    ReceiptId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -365,8 +356,8 @@ namespace RBS.Migrations
                 name: "BookingTable",
                 columns: table => new
                 {
-                    BookingsId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    TablesId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    BookingsId = table.Column<int>(type: "int", nullable: false),
+                    TablesId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -389,16 +380,16 @@ namespace RBS.Migrations
                 name: "Chairs",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     ChairNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     MinSpent = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
-                    IsBooked = table.Column<bool>(type: "bit", nullable: false),
                     IsAvailable = table.Column<bool>(type: "bit", nullable: false),
                     ChairPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Xlocation = table.Column<int>(type: "int", nullable: false),
                     Ylocation = table.Column<int>(type: "int", nullable: false),
-                    TableId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ReceiptId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    TableId = table.Column<int>(type: "int", nullable: false),
+                    ReceiptId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -417,24 +408,31 @@ namespace RBS.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ReservationBookingTable",
+                name: "TableReservations",
                 columns: table => new
                 {
-                    BookingReservationsId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    TablesId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    BookedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    BookingDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    BookingExpireDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    PaymentStatus = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    TableId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ReservationBookingTable", x => new { x.BookingReservationsId, x.TablesId });
+                    table.PrimaryKey("PK_TableReservations", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ReservationBookingTable_ReservationBookings_BookingReservationsId",
-                        column: x => x.BookingReservationsId,
-                        principalTable: "ReservationBookings",
+                        name: "FK_TableReservations_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ReservationBookingTable_Tables_TablesId",
-                        column: x => x.TablesId,
+                        name: "FK_TableReservations_Tables_TableId",
+                        column: x => x.TableId,
                         principalTable: "Tables",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -444,8 +442,8 @@ namespace RBS.Migrations
                 name: "BookingChair",
                 columns: table => new
                 {
-                    BookingsId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ChairsId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    BookingsId = table.Column<int>(type: "int", nullable: false),
+                    ChairsId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -465,25 +463,32 @@ namespace RBS.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ChairReservationBooking",
+                name: "ChairReservations",
                 columns: table => new
                 {
-                    BookingReservationsId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ChairsId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    BookedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    BookingDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    BookingExpireDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    PaymentStatus = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    ChairId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ChairReservationBooking", x => new { x.BookingReservationsId, x.ChairsId });
+                    table.PrimaryKey("PK_ChairReservations", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ChairReservationBooking_Chairs_ChairsId",
-                        column: x => x.ChairsId,
-                        principalTable: "Chairs",
+                        name: "FK_ChairReservations_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ChairReservationBooking_ReservationBookings_BookingReservationsId",
-                        column: x => x.BookingReservationsId,
-                        principalTable: "ReservationBookings",
+                        name: "FK_ChairReservations_Chairs_ChairId",
+                        column: x => x.ChairId,
+                        principalTable: "Chairs",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -548,9 +553,14 @@ namespace RBS.Migrations
                 column: "TablesId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ChairReservationBooking_ChairsId",
-                table: "ChairReservationBooking",
-                column: "ChairsId");
+                name: "IX_ChairReservations_ChairId",
+                table: "ChairReservations",
+                column: "ChairId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ChairReservations_UserId",
+                table: "ChairReservations",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Chairs_ReceiptId",
@@ -568,19 +578,14 @@ namespace RBS.Migrations
                 column: "CustomerDetailsId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ReservationBookings_UserId",
-                table: "ReservationBookings",
+                name: "IX_SpaceReservations_SpaceId",
+                table: "SpaceReservations",
+                column: "SpaceId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SpaceReservations_UserId",
+                table: "SpaceReservations",
                 column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ReservationBookingSpace_SpacesId",
-                table: "ReservationBookingSpace",
-                column: "SpacesId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ReservationBookingTable_TablesId",
-                table: "ReservationBookingTable",
-                column: "TablesId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Spaces_ReceiptId",
@@ -591,6 +596,16 @@ namespace RBS.Migrations
                 name: "IX_Spaces_RestaurantId",
                 table: "Spaces",
                 column: "RestaurantId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TableReservations_TableId",
+                table: "TableReservations",
+                column: "TableId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TableReservations_UserId",
+                table: "TableReservations",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Tables_ReceiptId",
@@ -631,13 +646,13 @@ namespace RBS.Migrations
                 name: "BookingTable");
 
             migrationBuilder.DropTable(
-                name: "ChairReservationBooking");
+                name: "ChairReservations");
 
             migrationBuilder.DropTable(
-                name: "ReservationBookingSpace");
+                name: "SpaceReservations");
 
             migrationBuilder.DropTable(
-                name: "ReservationBookingTable");
+                name: "TableReservations");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
@@ -647,9 +662,6 @@ namespace RBS.Migrations
 
             migrationBuilder.DropTable(
                 name: "Chairs");
-
-            migrationBuilder.DropTable(
-                name: "ReservationBookings");
 
             migrationBuilder.DropTable(
                 name: "Tables");

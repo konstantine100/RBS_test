@@ -1,4 +1,6 @@
-﻿namespace RBS.Models;
+﻿using RBS.Enums;
+
+namespace RBS.Models;
 
 public class TableReservation
 {
@@ -9,6 +11,7 @@ public class TableReservation
     public DateTime BookingExpireDate { get; set; }
     
     public decimal Price { get; set; }
+    public PAYMENT_STATUS PaymentStatus { get; set; } = PAYMENT_STATUS.NOT_PAYED;
     
     public int UserId { get; set; }
     public User User { get; set; }

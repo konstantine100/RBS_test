@@ -4,7 +4,7 @@ namespace RBS.DTOs;
 
 public class TableDTO
 {
-    public Guid Id { get; set; }
+    public int Id { get; set; }
     public TABLE_TYPE TableType { get; set; }
     public TABLE_SHAPE TableShape { get; set; }
     public int ChairQuantity { get; set; } 

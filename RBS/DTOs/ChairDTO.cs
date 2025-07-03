@@ -2,7 +2,7 @@
 
 public class ChairDTO
 {
-    public Guid Id { get; set; }
+    public int Id { get; set; }
     
     public string ChairNumber { get; set; }
     public decimal? MinSpent { get; set; }

@@ -51,7 +51,6 @@ public class ConflictChairService : IConflictChairService
         
         allBookings.AddRange(chairBookings);
         allBookings.AddRange(tableConflicts);
-        allBookings.AddRange(spaceConflicts);
         
         if (startDate.Hour < after18Hour.Hours)
         {
@@ -68,6 +67,12 @@ public class ConflictChairService : IConflictChairService
                              (x.BookingDate - startDate).Duration() < TimeSpan.FromHours(-1)))
                 .ToList();
         }
+        spaceConflicts = spaceConflicts
+            .Where(x => x.BookingDateEnd > startDate &&
+                        (x.BookingDate - startDate).Duration() > TimeSpan.FromHours(-1))
+            .ToList();
+        
+        allBookings.AddRange(spaceConflicts);
         
         return allBookings;
     }

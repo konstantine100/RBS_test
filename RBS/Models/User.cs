@@ -18,7 +18,6 @@ public class User : IdentityUser<int>
     public List<Booking> MyBookings { get; set; } = new List<Booking>();
     
     //booking reservation for now is not usable peace of garbage
-    public List<ReservationBooking> MyBookingReservations { get; set; } = new List<ReservationBooking>();
     
     public List<SpaceReservation> SpaceReservations { get; set; } = new List<SpaceReservation>();
     public List<TableReservation> TableReservations { get; set; } = new List<TableReservation>();

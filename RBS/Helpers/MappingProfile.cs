@@ -3,6 +3,7 @@ using RBS.Models;
 using RBS.Requests;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using RBS.CORE;
 using RBS.DTOs;
 using Table = RBS.Models.Table;
 
@@ -31,9 +32,6 @@ public class MappingProfile : Profile
         CreateMap<AddReservation, Booking>().ReverseMap();
         CreateMap<Booking, BookingDTO>().ReverseMap();
         
-        CreateMap<AddReservation, ReservationBooking>().ReverseMap();
-        CreateMap<ReservationBooking, ReservationBookingDTO>().ReverseMap(); // not using 
-        
         CreateMap<AddReservation, SpaceReservation>().ReverseMap();
         CreateMap<SpaceReservation, SpaceReservationDTO>().ReverseMap();
         
@@ -42,6 +40,10 @@ public class MappingProfile : Profile
         
         CreateMap<AddReservation, ChairReservation>().ReverseMap();
         CreateMap<ChairReservation, ChairReservationDTO>().ReverseMap();
-        
+
+        CreateMap<SpaceReservation, OverallReservations>().ReverseMap();
+        CreateMap<TableReservation, OverallReservations>().ReverseMap();
+        CreateMap<ChairReservation, OverallReservations>().ReverseMap();
+
     }
 }
