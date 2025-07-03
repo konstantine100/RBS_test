@@ -3,15 +3,16 @@ using System.Text.Json.Serialization;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using RBS.Data;
 using RBS.Models;
+using RBS.Services.Implementation;
 using RBS.Services.Implenetation;
 using RBS.Services.Interfaces;
 
@@ -55,6 +56,10 @@ builder.Services.AddScoped<ILayoutService, LayoutService>();
 builder.Services.AddScoped<ISpaceReservationService, SpaceReservationService>();
 builder.Services.AddScoped<ITableReservationService, TableReservationService>();
 builder.Services.AddScoped<IChairReservationService, ChairReservationService>();
+
+// for Apple payment service 
+builder.Services.AddScoped<IApplePaymentService, ApplePaymentService>();
+builder.Services.AddHttpClient<IApplePaymentService, ApplePaymentService>();
 
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
