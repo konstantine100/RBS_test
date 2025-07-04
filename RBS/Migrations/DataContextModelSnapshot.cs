@@ -327,6 +327,143 @@ namespace RBS.Migrations
                     b.ToTable("ChairReservations");
                 });
 
+            modelBuilder.Entity("RBS.Models.Food", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("FoodCategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("FoodType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ImageURL")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsAvailable")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FoodCategoryId");
+
+                    b.ToTable("Foods");
+                });
+
+            modelBuilder.Entity("RBS.Models.FoodCategory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CategoryName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("MenuId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MenuId");
+
+                    b.ToTable("FoodCategories");
+                });
+
+            modelBuilder.Entity("RBS.Models.Ingredient", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("FoodId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("FoodType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FoodId");
+
+                    b.ToTable("Ingredients");
+                });
+
+            modelBuilder.Entity("RBS.Models.Menu", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("RestaurantId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RestaurantId")
+                        .IsUnique();
+
+                    b.ToTable("Menus");
+                });
+
+            modelBuilder.Entity("RBS.Models.OrderedFood", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("BookingId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("FoodId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("MessageToStuff")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("OverallPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("PaymentStatus")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BookingId");
+
+                    b.HasIndex("FoodId");
+
+                    b.ToTable("OrderedFoods");
+                });
+
             modelBuilder.Entity("RBS.Models.Receipt", b =>
                 {
                     b.Property<int>("Id")
@@ -802,6 +939,69 @@ namespace RBS.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("RBS.Models.Food", b =>
+                {
+                    b.HasOne("RBS.Models.FoodCategory", "FoodCategory")
+                        .WithMany()
+                        .HasForeignKey("FoodCategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("FoodCategory");
+                });
+
+            modelBuilder.Entity("RBS.Models.FoodCategory", b =>
+                {
+                    b.HasOne("RBS.Models.Menu", "Menu")
+                        .WithMany("Categories")
+                        .HasForeignKey("MenuId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Menu");
+                });
+
+            modelBuilder.Entity("RBS.Models.Ingredient", b =>
+                {
+                    b.HasOne("RBS.Models.Food", "Food")
+                        .WithMany()
+                        .HasForeignKey("FoodId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Food");
+                });
+
+            modelBuilder.Entity("RBS.Models.Menu", b =>
+                {
+                    b.HasOne("RBS.Models.Restaurant", "Restaurant")
+                        .WithOne("Menu")
+                        .HasForeignKey("RBS.Models.Menu", "RestaurantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Restaurant");
+                });
+
+            modelBuilder.Entity("RBS.Models.OrderedFood", b =>
+                {
+                    b.HasOne("RBS.Models.Booking", "Booking")
+                        .WithMany("OrderedFoods")
+                        .HasForeignKey("BookingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("RBS.Models.Food", "Food")
+                        .WithMany()
+                        .HasForeignKey("FoodId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Booking");
+
+                    b.Navigation("Food");
+                });
+
             modelBuilder.Entity("RBS.Models.Receipt", b =>
                 {
                     b.HasOne("RBS.Models.User", "CustomerDetails")
@@ -879,9 +1079,19 @@ namespace RBS.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("RBS.Models.Booking", b =>
+                {
+                    b.Navigation("OrderedFoods");
+                });
+
             modelBuilder.Entity("RBS.Models.Chair", b =>
                 {
                     b.Navigation("ChairReservations");
+                });
+
+            modelBuilder.Entity("RBS.Models.Menu", b =>
+                {
+                    b.Navigation("Categories");
                 });
 
             modelBuilder.Entity("RBS.Models.Receipt", b =>
@@ -896,6 +1106,9 @@ namespace RBS.Migrations
             modelBuilder.Entity("RBS.Models.Restaurant", b =>
                 {
                     b.Navigation("Bookings");
+
+                    b.Navigation("Menu")
+                        .IsRequired();
 
                     b.Navigation("Spaces");
                 });

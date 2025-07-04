@@ -11,6 +11,7 @@ public class Restaurant
 
     public List<Space> Spaces { get; set; } = new List<Space>();
     public List<Booking> Bookings { get; set; } = new List<Booking>();
+    public Menu Menu { get; set; }
 
     // navigation properties
     // restaurant -> schedule ???

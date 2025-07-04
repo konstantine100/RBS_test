@@ -44,6 +44,20 @@ public class MappingProfile : Profile
         CreateMap<SpaceReservation, OverallReservations>().ReverseMap();
         CreateMap<TableReservation, OverallReservations>().ReverseMap();
         CreateMap<ChairReservation, OverallReservations>().ReverseMap();
+        
+        CreateMap<Menu, MenuDTO>().ReverseMap();
+        
+        CreateMap<FoodCategory, AddFoodCategory>().ReverseMap();
+        CreateMap<FoodCategory, FoodCategoryDTO>().ReverseMap();
+        
+        CreateMap<Food, AddFood>().ReverseMap();
+        CreateMap<Food, FoodDTO>().ReverseMap();
+        
+        CreateMap<Ingredient, AddIngredient>().ReverseMap();
+        CreateMap<Ingredient, IngredientDTO>().ReverseMap();
+        
+        CreateMap<OrderedFood, AddOrderedFood>().ReverseMap();
+        CreateMap<OrderedFood, OrderedFoodDTO>().ReverseMap();
 
     }
 }

@@ -25,6 +25,11 @@ public class DataContext : IdentityDbContext<User, IdentityRole<int>, int>
     public DbSet<TableReservation> TableReservations { get; set; }
     public DbSet<ChairReservation> ChairReservations { get; set; }
     public DbSet<Receipt> Receipts { get; set; }
+    public DbSet<Menu> Menus { get; set; }
+    public DbSet<FoodCategory> FoodCategories { get; set; }
+    public DbSet<Food> Foods { get; set; }
+    public DbSet<Ingredient> Ingredients { get; set; }
+    public DbSet<OrderedFood> OrderedFoods { get; set; }
     
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

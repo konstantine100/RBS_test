@@ -29,4 +29,5 @@ public class Booking
 
     public List<Space> Spaces { get; set; } = new List<Space>();
 
+    public List<OrderedFood> OrderedFoods { get; set; } = new List<OrderedFood>();
 }
