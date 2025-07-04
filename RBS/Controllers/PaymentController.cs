@@ -14,7 +14,7 @@ namespace RBS.Controllers
         public PaymentController(IApplePaymentService applePayment)
         {
             _paymentService = applePayment;
-        }
+        }       
 
         [HttpGet("apple1")]
         public IActionResult StartAppleLogin()

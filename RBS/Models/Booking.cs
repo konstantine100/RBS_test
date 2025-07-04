@@ -1,4 +1,7 @@
-﻿namespace RBS.Models;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
+
+namespace RBS.Models;
 
 public class Booking
 {
@@ -16,6 +19,9 @@ public class Booking
     public int UserId { get; set; }
     public User User { get; set; }
     public int RestaurantId { get; set; }
+
+    [ForeignKey("RestaurantId")]
+    [DeleteBehavior(DeleteBehavior.Restrict)]
     public Restaurant Restaurant { get; set; }
     public List<Table> Tables { get; set; } = new List<Table>();
     public List<Chair> Chairs { get; set; } = new List<Chair>();

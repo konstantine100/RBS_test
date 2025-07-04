@@ -384,10 +384,10 @@ C:\Users\khule\OneDrive\Desktop\WebApplication1\RBS_test\RBS\obj\Debug\net8.0\st
 C:\Users\khule\OneDrive\Desktop\WebApplication1\RBS_test\RBS\obj\Debug\net8.0\staticwebassets.build.json.cache
 C:\Users\khule\OneDrive\Desktop\WebApplication1\RBS_test\RBS\obj\Debug\net8.0\staticwebassets.development.json
 C:\Users\khule\OneDrive\Desktop\WebApplication1\RBS_test\RBS\obj\Debug\net8.0\staticwebassets.build.endpoints.json
-C:\Users\khule\OneDrive\Desktop\WebApplication1\RBS_test\RBS\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
 C:\Users\khule\OneDrive\Desktop\WebApplication1\RBS_test\RBS\obj\Debug\net8.0\RBS.csproj.Up2Date
 C:\Users\khule\OneDrive\Desktop\WebApplication1\RBS_test\RBS\obj\Debug\net8.0\RBS.dll
 C:\Users\khule\OneDrive\Desktop\WebApplication1\RBS_test\RBS\obj\Debug\net8.0\refint\RBS.dll
 C:\Users\khule\OneDrive\Desktop\WebApplication1\RBS_test\RBS\obj\Debug\net8.0\RBS.pdb
 C:\Users\khule\OneDrive\Desktop\WebApplication1\RBS_test\RBS\obj\Debug\net8.0\RBS.genruntimeconfig.cache
 C:\Users\khule\OneDrive\Desktop\WebApplication1\RBS_test\RBS\obj\Debug\net8.0\ref\RBS.dll
+C:\Users\khule\OneDrive\Desktop\WebApplication1\RBS_test\RBS\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt

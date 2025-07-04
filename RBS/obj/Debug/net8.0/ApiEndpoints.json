@@ -32,6 +32,11 @@
         "Name": "userId",
         "Type": "System.Int32",
         "IsRequired": false
+      },
+      {
+        "Name": "restaurantId",
+        "Type": "System.Int32",
+        "IsRequired": false
       }
     ],
     "ReturnTypes": []
@@ -842,7 +847,7 @@
   {
     "ContainingType": "Api14.Controllers.UserController",
     "Method": "DeleteUser",
-    "RelativePath": "api/User",
+    "RelativePath": "api/User/delete-user",
     "HttpMethod": "DELETE",
     "IsController": true,
     "Order": 0,

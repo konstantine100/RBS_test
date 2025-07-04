@@ -19,6 +19,15 @@
               "type": "integer",
               "format": "int32"
             }
+          },
+          {
+            "name": "restaurantId",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
           }
         ],
         "responses": {
@@ -1647,7 +1656,7 @@
         }
       }
     },
-    "/api/User": {
+    "/api/User/delete-user": {
       "delete": {
         "tags": [
           "User"
