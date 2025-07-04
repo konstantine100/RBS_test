@@ -3,5 +3,5 @@
 public class AddOrderedFood
 {
     public int Quantity { get; set; }
-    public string MessageToStuff { get; set; }
+    public string? MessageToStuff { get; set; }
 }

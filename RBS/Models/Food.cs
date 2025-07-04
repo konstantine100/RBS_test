@@ -10,6 +10,7 @@ public class Food
     public decimal Price { get; set; }
     public FOOD_TYPE FoodType { get; set; }
     public bool IsAvailable { get; set; } = true;
+    public decimal DiscountRate { get; set; } = 0;
     public int FoodCategoryId { get; set; }
     public FoodCategory FoodCategory { get; set; }
     List<Ingredient> Ingredients { get; set; } = new List<Ingredient>();
