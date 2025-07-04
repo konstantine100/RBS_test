@@ -12,7 +12,7 @@ using RBS.Data;
 namespace RBS.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20250704075129_init")]
+    [Migration("20250704143518_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -344,10 +344,6 @@ namespace RBS.Migrations
                     b.Property<int>("FoodType")
                         .HasColumnType("int");
 
-                    b.Property<string>("ImageURL")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("IsAvailable")
                         .HasColumnType("bit");
 
@@ -420,6 +416,10 @@ namespace RBS.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("RestaurantId")
                         .HasColumnType("int");
 
@@ -446,7 +446,6 @@ namespace RBS.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("MessageToStuff")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("OverallPrice")
@@ -945,7 +944,7 @@ namespace RBS.Migrations
             modelBuilder.Entity("RBS.Models.Food", b =>
                 {
                     b.HasOne("RBS.Models.FoodCategory", "FoodCategory")
-                        .WithMany()
+                        .WithMany("Foods")
                         .HasForeignKey("FoodCategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -967,7 +966,7 @@ namespace RBS.Migrations
             modelBuilder.Entity("RBS.Models.Ingredient", b =>
                 {
                     b.HasOne("RBS.Models.Food", "Food")
-                        .WithMany()
+                        .WithMany("Ingredients")
                         .HasForeignKey("FoodId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1090,6 +1089,16 @@ namespace RBS.Migrations
             modelBuilder.Entity("RBS.Models.Chair", b =>
                 {
                     b.Navigation("ChairReservations");
+                });
+
+            modelBuilder.Entity("RBS.Models.Food", b =>
+                {
+                    b.Navigation("Ingredients");
+                });
+
+            modelBuilder.Entity("RBS.Models.FoodCategory", b =>
+                {
+                    b.Navigation("Foods");
                 });
 
             modelBuilder.Entity("RBS.Models.Menu", b =>

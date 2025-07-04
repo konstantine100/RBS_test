@@ -57,6 +57,11 @@ builder.Services.AddScoped<ISpaceReservationService, SpaceReservationService>();
 builder.Services.AddScoped<ITableReservationService, TableReservationService>();
 builder.Services.AddScoped<IChairReservationService, ChairReservationService>();
 builder.Services.AddScoped<IHostService, HostService>();
+builder.Services.AddScoped<IMenuService, MenuService>();
+builder.Services.AddScoped<IFoodCategoryService, FoodCategoryService>();
+builder.Services.AddScoped<IFoodService, FoodService>();
+builder.Services.AddScoped<IIngridientService, IngridientService>();
+builder.Services.AddScoped<IOrderFoodService, OrderFoodService>();
 
 // for Apple payment service 
 builder.Services.AddScoped<IApplePaymentService, ApplePaymentService>();

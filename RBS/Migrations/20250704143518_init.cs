@@ -247,6 +247,7 @@ namespace RBS.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     RestaurantId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -406,7 +407,6 @@ namespace RBS.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ImageURL = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     FoodType = table.Column<int>(type: "int", nullable: false),
                     IsAvailable = table.Column<bool>(type: "bit", nullable: false),
@@ -539,7 +539,7 @@ namespace RBS.Migrations
                     FoodId = table.Column<int>(type: "int", nullable: false),
                     Quantity = table.Column<int>(type: "int", nullable: false),
                     OverallPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    MessageToStuff = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    MessageToStuff = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     PaymentStatus = table.Column<int>(type: "int", nullable: false),
                     BookingId = table.Column<int>(type: "int", nullable: false)
                 },
