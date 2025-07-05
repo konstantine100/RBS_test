@@ -24,6 +24,8 @@ public class User : IdentityUser<int>
     public List<ChairReservation> ChairReservations { get; set; } = new List<ChairReservation>();
 
     // for hosts!
+    public int? RestaurantId { get; set; }
+    public Restaurant? Restaurant { get; set; }
     public List<WalkIn> AcceptedWalkIns { get; set; } = new List<WalkIn>();
     public string? RefreshToken { get; set; }
     public DateTime? RefreshTokenExpiresAtUtc { get; set; }

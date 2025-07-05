@@ -75,8 +75,9 @@ public class TableReservationService : ITableReservationService
                         var spaceReservationConflicts = await _conflictTableService.ConflictSpaceReservation(table.SpaceId, reservation.BookingDate);
                         var tableReservationConflicts = await _conflictTableService.ConflictTableReservation(tableId, reservation.BookingDate);
                         var chairReservationConflicts = await _conflictTableService.ConflictChairReservation(tableId, reservation.BookingDate);
+                        var walkInConflicts = await _conflictTableService.ConflictWalkIn(tableId, reservation.BookingDate);
 
-                        if (allBookingConflicts.Count != 0 || spaceReservationConflicts.Count != 0 || tableReservationConflicts.Count != 0 || chairReservationConflicts.Count != 0)
+                        if (allBookingConflicts.Any() || spaceReservationConflicts.Any() || tableReservationConflicts.Any() || chairReservationConflicts.Any() || walkInConflicts.Any())
                         {
                             var response = ApiResponseService<TableReservationDTO>
                                 .Response(null, "table not available", StatusCodes.Status400BadRequest);

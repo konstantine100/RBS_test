@@ -12,7 +12,7 @@ using RBS.Data;
 namespace RBS.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20250705095604_init")]
+    [Migration("20250705100852_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -766,6 +766,9 @@ namespace RBS.Migrations
                     b.Property<DateTime?>("RefreshTokenExpiresAtUtc")
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("RestaurantId")
+                        .HasColumnType("int");
+
                     b.Property<int>("Role")
                         .HasColumnType("int");
 
@@ -794,6 +797,8 @@ namespace RBS.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
+
+                    b.HasIndex("RestaurantId");
 
                     b.ToTable("AspNetUsers", (string)null);
                 });
@@ -1121,6 +1126,15 @@ namespace RBS.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("RBS.Models.User", b =>
+                {
+                    b.HasOne("RBS.Models.Restaurant", "Restaurant")
+                        .WithMany("Hosts")
+                        .HasForeignKey("RestaurantId");
+
+                    b.Navigation("Restaurant");
+                });
+
             modelBuilder.Entity("RBS.Models.WalkIn", b =>
                 {
                     b.HasOne("RBS.Models.Chair", "Chair")
@@ -1183,6 +1197,8 @@ namespace RBS.Migrations
             modelBuilder.Entity("RBS.Models.Restaurant", b =>
                 {
                     b.Navigation("Bookings");
+
+                    b.Navigation("Hosts");
 
                     b.Navigation("Menu")
                         .IsRequired();

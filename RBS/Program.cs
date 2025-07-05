@@ -43,8 +43,6 @@ builder.Services.AddIdentity<User, IdentityRole<int>>(options =>
     .AddEntityFrameworkStores<DataContext>()
     .AddDefaultTokenProviders();
 
-
-
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IBookingService, BookingService>();
@@ -64,6 +62,8 @@ builder.Services.AddScoped<IFoodCategoryService, FoodCategoryService>();
 builder.Services.AddScoped<IFoodService, FoodService>();
 builder.Services.AddScoped<IIngridientService, IngridientService>();
 builder.Services.AddScoped<IOrderFoodService, OrderFoodService>();
+builder.Services.AddScoped<IWalkInService, WalkInService>();
+builder.Services.AddScoped<IAdminService, AdminService>();
 
 // for Apple payment service 
 builder.Services.AddScoped<IApplePaymentService, ApplePaymentService>();

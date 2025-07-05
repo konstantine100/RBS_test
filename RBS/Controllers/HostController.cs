@@ -39,6 +39,20 @@ public class HostController : ControllerBase
         return Ok(response);
     }
     
+    [HttpPut("booking-user-announced")]
+    public async Task<ActionResult> BookingUserAnnounced(int bookingId)
+    {
+        var response = await _hostService.BookingUserAnnounced(bookingId);
+        return Ok(response);
+    }
+    
+    [HttpPut("booking-user-not-announced")]
+    public async Task<ActionResult> BookingUserNotAnnounced(int bookingId)
+    {
+        var response = await _hostService.BookingUserNotAnnounced(bookingId);
+        return Ok(response);
+    }
+    
     [HttpPut("finish-booking")]
     public async Task<ActionResult> FinishBooking(int bookingId)
     {

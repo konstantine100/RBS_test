@@ -309,6 +309,50 @@ public class HostService : IHostService
         }
     }
 
+    public async Task<ApiResponse<BookingDTO>> BookingUserAnnounced(int bookingId)
+    {
+        var booking = await _context.Bookings
+            .FirstOrDefaultAsync(x => x.Id == bookingId);
+
+        if (booking == null)
+        {
+            var response = ApiResponseService<BookingDTO>
+                .Response(null, "Booking not found", StatusCodes.Status404NotFound);
+            return response;
+        }
+        else
+        {
+            booking.BookingStatus = BOOKING_STATUS.Announced;
+            await _context.SaveChangesAsync();
+            
+            var response = ApiResponseService<BookingDTO>
+                .Response200(_mapper.Map<BookingDTO>(booking));
+            return response;
+        }
+    }
+
+    public async Task<ApiResponse<BookingDTO>> BookingUserNotAnnounced(int bookingId)
+    {
+        var booking = await _context.Bookings
+            .FirstOrDefaultAsync(x => x.Id == bookingId);
+
+        if (booking == null)
+        {
+            var response = ApiResponseService<BookingDTO>
+                .Response(null, "Booking not found", StatusCodes.Status404NotFound);
+            return response;
+        }
+        else
+        {
+            booking.BookingStatus = BOOKING_STATUS.Not_Announced;
+            await _context.SaveChangesAsync();
+            
+            var response = ApiResponseService<BookingDTO>
+                .Response200(_mapper.Map<BookingDTO>(booking));
+            return response;
+        }
+    }
+
     public async Task<ApiResponse<BookingDTO>> FinishBooking(int bookingId)
     {
         var booking = await _context.Bookings

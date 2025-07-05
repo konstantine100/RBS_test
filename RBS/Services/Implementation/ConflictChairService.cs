@@ -149,4 +149,38 @@ public class ConflictChairService : IConflictChairService
         
         return conflictChairReservations;
     }
+
+    public async Task<List<WalkIn>> ConflictWalkIn(int chairId, DateTime startDate)
+    {
+        TimeSpan after18Hour = new TimeSpan(18, 0, 0);
+        
+        List<WalkIn> conflictWalkIns = await _context.WalkIns
+            .Include(x => x.Table)
+            .ThenInclude(x => x.Chairs)
+            .Where(x => 
+                (x.ChairId.HasValue ^ x.TableId.HasValue) &&
+                ((x.ChairId.HasValue && x.ChairId == chairId) ||
+                 (x.TableId.HasValue && x.Table.Chairs.Any(x => x.Id == chairId))) &&
+                x.WalkInAt.Day == startDate.Day)
+            .ToListAsync();
+        
+        if (startDate.Hour < after18Hour.Hours)
+        {
+            conflictWalkIns = conflictWalkIns
+                .Where(x => (x.WalkInAt - startDate).Duration() < TimeSpan.FromHours(1) &&
+                            (x.WalkInAt - startDate).Duration() > TimeSpan.FromHours(-1))
+                .ToList();
+        }
+
+        else if (startDate.Hour > after18Hour.Hours)
+        {
+            conflictWalkIns = conflictWalkIns
+                .Where(x => x.WalkInAt.Hour > after18Hour.Hours &&
+                            (x.WalkInAt <= startDate ||
+                             (x.WalkInAt - startDate).Duration() < TimeSpan.FromHours(-1)))
+                .ToList();
+        }
+        
+        return conflictWalkIns;
+    }
 }

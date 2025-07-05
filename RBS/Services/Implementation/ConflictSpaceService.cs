@@ -80,5 +80,14 @@ public class ConflictSpaceService : IConflictSpaceService
         
         return conflictChairs;
     }
-    
+
+    public async Task<List<WalkIn>> ConflictWalkIns(int spaceId, DateTime startDate, DateTime endDate)
+    {
+        List<WalkIn> conflictWalkIns = await _context.WalkIns
+            .Where(x => x.spaceId == spaceId &&
+                        (x.WalkInAt >= startDate && x.WalkInAt <= endDate) )
+            .ToListAsync();
+        
+        return conflictWalkIns;
+    }
 }

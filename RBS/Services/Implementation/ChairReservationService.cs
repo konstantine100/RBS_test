@@ -86,8 +86,12 @@ public class ChairReservationService : IChairReservationService
                             await _conflictChairService.ConflictTableReservation(chair.TableId, reservation.BookingDate);
                         var chairReservationConflicts =
                             await _conflictChairService.ConflictChairReservation(chairId, reservation.BookingDate);
+                        var walkInConflicts =
+                            await _conflictChairService.ConflictWalkIn(chairId, reservation.BookingDate);
 
-                        if (allBookingConflicts.Count != 0 || spaceReservationConflicts.Count != 0 || tableReservationConflicts.Count != 0 || chairReservationConflicts.Count != 0)
+                        
+                        
+                        if (allBookingConflicts.Any() || spaceReservationConflicts.Any() || tableReservationConflicts.Any() || chairReservationConflicts.Any() || walkInConflicts.Any())
                         {
                             var response = ApiResponseService<ChairReservationDTO>
                                 .Response(null, "chair not available", StatusCodes.Status400BadRequest);
