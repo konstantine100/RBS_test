@@ -4,6 +4,6 @@ namespace RBS.Requests;
 
 public class AddIngredient
 {
-    public string Name { get; set; }
-    public FOOD_TYPE FoodType { get; set; }
+    public string EnglishName { get; set; }
+    public string GeorgianName { get; set; }
 }

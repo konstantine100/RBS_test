@@ -50,7 +50,8 @@ public class FoodCategoryService : IFoodCategoryService
             }
             else
             {
-                if (menu.Categories.Any(x => x.CategoryName.ToLower() == foodCategory.CategoryName.ToLower()))
+                if (menu.Categories.Any(x => x.CategoryEnglishName.ToLower() == foodCategory.CategoryEnglishName.ToLower()) ||
+                    menu.Categories.Any(x => x.CategoryGeorgianName.ToLower() == foodCategory.CategoryGeorgianName.ToLower()))
                 {
                     var response = ApiResponseService<FoodCategoryDTO>
                         .Response(null, "category already exists", StatusCodes.Status400BadRequest);
@@ -70,7 +71,7 @@ public class FoodCategoryService : IFoodCategoryService
         }
     }
 
-    public async Task<ApiResponse<FoodCategoryDTO>> UpdateFoodCategory(int categoryId, string newCategoryName)
+    public async Task<ApiResponse<FoodCategoryDTO>> UpdateFoodCategory(int categoryId, bool IsEnglish, string newCategoryName)
     {
         var foodCategory = await _context.FoodCategories
             .Include(x => x.MenuId)
@@ -84,35 +85,71 @@ public class FoodCategoryService : IFoodCategoryService
         }
         else
         {
-            if (foodCategory.Menu.Categories.Any(x => x.CategoryName.ToLower() == foodCategory.CategoryName.ToLower()))
+            if (IsEnglish)
             {
-                var response = ApiResponseService<FoodCategoryDTO>
-                    .Response(null, "category already exists", StatusCodes.Status400BadRequest);
-                return response;
-            }
-            else
-            {
-                foodCategory.CategoryName = newCategoryName;
-                var validator = new FoodCategoryValidator();
-                var result = validator.Validate(foodCategory);
-
-                if (!result.IsValid)
+                if (foodCategory.Menu.Categories.Any(x => x.CategoryEnglishName.ToLower() == foodCategory.CategoryEnglishName.ToLower()))
                 {
-                    string errors = string.Join(", ", result.Errors.Select(x => x.ErrorMessage));
-
                     var response = ApiResponseService<FoodCategoryDTO>
-                        .Response(null, errors, StatusCodes.Status400BadRequest);
+                        .Response(null, "category already exists", StatusCodes.Status400BadRequest);
                     return response;
                 }
                 else
                 {
-                    await _context.SaveChangesAsync();
+                    foodCategory.CategoryEnglishName = newCategoryName;
+                    var validator = new FoodCategoryValidator();
+                    var result = validator.Validate(foodCategory);
+
+                    if (!result.IsValid)
+                    {
+                        string errors = string.Join(", ", result.Errors.Select(x => x.ErrorMessage));
+
+                        var response = ApiResponseService<FoodCategoryDTO>
+                            .Response(null, errors, StatusCodes.Status400BadRequest);
+                        return response;
+                    }
+                    else
+                    {
+                        await _context.SaveChangesAsync();
                     
-                    var response = ApiResponseService<FoodCategoryDTO>
-                        .Response200(_mapper.Map<FoodCategoryDTO>(foodCategory));
-                    return response;
+                        var response = ApiResponseService<FoodCategoryDTO>
+                            .Response200(_mapper.Map<FoodCategoryDTO>(foodCategory));
+                        return response;
+                    }
                 }
             }
+            else
+            {
+                if (foodCategory.Menu.Categories.Any(x => x.CategoryGeorgianName.ToLower() == foodCategory.CategoryGeorgianName.ToLower()))
+                {
+                    var response = ApiResponseService<FoodCategoryDTO>
+                        .Response(null, "category already exists", StatusCodes.Status400BadRequest);
+                    return response;
+                }
+                else
+                {
+                    foodCategory.CategoryGeorgianName = newCategoryName;
+                    var validator = new FoodCategoryValidator();
+                    var result = validator.Validate(foodCategory);
+
+                    if (!result.IsValid)
+                    {
+                        string errors = string.Join(", ", result.Errors.Select(x => x.ErrorMessage));
+
+                        var response = ApiResponseService<FoodCategoryDTO>
+                            .Response(null, errors, StatusCodes.Status400BadRequest);
+                        return response;
+                    }
+                    else
+                    {
+                        await _context.SaveChangesAsync();
+                    
+                        var response = ApiResponseService<FoodCategoryDTO>
+                            .Response200(_mapper.Map<FoodCategoryDTO>(foodCategory));
+                        return response;
+                    }
+                }
+            }
+            
         }
     }
 

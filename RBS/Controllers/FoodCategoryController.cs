@@ -25,9 +25,9 @@ public class FoodCategoryController : ControllerBase
     }
     
     [HttpPut("update-food-category")]
-    public async Task<ActionResult> UpdateFoodCategory(int categoryId, string newCategoryName)
+    public async Task<ActionResult> UpdateFoodCategory(int categoryId, bool isEnglish, string newCategoryName)
     {
-        var response = await _foodCategoryService.UpdateFoodCategory(categoryId, newCategoryName);
+        var response = await _foodCategoryService.UpdateFoodCategory(categoryId, isEnglish, newCategoryName);
         return Ok(response);
     }
     

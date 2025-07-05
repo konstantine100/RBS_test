@@ -7,8 +7,11 @@ public class FoodCategoryValidator : AbstractValidator<FoodCategory>
 {
     public FoodCategoryValidator()
     {
-        RuleFor(x => x.CategoryName)
-            .NotEmpty().WithMessage("Category name cannot be empty")
-            .Length(2, 50).WithMessage("Category name must be between 2 and 50 characters");
+        RuleFor(ingredient => ingredient.CategoryEnglishName)
+            .NotEmpty().WithMessage("Name cannot be empty")
+            .Length(2, 50).WithMessage("Name must be between 2 and 50 characters");
+        RuleFor(ingredient => ingredient.CategoryGeorgianName)
+            .NotEmpty().WithMessage("Name cannot be empty")
+            .Length(2, 50).WithMessage("Name must be between 2 and 50 characters");
     }
 }

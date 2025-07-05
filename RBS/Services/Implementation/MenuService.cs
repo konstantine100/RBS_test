@@ -119,9 +119,12 @@ public class MenuService : IMenuService
                 .Include(x => x.Ingredients)
                 .Include(x => x.FoodCategory)
                 .Where(x => x.FoodCategory.MenuId == menuId &&
-                            (x.Name.ToLower().Contains(searchToLower) ||
-                             x.Ingredients.Any(x => x.Name.ToLower().Contains(searchToLower)) ||
-                             x.FoodCategory.CategoryName.ToLower().Contains(searchToLower)))
+                            (x.EnglishName.ToLower().Contains(searchToLower) ||
+                             x.GeorgianName.ToLower().Contains(searchToLower) ||
+                             x.Ingredients.Any(x => x.EnglishName.ToLower().Contains(searchToLower)) ||
+                             x.Ingredients.Any(x => x.GeorgianName.ToLower().Contains(searchToLower)) ||
+                             x.FoodCategory.CategoryEnglishName.ToLower().Contains(searchToLower)) ||
+                             x.FoodCategory.CategoryGeorgianName.ToLower().Contains(searchToLower))
                 .ToListAsync();
             
             var response = ApiResponseService<List<FoodDTO>>

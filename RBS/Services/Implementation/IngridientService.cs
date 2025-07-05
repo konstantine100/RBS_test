@@ -50,7 +50,8 @@ public class IngridientService : IIngridientService
             }
             else
             {
-                if (food.Ingredients.Any(x => x.Name.ToLower() == ingredient.Name.ToLower()))
+                if (food.Ingredients.Any(x => x.EnglishName.ToLower() == ingredient.EnglishName.ToLower()) ||
+                    food.Ingredients.Any(x => x.GeorgianName.ToLower() == ingredient.GeorgianName.ToLower()))
                 {
                     var response = ApiResponseService<IngredientDTO>
                         .Response(null, "ingredient already exists", StatusCodes.Status400BadRequest);
@@ -70,7 +71,7 @@ public class IngridientService : IIngridientService
         }
     }
 
-    public async Task<ApiResponse<IngredientDTO>> UpdateIngredient(int ingridientId, string changeTo)
+    public async Task<ApiResponse<IngredientDTO>> UpdateIngredient(int ingridientId, bool isEnglish, string changeTo)
     {
         var ingredient = await _context.Ingredients
             .Include(x => x.Food)
@@ -84,34 +85,69 @@ public class IngridientService : IIngridientService
         }
         else
         {
-            if (ingredient.Food.Ingredients.Any(x => x.Name.ToLower() == changeTo.ToLower()))
+            if (isEnglish)
             {
-                var response = ApiResponseService<IngredientDTO>
-                    .Response(null, "ingredient already exists", StatusCodes.Status400BadRequest);
-                return response;
-            }
-            else
-            {
-                ingredient.Name = changeTo;
-                var validator = new IngredientValidator();
-                var result = validator.Validate(ingredient);
-
-                if (!result.IsValid)
+                if (ingredient.Food.Ingredients.Any(x => x.EnglishName.ToLower() == changeTo.ToLower()))
                 {
-                    string errors = string.Join(", ", result.Errors.Select(x => x.ErrorMessage));
-
                     var response = ApiResponseService<IngredientDTO>
-                        .Response(null, errors, StatusCodes.Status400BadRequest);
+                        .Response(null, "ingredient already exists", StatusCodes.Status400BadRequest);
                     return response;
                 }
                 else
                 {
-                    await _context.SaveChangesAsync();
-                    var response = ApiResponseService<IngredientDTO>
-                        .Response200(_mapper.Map<IngredientDTO>(ingredient));
-                    return response;
+                    ingredient.EnglishName = changeTo;
+                    var validator = new IngredientValidator();
+                    var result = validator.Validate(ingredient);
+
+                    if (!result.IsValid)
+                    {
+                        string errors = string.Join(", ", result.Errors.Select(x => x.ErrorMessage));
+
+                        var response = ApiResponseService<IngredientDTO>
+                            .Response(null, errors, StatusCodes.Status400BadRequest);
+                        return response;
+                    }
+                    else
+                    {
+                        await _context.SaveChangesAsync();
+                        var response = ApiResponseService<IngredientDTO>
+                            .Response200(_mapper.Map<IngredientDTO>(ingredient));
+                        return response;
+                    }
                 }
             }
+            else
+            {
+                if (ingredient.Food.Ingredients.Any(x => x.GeorgianName.ToLower() == changeTo.ToLower()))
+                {
+                    var response = ApiResponseService<IngredientDTO>
+                        .Response(null, "ingredient already exists", StatusCodes.Status400BadRequest);
+                    return response;
+                }
+                else
+                {
+                    ingredient.GeorgianName = changeTo;
+                    var validator = new IngredientValidator();
+                    var result = validator.Validate(ingredient);
+
+                    if (!result.IsValid)
+                    {
+                        string errors = string.Join(", ", result.Errors.Select(x => x.ErrorMessage));
+
+                        var response = ApiResponseService<IngredientDTO>
+                            .Response(null, errors, StatusCodes.Status400BadRequest);
+                        return response;
+                    }
+                    else
+                    {
+                        await _context.SaveChangesAsync();
+                        var response = ApiResponseService<IngredientDTO>
+                            .Response200(_mapper.Map<IngredientDTO>(ingredient));
+                        return response;
+                    }
+                }
+            }
+            
         }
     }
 

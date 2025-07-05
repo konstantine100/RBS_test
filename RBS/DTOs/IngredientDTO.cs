@@ -4,6 +4,6 @@ namespace RBS.DTOs;
 
 public class IngredientDTO
 {
-    public string Name { get; set; }
-    public FOOD_TYPE FoodType { get; set; }
+    public string EnglishName { get; set; }
+    public string GeorgianName { get; set; }
 }

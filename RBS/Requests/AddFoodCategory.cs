@@ -2,5 +2,6 @@
 
 public class AddFoodCategory
 {
-    public string CategoryName { get; set; }
+    public string CategoryEnglishName { get; set; }
+    public string CategoryGeorgianName { get; set; }
 }

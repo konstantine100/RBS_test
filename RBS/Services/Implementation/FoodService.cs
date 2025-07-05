@@ -50,7 +50,8 @@ public class FoodService : IFoodService
             }
             else
             {
-                if (foodCategory.Foods.Any(x => x.Name.ToLower() == food.Name.ToLower()))
+                if (foodCategory.Foods.Any(x => x.EnglishName.ToLower() == food.EnglishName.ToLower()) ||
+                    foodCategory.Foods.Any(x => x.GeorgianName.ToLower() == food.GeorgianName.ToLower()))
                 {
                     var response = ApiResponseService<FoodDTO>
                         .Response(null, "Food already exists", StatusCodes.Status400BadRequest);
@@ -85,9 +86,9 @@ public class FoodService : IFoodService
         }
         else
         {
-            if (changeParameter.ToLower() == "name")
+            if (changeParameter.ToLower() == "englishName")
             {
-                if (food.FoodCategory.Foods.Any(x => x.Name.ToLower() == changeTo.ToLower()))
+                if (food.FoodCategory.Foods.Any(x => x.EnglishName.ToLower() == changeTo.ToLower()))
                 {
                     var response = ApiResponseService<FoodDTO>
                         .Response(null, "Food already exists", StatusCodes.Status400BadRequest);
@@ -95,7 +96,39 @@ public class FoodService : IFoodService
                 }
                 else
                 {
-                    food.Name = changeTo;
+                    food.EnglishName = changeTo;
+                    var validator = new FoodValidator();
+                    var result = validator.Validate(food);
+
+                    if (!result.IsValid)
+                    {
+                        string errors = string.Join(", ", result.Errors.Select(x => x.ErrorMessage));
+
+                        var response = ApiResponseService<FoodDTO>
+                            .Response(null, errors, StatusCodes.Status400BadRequest);
+                        return response;
+                    }
+                    else
+                    {
+                        await _context.SaveChangesAsync();
+                        
+                        var response = ApiResponseService<FoodDTO>
+                            .Response200(_mapper.Map<FoodDTO>(food));
+                        return response;
+                    }
+                }
+            }
+            else if (changeParameter.ToLower() == "georgianName")
+            {
+                if (food.FoodCategory.Foods.Any(x => x.GeorgianName.ToLower() == changeTo.ToLower()))
+                {
+                    var response = ApiResponseService<FoodDTO>
+                        .Response(null, "Food already exists", StatusCodes.Status400BadRequest);
+                    return response;
+                }
+                else
+                {
+                    food.GeorgianName = changeTo;
                     var validator = new FoodValidator();
                     var result = validator.Validate(food);
 

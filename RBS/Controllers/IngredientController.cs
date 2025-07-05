@@ -20,21 +20,21 @@ public class IngredientController : ControllerBase
     [HttpPost("create-ingredient")]
     public async Task<ActionResult> AddIngredient(int foodId, AddIngredient request)
     {
-        var response = _ingridientService.AddIngredient(foodId, request);
+        var response = await _ingridientService.AddIngredient(foodId, request);
         return Ok(response);
     }
     
     [HttpPut("update-ingredient")]
-    public async Task<ActionResult> UpdateIngredient(int ingridientId, string changeTo)
+    public async Task<ActionResult> UpdateIngredient(int ingridientId, bool isEnglish, string changeTo)
     {
-        var response = _ingridientService.UpdateIngredient(ingridientId, changeTo);
+        var response = await _ingridientService.UpdateIngredient(ingridientId, isEnglish, changeTo);
         return Ok(response);
     }
     
     [HttpDelete("delete-ingredient")]
     public async Task<ActionResult> DeleteIngredient(int ingridientId)
     {
-        var response = _ingridientService.DeleteIngredient(ingridientId);
+        var response = await _ingridientService.DeleteIngredient(ingridientId);
         return Ok(response);
     }
 }
