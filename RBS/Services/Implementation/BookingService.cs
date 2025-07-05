@@ -236,7 +236,7 @@ public class BookingService : IBookingService
                 .Include(x => x.Spaces)
                 .Include(x => x.Tables)
                 .Include(x => x.Chairs)
-                .Where(x => (x.BookingDate > DateTime.UtcNow && !x.IsFinished) && x.UserId == userId)
+                .Where(x => (x.BookingDate > DateTime.UtcNow && x.BookingStatus == BOOKING_STATUS.Waiting) && x.UserId == userId)
                 .OrderBy(x => x.BookingDate)
                 .ToListAsync();
                 
@@ -263,7 +263,7 @@ public class BookingService : IBookingService
                 .Include(x => x.Spaces)
                 .Include(x => x.Tables)
                 .Include(x => x.Chairs)
-                .Where(x => (x.BookingDate < DateTime.UtcNow && x.IsFinished) && x.UserId == userId)
+                .Where(x => (x.BookingDate < DateTime.UtcNow && (x.BookingStatus == BOOKING_STATUS.Finished || x.BookingStatus == BOOKING_STATUS.Not_Announced)) && x.UserId == userId)
                 .OrderByDescending(x => x.BookingDate)
                 .ToListAsync();
                 
@@ -297,7 +297,7 @@ public class BookingService : IBookingService
             }
             else
             {
-                if (booking.IsPayed)
+                if (booking.PaymentStatus == PAYMENT_STATUS.SUCCESS)
                 {
                     if ((booking.BookingDate - DateTime.UtcNow).Duration().TotalHours <= 6 )
                     {
@@ -343,8 +343,7 @@ public class BookingService : IBookingService
                 BookingDateEnd = reservation.BookingDateEnd,
                 BookingDateExpiration = reservation.BookingDate.AddMinutes(30),
                 BookedAt = DateTime.UtcNow,
-                IsPayed = true,
-                IsPending = true,
+                PaymentStatus = PAYMENT_STATUS.SUCCESS,
                 Price = reservation.Price,
                 UserId = reservation.UserId,
                 RestaurantId = restaurantId,
@@ -369,8 +368,7 @@ public class BookingService : IBookingService
                 BookingDateEnd = null,
                 BookingDateExpiration = reservation.BookingDate.AddMinutes(30),
                 BookedAt = DateTime.UtcNow,
-                IsPayed = true,
-                IsPending = true,
+                PaymentStatus = PAYMENT_STATUS.SUCCESS,
                 Price = reservation.Price,
                 UserId = reservation.UserId,
                 RestaurantId = restaurantId
@@ -394,8 +392,7 @@ public class BookingService : IBookingService
                 BookingDateEnd = null,
                 BookingDateExpiration = reservation.BookingDate.AddMinutes(30),
                 BookedAt = DateTime.UtcNow,
-                IsPayed = true,
-                IsPending = true,
+                PaymentStatus = PAYMENT_STATUS.SUCCESS,
                 Price = reservation.Price,
                 UserId = reservation.UserId,
                 RestaurantId = restaurantId

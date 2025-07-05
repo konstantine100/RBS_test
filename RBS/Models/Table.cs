@@ -22,6 +22,7 @@ public class Table
     public List<Chair> Chairs { get; set; } = new List<Chair>();
     public List<Booking> Bookings { get; set; } = new List<Booking>();
     public List<TableReservation> TableReservations { get; set; } = new List<TableReservation>();
+    public List<WalkIn> WalkIns { get; set; } = new List<WalkIn>();
 
     public Table()
     {

@@ -1,4 +1,6 @@
-﻿namespace RBS.DTOs;
+﻿using RBS.Enums;
+
+namespace RBS.DTOs;
 
 public class BookingDTO
 {
@@ -8,8 +10,8 @@ public class BookingDTO
     public DateTime? BookingDateEnd { get; set; }
     public DateTime BookingExpireDate { get; set; }
     public decimal Price { get; set; }
-    public bool IsPayed { get; set; }
-    public bool IsFinished { get; set; }
+    public PAYMENT_STATUS PaymentStatus { get; set; }
+    public BOOKING_STATUS BookingStatus { get; set; } 
     public UserDTO User { get; set; }
     public List<SpaceDTO> Spaces { get; set; }
     public List<TableDTO> Tables { get; set; }

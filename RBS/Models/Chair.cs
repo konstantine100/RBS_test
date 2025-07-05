@@ -15,4 +15,5 @@ public class Chair
     public Table Table { get; set; }
     public List<Booking> Bookings { get; set; } = new List<Booking>();
     public List<ChairReservation> ChairReservations { get; set; } = new List<ChairReservation>();
+    public List<WalkIn> WalkIns { get; set; } = new List<WalkIn>();
 }

@@ -59,5 +59,6 @@ public class MappingProfile : Profile
         CreateMap<OrderedFood, AddOrderedFood>().ReverseMap();
         CreateMap<OrderedFood, OrderedFoodDTO>().ReverseMap();
 
+        CreateMap<WalkIn, WalkInDTO>().ReverseMap();
     }
 }

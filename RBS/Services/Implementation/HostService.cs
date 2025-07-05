@@ -322,7 +322,7 @@ public class HostService : IHostService
         }
         else
         {
-            booking.IsFinished = true;
+            booking.BookingStatus = BOOKING_STATUS.Finished;
             await _context.SaveChangesAsync();
             
             var response = ApiResponseService<BookingDTO>

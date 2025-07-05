@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
+using RBS.Enums;
 
 namespace RBS.Models;
 
@@ -11,9 +12,10 @@ public class Booking
     public DateTime BookingDate { get; set; } 
     public DateTime? BookingDateEnd { get; set; } // marto roca mtlian sivrces qiraobs!!!
     public DateTime BookingDateExpiration { get; set; } // max time user can late to restaurant
-    public bool IsPayed { get; set; } = false;
-    public bool IsPending { get; set; } = false;
-    public bool IsFinished { get; set; } = false;
+
+    public PAYMENT_STATUS PaymentStatus { get; set; } = PAYMENT_STATUS.NOT_PAYED;
+    public BOOKING_STATUS BookingStatus { get; set; } = BOOKING_STATUS.Waiting;
+    
     public decimal Price { get; set; }
     
     public int UserId { get; set; }

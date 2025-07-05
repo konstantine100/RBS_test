@@ -22,6 +22,9 @@ public class User : IdentityUser<int>
     public List<SpaceReservation> SpaceReservations { get; set; } = new List<SpaceReservation>();
     public List<TableReservation> TableReservations { get; set; } = new List<TableReservation>();
     public List<ChairReservation> ChairReservations { get; set; } = new List<ChairReservation>();
+
+    // for hosts!
+    public List<WalkIn> AcceptedWalkIns { get; set; } = new List<WalkIn>();
     public string? RefreshToken { get; set; }
     public DateTime? RefreshTokenExpiresAtUtc { get; set; }
     public string? VerificationCode { get; set; }

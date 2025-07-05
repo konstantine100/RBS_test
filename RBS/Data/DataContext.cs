@@ -30,6 +30,7 @@ public class DataContext : IdentityDbContext<User, IdentityRole<int>, int>
     public DbSet<Food> Foods { get; set; }
     public DbSet<Ingredient> Ingredients { get; set; }
     public DbSet<OrderedFood> OrderedFoods { get; set; }
+    public DbSet<WalkIn> WalkIns { get; set; }
     
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
