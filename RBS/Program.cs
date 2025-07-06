@@ -64,6 +64,7 @@ builder.Services.AddScoped<IIngridientService, IngridientService>();
 builder.Services.AddScoped<IOrderFoodService, OrderFoodService>();
 builder.Services.AddScoped<IWalkInService, WalkInService>();
 builder.Services.AddScoped<IAdminService, AdminService>();
+builder.Services.AddScoped<ILayoutHelperService, LayoutHelperService>();
 
 // for Apple payment service 
 builder.Services.AddScoped<IApplePaymentService, ApplePaymentService>();

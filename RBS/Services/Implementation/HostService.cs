@@ -15,11 +15,13 @@ public class HostService : IHostService
 {
     private readonly DataContext _context;
     private readonly IMapper _mapper;
+    private readonly ILayoutHelperService _layoutHelperService;
     
-    public HostService(DataContext context, IMapper mapper)
+    public HostService(DataContext context, IMapper mapper, ILayoutHelperService layoutService)
     {
         _context = context;
         _mapper = mapper;
+        _layoutHelperService = layoutService;
     }
     
     public async Task<ApiResponse<List<BookingDTO>>> GetRestaurantBookings(int restaurantId)
@@ -51,12 +53,24 @@ public class HostService : IHostService
 
     public async Task<ApiResponse<List<LayoutByHour>>> GetCurrentLayout(int spaceId)
     {
+        var nowTime = DateTime.UtcNow;
+        var targetDate = nowTime.Date;
+        var targetHour = nowTime.Hour;
+        
         var space = await _context.Spaces
             .Include(x => x.Bookings)
             .Include(x => x.SpaceReservations)
             .FirstOrDefaultAsync(x => x.Id == spaceId);
         
-        var tables = await _context.Tables
+        if (space == null)
+        {
+            var response = ApiResponseService<List<LayoutByHour>>
+                .Response(null, "space not found", StatusCodes.Status404NotFound);
+            return response;
+        }
+        else
+        {
+            var tables = await _context.Tables
             .Include(x => x.Bookings)
             .Include(x => x.TableReservations)
             .Include(x => x.WalkIns)
@@ -72,166 +86,36 @@ public class HostService : IHostService
             .ToListAsync();
         
         // booking entities
-        var spaceBooking = ReturnFilteredSpaceBookings(space);
-        var tableBookings = ReturnFilteredTableBookings(tables);
-        var chairBookings = ReturnFilteredChairBookings(chairs);
+        var spaceBooking = _layoutHelperService.ReturnFilteredSpaceBookings(space, nowTime);
+        var tableBookings = _layoutHelperService.ReturnFilteredTableBookings(tables, nowTime);
+        var chairBookings = _layoutHelperService.ReturnFilteredChairBookings(chairs, nowTime);
         // reserved entities
-        var spaceReservation = ReturnFilteredSpaceReservations(space);
-        var tableReservation = ReturnFilteredTableReservations(tables);
-        var chairReservation = ReturnFilteredChairReservations(chairs);
+        var spaceReservation = _layoutHelperService.ReturnFilteredSpaceReservations(space, nowTime);
+        var tableReservation = _layoutHelperService.ReturnFilteredTableReservations(tables, nowTime);
+        var chairReservation = _layoutHelperService.ReturnFilteredChairReservations(chairs, nowTime);
         // walkIn entities
-        var tableWalkIns = ReturnFilteredTableWalkIn(tables);
-        var chairWalkIns = ReturnFilteredChairWalkIn(chairs);
+        var tableWalkIns = _layoutHelperService.ReturnFilteredTableWalkIn(tables, nowTime);
+        var chairWalkIns = _layoutHelperService.ReturnFilteredChairWalkIn(chairs, nowTime);
         // empty entities
-        var noTableBookings = await ReturnEmptyTables(spaceId);
-        var noChairBookings = await ReturnEmptyChairs(spaceId);
+        var noTableBookings = await _layoutHelperService.ReturnEmptyTables(spaceId, nowTime);
+        var noChairBookings = await _layoutHelperService.ReturnEmptyChairs(spaceId, nowTime);
 
         List<LayoutByHour> allLayout = new List<LayoutByHour>();
         
         // bookings
-        // bookings
-        foreach (var booking in spaceBooking)
-        {
-            var layout = new LayoutByHour();
-            
-            layout.SpaceId = spaceId;
-            layout.Space = _mapper.Map<LayoutSpaceDTO>(space);
-            layout.Status = AVAILABLE_STATUS.Booked;
-            allLayout.Add(layout);
-        }
-        
-        foreach (var table in tableBookings)
-        {
-            // Filter bookings for this specific date/hour
-            var filteredBookings = table.Bookings
-                .Where(x => x.BookingDate.Year == DateTime.UtcNow.Year &&
-                           x.BookingDate.Month == DateTime.UtcNow.Month &&
-                           x.BookingDate.Day == DateTime.UtcNow.Day &&
-                           x.BookingDate.Hour == DateTime.UtcNow.Hour)
-                .ToList();
-                
-            foreach (var booking in filteredBookings)
-            {
-                var layout = new LayoutByHour();
-                layout.TableId = table.Id;
-                layout.Table = _mapper.Map<LayoutTableDTO>(table);
-                layout.Status = AVAILABLE_STATUS.Booked;
-                allLayout.Add(layout);
-            }
-        }
-        
-        foreach (var chair in chairBookings)
-        {
-            // Filter bookings for this specific date/hour
-            var filteredBookings = chair.Bookings
-                .Where(x => x.BookingDate.Year == DateTime.UtcNow.Year &&
-                           x.BookingDate.Month == DateTime.UtcNow.Month &&
-                           x.BookingDate.Day == DateTime.UtcNow.Day &&
-                           x.BookingDate.Hour == DateTime.UtcNow.Hour)
-                .ToList();
-                
-            foreach (var booking in filteredBookings)
-            {
-                var layout = new LayoutByHour();
-                layout.ChairId = chair.Id;
-                layout.Chair = _mapper.Map<ChairDTO>(chair);
-                layout.Status = AVAILABLE_STATUS.Booked;
-                allLayout.Add(layout);
-            }
-        }
+        allLayout.AddRange(_layoutHelperService.CreateSpaceBookingLayouts(spaceBooking, spaceId, space));
+        allLayout.AddRange(_layoutHelperService.CreateTableBookingLayouts(tableBookings, targetDate, targetHour));
+        allLayout.AddRange(_layoutHelperService.CreateChairBookingLayouts(chairBookings, targetDate, targetHour));
         
         // reservations
-        foreach (var reservation in spaceReservation)
-        {
-            var layout = new LayoutByHour();
-            
-            layout.SpaceId = spaceId;
-            layout.Space = _mapper.Map<LayoutSpaceDTO>(space);
-            layout.Status = AVAILABLE_STATUS.Reserved;
-            allLayout.Add(layout);
-        }
-
-        foreach (var table in tableReservation)
-        {
-            // Filter reservations for this specific date/hour
-            var filteredReservations = table.TableReservations
-                .Where(x => x.BookingDate.Year == DateTime.UtcNow.Year &&
-                           x.BookingDate.Month == DateTime.UtcNow.Month &&
-                           x.BookingDate.Day == DateTime.UtcNow.Day &&
-                           x.BookingDate.Hour == DateTime.UtcNow.Hour)
-                .ToList();
-                
-            foreach (var reservation in filteredReservations)
-            {
-                var layout = new LayoutByHour();
-                layout.TableId = table.Id;
-                layout.Table = _mapper.Map<LayoutTableDTO>(table);
-                layout.Status = AVAILABLE_STATUS.Reserved;
-                allLayout.Add(layout);
-            }
-        }
-        
-        foreach (var chair in chairReservation)
-        {
-            // Filter reservations for this specific date/hour
-            var filteredReservations = chair.ChairReservations
-                .Where(x => x.BookingDate.Year == DateTime.UtcNow.Year &&
-                           x.BookingDate.Month == DateTime.UtcNow.Month &&
-                           x.BookingDate.Day == DateTime.UtcNow.Day &&
-                           x.BookingDate.Hour == DateTime.UtcNow.Hour)
-                .ToList();
-                
-            foreach (var reservation in filteredReservations)
-            {
-                var layout = new LayoutByHour();
-                layout.ChairId = chair.Id;
-                layout.Chair = _mapper.Map<ChairDTO>(chair);
-                layout.Status = AVAILABLE_STATUS.Reserved;
-                allLayout.Add(layout);
-            }
-        }
+        allLayout.AddRange(_layoutHelperService.CreateSpaceReservationLayouts(spaceReservation, spaceId, space));
+        allLayout.AddRange(_layoutHelperService.CreateTableReservationLayouts(tableReservation, targetDate, targetHour));
+        allLayout.AddRange(_layoutHelperService.CreateChairReservationLayouts(chairReservation, targetDate, targetHour));
         
         // walkIns
-        foreach (var table in tableWalkIns)
-        {
-            // Filter walk-ins for this specific date/hour
-            var filteredWalkIns = table.WalkIns
-                .Where(x => x.WalkInAt.Year == DateTime.UtcNow.Year &&
-                           x.WalkInAt.Month == DateTime.UtcNow.Month &&
-                           x.WalkInAt.Day == DateTime.UtcNow.Day &&
-                           x.WalkInAt.Hour == DateTime.UtcNow.Hour)
-                .ToList();
-                
-            foreach (var walkin in filteredWalkIns)
-            {
-                var layout = new LayoutByHour();
-                layout.TableId = table.Id;
-                layout.Table = _mapper.Map<LayoutTableDTO>(table);
-                layout.Status = AVAILABLE_STATUS.WalkIn;
-                allLayout.Add(layout);
-            }
-        }
+        allLayout.AddRange(_layoutHelperService.CreateTableWalkInLayouts(tableWalkIns, targetDate, targetHour));
+        allLayout.AddRange(_layoutHelperService.CreateChairWalkInLayouts(chairWalkIns, targetDate, targetHour));
         
-        foreach (var chair in chairWalkIns)
-        {
-            // Filter walk-ins for this specific date/hour
-            var filteredWalkIns = chair.WalkIns
-                .Where(x => x.WalkInAt.Year == DateTime.UtcNow.Year &&
-                           x.WalkInAt.Month == DateTime.UtcNow.Month &&
-                           x.WalkInAt.Day == DateTime.UtcNow.Day &&
-                           x.WalkInAt.Hour == DateTime.UtcNow.Hour)
-                .ToList();
-                
-            foreach (var walkin in filteredWalkIns)
-            {
-                var layout = new LayoutByHour();
-                layout.ChairId = chair.Id;
-                layout.Chair = _mapper.Map<ChairDTO>(chair);
-                layout.Status = AVAILABLE_STATUS.WalkIn;
-                allLayout.Add(layout);
-            }
-        }
-
         // empty
         if (!spaceBooking.Any() && !spaceReservation.Any())
         {
@@ -243,107 +127,14 @@ public class HostService : IHostService
             };
             allLayout.Add(notBookedSpaceLayout);
         }
-        
-        foreach (var table in noTableBookings)
-        {
-            if (spaceBooking.Any())
-            {
-                var layout = new LayoutByHour();
-                layout.TableId = table.Id;
-                layout.Table = _mapper.Map<LayoutTableDTO>(table);
-                layout.Status = AVAILABLE_STATUS.Booked;
-                allLayout.Add(layout);
-            }
-            else if (spaceReservation.Any())
-            {
-                var layout = new LayoutByHour();
-                layout.TableId = table.Id;
-                layout.Table = _mapper.Map<LayoutTableDTO>(table);
-                layout.Status = AVAILABLE_STATUS.Reserved;
-                allLayout.Add(layout);
-            }
-            else
-            {
-                var layout = new LayoutByHour
-                {
-                    TableId = table.Id,
-                    Table = _mapper.Map<LayoutTableDTO>(table),
-                    Status = AVAILABLE_STATUS.None
-                };
-                allLayout.Add(layout);
-            }
-        }
-        
-        foreach (var chair in noChairBookings)
-        {
-            if (spaceBooking.Any())
-            {
-                var layout = new LayoutByHour();
-                layout.ChairId = chair.Id;
-                layout.Chair = _mapper.Map<ChairDTO>(chair);
-                layout.Status = AVAILABLE_STATUS.Booked;
-                allLayout.Add(layout);
-            }
-            else if (spaceReservation.Any())
-            {
-                var layout = new LayoutByHour();
-                layout.ChairId = chair.Id;
-                layout.Chair = _mapper.Map<ChairDTO>(chair);
-                layout.Status = AVAILABLE_STATUS.Reserved;
-                allLayout.Add(layout);
-            }
-            else if (chair.Table.Bookings
-                     .Any(x => x.BookingDate.Year == DateTime.UtcNow.Year &&
-                               x.BookingDate.Month == DateTime.UtcNow.Month &&
-                               x.BookingDate.Day == DateTime.UtcNow.Day &&
-                               x.BookingDate.Hour == DateTime.UtcNow.Hour))
-            {
-                var layout = new LayoutByHour();
-                layout.ChairId = chair.Id;
-                layout.Chair = _mapper.Map<ChairDTO>(chair);
-                layout.Status = AVAILABLE_STATUS.Booked;
-                allLayout.Add(layout);
-            }
-            else if (chair.Table.TableReservations
-                     .Any(x => x.BookingDate.Year == DateTime.UtcNow.Year &&
-                               x.BookingDate.Month == DateTime.UtcNow.Month &&
-                               x.BookingDate.Day == DateTime.UtcNow.Day &&
-                               x.BookingDate.Hour == DateTime.UtcNow.Hour))
-            {
-                var layout = new LayoutByHour();
-                layout.ChairId = chair.Id;
-                layout.Chair = _mapper.Map<ChairDTO>(chair);
-                layout.Status = AVAILABLE_STATUS.Reserved;
-                allLayout.Add(layout);
-            }
-            else if (chair.Table.WalkIns
-                     .Any(x => x.WalkInAt.Year == DateTime.UtcNow.Year &&
-                               x.WalkInAt.Month == DateTime.UtcNow.Month &&
-                               x.WalkInAt.Day == DateTime.UtcNow.Day &&
-                               x.WalkInAt.Hour == DateTime.UtcNow.Hour))
-            {
-                var layout = new LayoutByHour();
-                layout.ChairId = chair.Id;
-                layout.Chair = _mapper.Map<ChairDTO>(chair);
-                layout.Status = AVAILABLE_STATUS.WalkIn;
-                allLayout.Add(layout);
-            }
-            else
-            {
-                var layout = new LayoutByHour
-                {
-                    ChairId = chair.Id,
-                    Chair = _mapper.Map<ChairDTO>(chair),
-                    Status = AVAILABLE_STATUS.None,
-                };
-                allLayout.Add(layout);
-            }
-        }
+        allLayout.AddRange(_layoutHelperService.CreateEmptyTableLayouts(noTableBookings, spaceBooking, spaceReservation));
+        allLayout.AddRange(_layoutHelperService.CreateEmptyChairLayouts(noChairBookings, spaceBooking, spaceReservation, targetDate, targetHour));
         
         //response
         var response = ApiResponseService<List<LayoutByHour>>
             .Response200(allLayout);
         return response;
+        }
     }
 
     public async Task<ApiResponse<BookingDTO>> UpdateBookingLateTimes(int bookingId, TimeSpan lateTime)
@@ -486,163 +277,5 @@ public class HostService : IHostService
             }
         }
     }
-
-    private List<Booking> ReturnFilteredSpaceBookings(Space space)
-    {
-        var spaceBooking = space.Bookings
-            .Where(x => x.BookingDate.Year == DateTime.UtcNow.Year &&
-                        x.BookingDate.Month == DateTime.UtcNow.Month &&
-                        x.BookingDate.Day == DateTime.UtcNow.Day &&
-                        x.BookingDate.Hour == DateTime.UtcNow.Hour)
-            .ToList();
-        
-        return spaceBooking;
-    }
     
-    private List<Table> ReturnFilteredTableBookings(List<Table> tables)
-    {
-        var tableBookings = tables
-            .Where(x => x.Bookings
-                .Any(x => x.BookingDate.Year == DateTime.UtcNow.Year &&
-                          x.BookingDate.Month == DateTime.UtcNow.Month &&
-                          x.BookingDate.Day == DateTime.UtcNow.Day &&
-                          x.BookingDate.Hour == DateTime.UtcNow.Hour))
-            .ToList();
-        
-        return tableBookings;
-    }
-    
-    private List<Chair> ReturnFilteredChairBookings(List<Chair> chairs)
-    {
-        var chairBookings = chairs
-            .Where(x => x.Bookings
-                .Any(x => x.BookingDate.Year == DateTime.UtcNow.Year &&
-                          x.BookingDate.Month == DateTime.UtcNow.Month &&
-                          x.BookingDate.Day == DateTime.UtcNow.Day &&
-                          x.BookingDate.Hour == DateTime.UtcNow.Hour))
-            .ToList();
-        
-        return chairBookings;
-    }
-    
-    private List<SpaceReservation> ReturnFilteredSpaceReservations(Space space)
-    {
-        var spaceReservation = space.SpaceReservations
-            .Where(x => x.BookingDate.Year == DateTime.UtcNow.Year &&
-                        x.BookingDate.Month == DateTime.UtcNow.Month &&
-                        x.BookingDate.Day == DateTime.UtcNow.Day &&
-                        x.BookingDate.Hour == DateTime.UtcNow.Hour)
-            .ToList();
-        
-        return spaceReservation;
-    }
-    
-    private List<Table> ReturnFilteredTableReservations(List<Table> tables)
-    {
-        var tableReservation = tables
-            .Where(x => x.TableReservations
-                .Any(x => x.BookingDate.Year == DateTime.UtcNow.Year &&
-                          x.BookingDate.Month == DateTime.UtcNow.Month &&
-                          x.BookingDate.Day == DateTime.UtcNow.Day &&
-                          x.BookingDate.Hour == DateTime.UtcNow.Hour))
-            .ToList();
-        
-        return tableReservation;
-    }
-    
-    private List<Chair> ReturnFilteredChairReservations(List<Chair> chairs)
-    {
-        var chairReservation = chairs
-            .Where(x => x.ChairReservations
-                .Any(x => x.BookingDate.Year == DateTime.UtcNow.Year &&
-                          x.BookingDate.Month == DateTime.UtcNow.Month &&
-                          x.BookingDate.Day == DateTime.UtcNow.Day &&
-                          x.BookingDate.Hour == DateTime.UtcNow.Hour))
-            .ToList();
-        
-        return chairReservation;
-    }
-
-    private List<Table> ReturnFilteredTableWalkIn(List<Table> tables)
-    {
-        var tableReservation = tables
-            .Where(x => x.WalkIns
-                .Any(x => x.WalkInAt.Year == DateTime.UtcNow.Year &&
-                          x.WalkInAt.Month == DateTime.UtcNow.Month &&
-                          x.WalkInAt.Day == DateTime.UtcNow.Day &&
-                          x.WalkInAt.Hour == DateTime.UtcNow.Hour))
-            .ToList();
-        
-        return tableReservation;
-    }
-    
-    private List<Chair> ReturnFilteredChairWalkIn(List<Chair> chairs)
-    {
-        var chairReservation = chairs
-            .Where(x => x.WalkIns
-                .Any(x => x.WalkInAt.Year == DateTime.UtcNow.Year &&
-                          x.WalkInAt.Month == DateTime.UtcNow.Month &&
-                          x.WalkInAt.Day == DateTime.UtcNow.Day &&
-                          x.WalkInAt.Hour == DateTime.UtcNow.Hour))
-            .ToList();
-        
-        return chairReservation;
-    }
-
-    private async Task<List<Table>> ReturnEmptyTables(int spaceId)
-    {
-        var noTableBookings = await _context.Tables
-            .Include(x => x.Bookings)
-            .Include(x => x.TableReservations)
-            .Include(x => x.WalkIns)
-            .Where(x => x.SpaceId == spaceId && !x.Bookings
-                .Any(x => x.BookingDate.Year == DateTime.UtcNow.Year &&
-                          x.BookingDate.Month == DateTime.UtcNow.Month &&
-                          x.BookingDate.Day == DateTime.UtcNow.Day &&
-                          x.BookingDate.Hour == DateTime.UtcNow.Hour) &&
-                !x.TableReservations
-                    .Any(x => x.BookingDate.Year == DateTime.UtcNow.Year &&
-                                          x.BookingDate.Month == DateTime.UtcNow.Month &&
-                                          x.BookingDate.Day == DateTime.UtcNow.Day &&
-                                          x.BookingDate.Hour == DateTime.UtcNow.Hour) &&
-                !x.WalkIns
-                    .Any(x => x.WalkInAt.Year == DateTime.UtcNow.Year &&
-                                      x.WalkInAt.Month == DateTime.UtcNow.Month &&
-                                      x.WalkInAt.Day == DateTime.UtcNow.Day &&
-                                      x.WalkInAt.Hour == DateTime.UtcNow.Hour))
-            .ToListAsync();
-
-        return noTableBookings;
-    }
-    
-    private async Task<List<Chair>> ReturnEmptyChairs(int spaceId)
-    {
-        var noChairBookings = await _context.Chairs
-            .Include(x => x.Table)
-            .Include(x => x.Bookings)
-            .Include(x => x.WalkIns)
-            .Include(x => x.ChairReservations)
-            .Include(x => x.Table.TableReservations)
-            .Include(x => x.Table.Bookings)
-            .Include(x => x.Table.WalkIns)
-            .Where(x => x.Table.SpaceId == spaceId && !x.Bookings
-                .Any(x => x.BookingDate.Year == DateTime.UtcNow.Year &&
-                                  x.BookingDate.Month == DateTime.UtcNow.Month &&
-                                  x.BookingDate.Day == DateTime.UtcNow.Day &&
-                                  x.BookingDate.Hour == DateTime.UtcNow.Hour) &&
-                        !x.ChairReservations
-                            .Any(x => x.BookingDate.Year == DateTime.UtcNow.Year &&
-                                      x.BookingDate.Month == DateTime.UtcNow.Month &&
-                                      x.BookingDate.Day == DateTime.UtcNow.Day &&
-                                      x.BookingDate.Hour == DateTime.UtcNow.Hour) &&
-                        !x.WalkIns
-                            .Any(x => x.WalkInAt.Year == DateTime.UtcNow.Year &&
-                                 x.WalkInAt.Month == DateTime.UtcNow.Month &&
-                                 x.WalkInAt.Day == DateTime.UtcNow.Day &&
-                                 x.WalkInAt.Hour == DateTime.UtcNow.Hour))
-            .ToListAsync();
-
-        return noChairBookings;
-    }
-
 }
