@@ -4,5 +4,6 @@ public enum AVAILABLE_STATUS
 {
     None,
     Reserved,
-    Booked
+    Booked,
+    WalkIn,
 }
