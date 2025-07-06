@@ -11,4 +11,6 @@ public interface IHostService
     Task<ApiResponse<BookingDTO>> BookingUserAnnounced(int bookingId);
     Task<ApiResponse<BookingDTO>> BookingUserNotAnnounced(int bookingId);
     Task<ApiResponse<BookingDTO>> FinishBooking(int bookingId);
+    Task<ApiResponse<TableDTO>> TableAvailabilityChange(int hostId, int tableId);
+    
 }

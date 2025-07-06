@@ -8,7 +8,7 @@ public class BookingDTO
     public DateTime BookedAt { get; set; } 
     public DateTime BookingDate { get; set; } 
     public DateTime? BookingDateEnd { get; set; }
-    public DateTime BookingExpireDate { get; set; }
+    public DateTime BookingDateExpiration  { get; set; }
     public decimal Price { get; set; }
     public PAYMENT_STATUS PaymentStatus { get; set; }
     public BOOKING_STATUS BookingStatus { get; set; } 

@@ -4,5 +4,6 @@ public enum TABLE_TYPE
 {
     VIP,
     SHARED,
+    REGULAR,
     
 }

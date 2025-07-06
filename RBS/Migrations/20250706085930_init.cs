@@ -631,6 +631,7 @@ namespace RBS.Migrations
                     WalkInAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     TableId = table.Column<int>(type: "int", nullable: true),
                     ChairId = table.Column<int>(type: "int", nullable: true),
+                    spaceId = table.Column<int>(type: "int", nullable: false),
                     IsFinished = table.Column<bool>(type: "bit", nullable: false),
                     HostId = table.Column<int>(type: "int", nullable: false)
                 },

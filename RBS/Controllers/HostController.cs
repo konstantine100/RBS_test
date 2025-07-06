@@ -59,4 +59,11 @@ public class HostController : ControllerBase
         var response = await _hostService.FinishBooking(bookingId);
         return Ok(response);
     }
+    
+    [HttpPut("table-availability-change")]
+    public async Task<ActionResult> TableAvailabilityChange(int hostId, int tableId)
+    {
+        var response = await _hostService.TableAvailabilityChange(hostId, tableId);
+        return Ok(response);
+    }
 }

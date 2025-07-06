@@ -9,7 +9,7 @@ public class ChairValidator : AbstractValidator<Chair>
     {
         RuleFor(x=> x.ChairNumber)
             .NotEmpty().WithMessage("Chair Number is required")
-            .Length(1,20).WithMessage("Chair Number must be between 1 and 20 characters");
+            .Length(1,80).WithMessage("Chair Number must be between 1 and 80 characters");
         RuleFor(x=> x.ChairPrice)
             .NotEmpty().WithMessage("Chair Price is required")
             .GreaterThan(0).WithMessage("Chair Price must be greater than 0")

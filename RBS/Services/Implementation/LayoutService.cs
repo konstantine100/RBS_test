@@ -66,31 +66,44 @@ public class LayoutService : ILayoutService
             var layout = new LayoutByHour();
             
             layout.SpaceId = spaceId;
-            layout.Space = _mapper.Map<SpaceDTO>(space);
+            layout.Space = _mapper.Map<LayoutSpaceDTO>(space);
             layout.Status = AVAILABLE_STATUS.Booked;
             allLayout.Add(layout);
-            
         }
-
+        
         foreach (var table in tableBookings)
         {
-            foreach (var booking in table.Bookings)
+            // Filter bookings for this specific date/hour
+            var filteredBookings = table.Bookings
+                .Where(x => x.BookingDate.Year == Date.Year &&
+                           x.BookingDate.Month == Date.Month &&
+                           x.BookingDate.Day == Date.Day &&
+                           x.BookingDate.Hour == Date.Hour)
+                .ToList();
+                
+            foreach (var booking in filteredBookings)
             {
                 var layout = new LayoutByHour();
                 layout.TableId = table.Id;
-                layout.Table = _mapper.Map<TableDTO>(table);
+                layout.Table = _mapper.Map<LayoutTableDTO>(table);
                 layout.Status = AVAILABLE_STATUS.Booked;
                 allLayout.Add(layout);
             }
-            
         }
         
         foreach (var chair in chairBookings)
         {
-            foreach (var booking in chair.Bookings)
+            // Filter bookings for this specific date/hour
+            var filteredBookings = chair.Bookings
+                .Where(x => x.BookingDate.Year == Date.Year &&
+                           x.BookingDate.Month == Date.Month &&
+                           x.BookingDate.Day == Date.Day &&
+                           x.BookingDate.Hour == Date.Hour)
+                .ToList();
+                
+            foreach (var booking in filteredBookings)
             {
                 var layout = new LayoutByHour();
-            
                 layout.ChairId = chair.Id;
                 layout.Chair = _mapper.Map<ChairDTO>(chair);
                 layout.Status = AVAILABLE_STATUS.Booked;
@@ -104,31 +117,44 @@ public class LayoutService : ILayoutService
             var layout = new LayoutByHour();
             
             layout.SpaceId = spaceId;
-            layout.Space = _mapper.Map<SpaceDTO>(space);
+            layout.Space = _mapper.Map<LayoutSpaceDTO>(space);
             layout.Status = AVAILABLE_STATUS.Reserved;
             allLayout.Add(layout);
-            
         }
 
         foreach (var table in tableReservation)
         {
-            foreach (var reservation in table.TableReservations)
+            // Filter reservations for this specific date/hour
+            var filteredReservations = table.TableReservations
+                .Where(x => x.BookingDate.Year == Date.Year &&
+                           x.BookingDate.Month == Date.Month &&
+                           x.BookingDate.Day == Date.Day &&
+                           x.BookingDate.Hour == Date.Hour)
+                .ToList();
+                
+            foreach (var reservation in filteredReservations)
             {
                 var layout = new LayoutByHour();
                 layout.TableId = table.Id;
-                layout.Table = _mapper.Map<TableDTO>(table);
+                layout.Table = _mapper.Map<LayoutTableDTO>(table);
                 layout.Status = AVAILABLE_STATUS.Reserved;
                 allLayout.Add(layout);
             }
-            
         }
         
         foreach (var chair in chairReservation)
         {
-            foreach (var reservation in chair.ChairReservations)
+            // Filter reservations for this specific date/hour
+            var filteredReservations = chair.ChairReservations
+                .Where(x => x.BookingDate.Year == Date.Year &&
+                           x.BookingDate.Month == Date.Month &&
+                           x.BookingDate.Day == Date.Day &&
+                           x.BookingDate.Hour == Date.Hour)
+                .ToList();
+                
+            foreach (var reservation in filteredReservations)
             {
                 var layout = new LayoutByHour();
-            
                 layout.ChairId = chair.Id;
                 layout.Chair = _mapper.Map<ChairDTO>(chair);
                 layout.Status = AVAILABLE_STATUS.Reserved;
@@ -139,23 +165,37 @@ public class LayoutService : ILayoutService
         // walkIns
         foreach (var table in tableWalkIns)
         {
-            foreach (var walkin in table.WalkIns)
+            // Filter walk-ins for this specific date/hour
+            var filteredWalkIns = table.WalkIns
+                .Where(x => x.WalkInAt.Year == Date.Year &&
+                           x.WalkInAt.Month == Date.Month &&
+                           x.WalkInAt.Day == Date.Day &&
+                           x.WalkInAt.Hour == Date.Hour)
+                .ToList();
+                
+            foreach (var walkin in filteredWalkIns)
             {
                 var layout = new LayoutByHour();
                 layout.TableId = table.Id;
-                layout.Table = _mapper.Map<TableDTO>(table);
+                layout.Table = _mapper.Map<LayoutTableDTO>(table);
                 layout.Status = AVAILABLE_STATUS.WalkIn;
                 allLayout.Add(layout);
             }
-            
         }
         
         foreach (var chair in chairWalkIns)
         {
-            foreach (var reservation in chair.WalkIns)
+            // Filter walk-ins for this specific date/hour
+            var filteredWalkIns = chair.WalkIns
+                .Where(x => x.WalkInAt.Year == Date.Year &&
+                           x.WalkInAt.Month == Date.Month &&
+                           x.WalkInAt.Day == Date.Day &&
+                           x.WalkInAt.Hour == Date.Hour)
+                .ToList();
+                
+            foreach (var walkin in filteredWalkIns)
             {
                 var layout = new LayoutByHour();
-            
                 layout.ChairId = chair.Id;
                 layout.Chair = _mapper.Map<ChairDTO>(chair);
                 layout.Status = AVAILABLE_STATUS.WalkIn;
@@ -169,7 +209,7 @@ public class LayoutService : ILayoutService
             var notBookedSpaceLayout = new LayoutByHour
             {
                 SpaceId = spaceId,
-                Space = _mapper.Map<SpaceDTO>(space),
+                Space = _mapper.Map<LayoutSpaceDTO>(space),
                 Status = AVAILABLE_STATUS.None,
             };
             allLayout.Add(notBookedSpaceLayout);
@@ -180,21 +220,17 @@ public class LayoutService : ILayoutService
             if (spaceBooking.Any())
             {
                 var layout = new LayoutByHour();
-            
                 layout.TableId = table.Id;
-                layout.Table = _mapper.Map<TableDTO>(table);
+                layout.Table = _mapper.Map<LayoutTableDTO>(table);
                 layout.Status = AVAILABLE_STATUS.Booked;
-                    
                 allLayout.Add(layout);
             }
             else if (spaceReservation.Any())
             {
                 var layout = new LayoutByHour();
-            
                 layout.TableId = table.Id;
-                layout.Table = _mapper.Map<TableDTO>(table);
+                layout.Table = _mapper.Map<LayoutTableDTO>(table);
                 layout.Status = AVAILABLE_STATUS.Reserved;
-                    
                 allLayout.Add(layout);
             }
             else
@@ -202,13 +238,11 @@ public class LayoutService : ILayoutService
                 var layout = new LayoutByHour
                 {
                     TableId = table.Id,
-                    Table = _mapper.Map<TableDTO>(table),
+                    Table = _mapper.Map<LayoutTableDTO>(table),
                     Status = AVAILABLE_STATUS.None
                 };
-                
                 allLayout.Add(layout);
             }
-            
         }
         
         foreach (var chair in noChairBookings)
@@ -216,21 +250,17 @@ public class LayoutService : ILayoutService
             if (spaceBooking.Any())
             {
                 var layout = new LayoutByHour();
-            
                 layout.ChairId = chair.Id;
                 layout.Chair = _mapper.Map<ChairDTO>(chair);
                 layout.Status = AVAILABLE_STATUS.Booked;
-                    
                 allLayout.Add(layout);
             }
             else if (spaceReservation.Any())
             {
                 var layout = new LayoutByHour();
-            
                 layout.ChairId = chair.Id;
                 layout.Chair = _mapper.Map<ChairDTO>(chair);
                 layout.Status = AVAILABLE_STATUS.Reserved;
-                    
                 allLayout.Add(layout);
             }
             else if (chair.Table.Bookings
@@ -240,11 +270,9 @@ public class LayoutService : ILayoutService
                                x.BookingDate.Hour == Date.Hour))
             {
                 var layout = new LayoutByHour();
-            
                 layout.ChairId = chair.Id;
                 layout.Chair = _mapper.Map<ChairDTO>(chair);
                 layout.Status = AVAILABLE_STATUS.Booked;
-                    
                 allLayout.Add(layout);
             }
             else if (chair.Table.TableReservations
@@ -254,11 +282,9 @@ public class LayoutService : ILayoutService
                                x.BookingDate.Hour == Date.Hour))
             {
                 var layout = new LayoutByHour();
-            
                 layout.ChairId = chair.Id;
                 layout.Chair = _mapper.Map<ChairDTO>(chair);
                 layout.Status = AVAILABLE_STATUS.Reserved;
-                    
                 allLayout.Add(layout);
             }
             else if (chair.Table.WalkIns
@@ -268,11 +294,9 @@ public class LayoutService : ILayoutService
                                x.WalkInAt.Hour == Date.Hour))
             {
                 var layout = new LayoutByHour();
-            
                 layout.ChairId = chair.Id;
                 layout.Chair = _mapper.Map<ChairDTO>(chair);
                 layout.Status = AVAILABLE_STATUS.WalkIn;
-                    
                 allLayout.Add(layout);
             }
             else
@@ -283,10 +307,8 @@ public class LayoutService : ILayoutService
                     Chair = _mapper.Map<ChairDTO>(chair),
                     Status = AVAILABLE_STATUS.None,
                 };
-                
                 allLayout.Add(layout);
             }
-            
         }
         
         //response
@@ -306,7 +328,7 @@ public class LayoutService : ILayoutService
         
         return spaceBooking;
     }
-    
+
     private List<Table> ReturnFilteredTableBookings(List<Table> tables, DateTime Date)
     {
         var tableBookings = tables
@@ -319,7 +341,7 @@ public class LayoutService : ILayoutService
         
         return tableBookings;
     }
-    
+
     private List<Chair> ReturnFilteredChairBookings(List<Chair> chairs, DateTime Date)
     {
         var chairBookings = chairs
@@ -332,7 +354,7 @@ public class LayoutService : ILayoutService
         
         return chairBookings;
     }
-    
+
     private List<SpaceReservation> ReturnFilteredSpaceReservations(Space space, DateTime Date)
     {
         var spaceReservation = space.SpaceReservations
@@ -344,7 +366,7 @@ public class LayoutService : ILayoutService
         
         return spaceReservation;
     }
-    
+
     private List<Table> ReturnFilteredTableReservations(List<Table> tables, DateTime Date)
     {
         var tableReservation = tables
@@ -357,7 +379,7 @@ public class LayoutService : ILayoutService
         
         return tableReservation;
     }
-    
+
     private List<Chair> ReturnFilteredChairReservations(List<Chair> chairs, DateTime Date)
     {
         var chairReservation = chairs
@@ -370,10 +392,10 @@ public class LayoutService : ILayoutService
         
         return chairReservation;
     }
-    
+
     private List<Table> ReturnFilteredTableWalkIn(List<Table> tables, DateTime Date)
     {
-        var tableReservation = tables
+        var tableWalkIn = tables
             .Where(x => x.WalkIns
                 .Any(x => x.WalkInAt.Year == Date.Year &&
                           x.WalkInAt.Month == Date.Month &&
@@ -381,12 +403,12 @@ public class LayoutService : ILayoutService
                           x.WalkInAt.Hour == Date.Hour))
             .ToList();
         
-        return tableReservation;
+        return tableWalkIn;
     }
-    
+
     private List<Chair> ReturnFilteredChairWalkIn(List<Chair> chairs, DateTime Date)
     {
-        var chairReservation = chairs
+        var chairWalkIn = chairs
             .Where(x => x.WalkIns
                 .Any(x => x.WalkInAt.Year == Date.Year &&
                           x.WalkInAt.Month == Date.Month &&
@@ -394,7 +416,7 @@ public class LayoutService : ILayoutService
                           x.WalkInAt.Hour == Date.Hour))
             .ToList();
         
-        return chairReservation;
+        return chairWalkIn;
     }
 
     private async Task<List<Table>> ReturnEmptyTables(int spaceId, DateTime Date)
@@ -422,7 +444,7 @@ public class LayoutService : ILayoutService
 
         return noTableBookings;
     }
-    
+
     private async Task<List<Chair>> ReturnEmptyChairs(int spaceId, DateTime Date)
     {
         var noChairBookings = await _context.Chairs

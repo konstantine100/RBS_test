@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using RBS.CORE;
 using RBS.Data;
 using RBS.DTOs;
+using RBS.Enums;
 using RBS.Models;
 using RBS.Requests;
 using RBS.Services.Interfaces;
@@ -38,6 +39,7 @@ public class ChairReservationService : IChairReservationService
         else
         {
             var chair = await _context.Chairs
+                .Include(x => x.Table)
                 .Include(x => x.ChairReservations)
                 .FirstOrDefaultAsync(x => x.Id == chairId);
 
@@ -53,6 +55,12 @@ public class ChairReservationService : IChairReservationService
                 {
                     var response = ApiResponseService<ChairReservationDTO>
                         .Response(null, "Chair is not available", StatusCodes.Status400BadRequest);
+                    return response;
+                }
+                else if (chair.Table.TableType == TABLE_TYPE.VIP || chair.Table.TableType == TABLE_TYPE.REGULAR)
+                {
+                    var response = ApiResponseService<ChairReservationDTO>
+                        .Response(null, "Vip tables chairs is not for booking", StatusCodes.Status400BadRequest);
                     return response;
                 }
                 else

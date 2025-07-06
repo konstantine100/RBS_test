@@ -12,7 +12,7 @@ using RBS.Data;
 namespace RBS.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20250705100852_init")]
+    [Migration("20250706085930_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -825,6 +825,9 @@ namespace RBS.Migrations
 
                     b.Property<DateTime>("WalkInAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<int>("spaceId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
