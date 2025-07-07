@@ -217,8 +217,7 @@ public class UserService : IUserService
             return failureResponse;
         }
     }
-
-
+    
     public async Task<ApiResponse<bool>> Verify(string email, string code)
     {
         var user = _context.Users.FirstOrDefault(u => u.Email == email);
