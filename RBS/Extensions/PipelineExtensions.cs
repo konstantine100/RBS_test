@@ -16,6 +16,8 @@ public static class PipelineExtensions
         app.UseHttpsRedirection();
         app.UseAuthorization();
         app.MapControllers();
+        
+        
 
         return app;
     }

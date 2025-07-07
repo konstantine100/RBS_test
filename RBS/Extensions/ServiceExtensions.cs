@@ -156,6 +156,7 @@ public static class ServiceExtensions
         {
             options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
             options.AddPolicy("UserOnly", policy => policy.RequireRole("User"));
+            options.AddPolicy("HostOnly", policy => policy.RequireRole("Host"));
             options.AddPolicy("Universal", policy => policy.RequireRole("Owner, Admin"));
         });
         

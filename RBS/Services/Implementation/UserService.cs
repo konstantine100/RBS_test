@@ -30,9 +30,9 @@ public class UserService : IUserService
         _userManager = userManager;
     }
     
-    public async Task<ApiResponse<UserDTO>> UpdateUser(int id, string changeParametr, string toChange)
+    public async Task<ApiResponse<UserDTO>> UpdateUser(int id, string changeParameter, string toChange)
     {
-        var user = _context.Users.FirstOrDefault(x => x.Id == id);
+        var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == id);
 
         if (user == null)
         {
@@ -42,162 +42,77 @@ public class UserService : IUserService
                 Status = StatusCodes.Status404NotFound,
                 Message = "User not found"
             };
+            return response;
+        }
+        
+        var validParameters = new[] { "name", "lastname", "email", "password" };
+        if (!validParameters.Contains(changeParameter.ToLower()))
+        {
+            var response = new ApiResponse<UserDTO>
+            {
+                Data = null,
+                Status = StatusCodes.Status400BadRequest,
+                Message = "Invalid parameter. Valid parameters are: name, lastname, email, password"
+            };
+            return response;
+        }
 
+        IdentityResult updateResult = null;
+
+        switch (changeParameter.ToLower())
+        {
+            case "name":
+                user.FirstName = toChange;
+                updateResult = await _userManager.UpdateAsync(user);
+                break;
+
+            case "lastname":
+                user.LastName = toChange;
+                updateResult = await _userManager.UpdateAsync(user);
+                break;
+
+            case "email":
+                
+                var emailToken = await _userManager.GenerateChangeEmailTokenAsync(user, toChange);
+                updateResult = await _userManager.ChangeEmailAsync(user, toChange, emailToken);
+                
+                if (updateResult.Succeeded)
+                {
+                    user.UserName = toChange;
+                    updateResult = await _userManager.UpdateAsync(user);
+                }
+                break;
+
+            case "password":
+                // Generate password reset token and update password
+                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+                updateResult = await _userManager.ResetPasswordAsync(user, token, toChange);
+                break;
+        }
+
+        if (updateResult?.Succeeded == true)
+        {
+            var response = new ApiResponse<UserDTO>
+            {
+                Data = _mapper.Map<UserDTO>(user),
+                Status = StatusCodes.Status200OK,
+                Message = $"{changeParameter} updated successfully"
+            };
             return response;
         }
         else
         {
-            if (changeParametr.ToLower() == "name")
+            var errorMessages = updateResult?.Errors?.Any() == true 
+                ? string.Join(", ", updateResult.Errors.Select(e => e.Description))
+                : "Update failed";
+                
+            var response = new ApiResponse<UserDTO>
             {
-                user.FirstName = toChange;
-
-                var validator = new UserValidator();
-                var result = validator.Validate(user);
-
-                if (!result.IsValid)
-                {
-                    var response = new ApiResponse<UserDTO>
-                    {
-                        Data = null,
-                        Status = StatusCodes.Status409Conflict,
-                        Message = "Invalid Information"
-                    };
-
-                    return response;
-                }
-                else
-                {
-                    _context.SaveChanges();
-                    
-                    var response = new ApiResponse<UserDTO>
-                    {
-                        Data = _mapper.Map<UserDTO>(user),
-                        Status = StatusCodes.Status200OK,
-                        Message = null
-                    };
-
-                    return response;
-                }
-            }
-            else if (changeParametr.ToLower() == "lastname")
-            {
-                user.LastName = toChange;
-
-                var validator = new UserValidator();
-                var result = validator.Validate(user);
-
-                if (!result.IsValid)
-                {
-                    var response = new ApiResponse<UserDTO>
-                    {
-                        Data = null,
-                        Status = StatusCodes.Status409Conflict,
-                        Message = "Invalid Information"
-                    };
-
-                    return response;
-                }
-                else
-                {
-                    _context.SaveChanges();
-                    
-                    var response = new ApiResponse<UserDTO>
-                    {
-                        Data = _mapper.Map<UserDTO>(user),
-                        Status = StatusCodes.Status200OK,
-                        Message = null
-                    };
-
-                    return response;
-                }
-            }
-            else if (changeParametr.ToLower() == "email")
-            {
-                user.Email = toChange;
-
-                var validator = new UserValidator();
-                var result = validator.Validate(user);
-
-                if (!result.IsValid)
-                {
-                    var response = new ApiResponse<UserDTO>
-                    {
-                        Data = null,
-                        Status = StatusCodes.Status409Conflict,
-                        Message = "Invalid Information"
-                    };
-
-                    return response;
-                }
-                else
-                {
-                    _context.SaveChanges();
-                    
-                    var response = new ApiResponse<UserDTO>
-                    {
-                        Data = _mapper.Map<UserDTO>(user),
-                        Status = StatusCodes.Status200OK,
-                        Message = null
-                    };
-
-                    return response;
-                }
-            }
-            else if (changeParametr.ToLower() == "password")
-            {
-                var validator = new UserValidator();
-                var result = validator.Validate(user);
-
-                if (!result.IsValid)
-                {
-                    var response = new ApiResponse<UserDTO>
-                    {
-                        Data = null,
-                        Status = StatusCodes.Status409Conflict,
-                        Message = "Invalid Information"
-                    };
-                    return response;
-                }
-                else
-                {
-                    // Generate password reset token and update password using UserManager
-                    var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-                    var resetResult = await _userManager.ResetPasswordAsync(user, token, toChange);
-
-                    if (resetResult.Succeeded)
-                    {
-                        var response = new ApiResponse<UserDTO>
-                        {
-                            Data = _mapper.Map<UserDTO>(user),
-                            Status = StatusCodes.Status200OK,
-                            Message = "Password updated successfully"
-                        };
-                        return response;
-                    }
-                    else
-                    {
-                        var errorMessages = string.Join(", ", resetResult.Errors.Select(e => e.Description));
-                        var response = new ApiResponse<UserDTO>
-                        {
-                            Data = null,
-                            Status = StatusCodes.Status400BadRequest,
-                            Message = $"Password update failed: {errorMessages}"
-                        };
-                        return response;
-                    }
-                }
-            }
-            else
-            {
-                var response = new ApiResponse<UserDTO>
-                {
-                    Data = null,
-                    Status = StatusCodes.Status400BadRequest,
-                    Message = "something went wrong!"
-                };
-
-                return response;
-            }
+                Data = null,
+                Status = StatusCodes.Status400BadRequest,
+                Message = $"Update failed: {errorMessages}"
+            };
+            return response;
         }
     }
 
