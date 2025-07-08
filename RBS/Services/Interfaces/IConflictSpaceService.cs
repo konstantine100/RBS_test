@@ -8,6 +8,5 @@ public interface IConflictSpaceService
     Task<List<SpaceReservation>> ConflictSpaceReservation(int spaceId, DateTime startDate, DateTime endDate);
     Task<List<TableReservation>> ConflictSpaceTableReservation(int spaceId, DateTime startDate, DateTime endDate);
     Task<List<ChairReservation>> ConflictSpaceChairReservation(int spaceId, DateTime startDate, DateTime endDate);
-    Task<List<WalkIn>> ConflictWalkIns(int spaceId, DateTime startDate, DateTime endDate);
     
 }

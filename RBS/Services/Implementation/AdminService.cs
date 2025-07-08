@@ -21,9 +21,10 @@ public class AdminService : IAdminService
         _mapper = mapper;
     }
     
-    public async Task<ApiResponse<UserDTO>> MakeUserHost(int userId)
+    public async Task<ApiResponse<UserDTO>> MakeUserHost(int userId, int restaurantId)
     {
         var user = await _context.Users
+            .Include(x => x.Restaurant)
             .FirstOrDefaultAsync(x => x.Id == userId && x.Role == ROLES.User);
 
         if (user == null)
@@ -34,12 +35,28 @@ public class AdminService : IAdminService
         }
         else
         {
-            user.Role = ROLES.Host;
-            await _context.SaveChangesAsync();
+            var restaurant = await _context.Restaurants
+                .Include(x => x.Hosts)
+                .FirstOrDefaultAsync(x => x.Id == restaurantId);
+
+            if (restaurant == null)
+            {
+                var response = ApiResponseService<UserDTO>
+                    .Response(null, "restaurant not found", StatusCodes.Status404NotFound);
+                return response;
+            }
+            else
+            {
+                user.RestaurantId = restaurantId;
+                user.Restaurant = restaurant;
+                restaurant.Hosts.Add(user);
+                user.Role = ROLES.Host;
+                await _context.SaveChangesAsync();
             
-            var response = ApiResponseService<UserDTO>
-                .Response200(_mapper.Map<UserDTO>(user));
-            return response;
+                var response = ApiResponseService<UserDTO>
+                    .Response200(_mapper.Map<UserDTO>(user));
+                return response;
+            }
         }
     }
 
@@ -89,6 +106,7 @@ public class AdminService : IAdminService
     public async Task<ApiResponse<UserDTO>> DemoteHost(int restaurantId, int hostId)
     {
         var host = await _context.Users
+            .Include(x => x.Restaurant)
             .FirstOrDefaultAsync(x => x.Id == hostId && x.Role == ROLES.Host && x.RestaurantId == restaurantId);
 
         if (host == null)
@@ -100,9 +118,12 @@ public class AdminService : IAdminService
         else
         {
             var restaurant = await _context.Restaurants
+                .Include(x => x.Hosts)
                 .FirstOrDefaultAsync(x => x.Id == restaurantId);
             
             restaurant.Hosts.Remove(host);
+            host.RestaurantId = null;
+            host.Restaurant = null;
             host.Role = ROLES.User;
             await _context.SaveChangesAsync();
             

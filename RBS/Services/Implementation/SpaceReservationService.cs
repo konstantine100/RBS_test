@@ -77,9 +77,8 @@ public class SpaceReservationService : ISpaceReservationService
                         var allConflictingSpaceReservations = await _conflictSpaceService.ConflictSpaceReservation(spaceId, reservation.BookingDate, endDate);
                         var allConflictingTableReservations = await _conflictSpaceService.ConflictSpaceTableReservation(spaceId, reservation.BookingDate, endDate);
                         var allConflictingChairReservations = await _conflictSpaceService.ConflictSpaceChairReservation(spaceId, reservation.BookingDate, endDate);
-                        var allConflictingWalkings = await _conflictSpaceService.ConflictWalkIns(spaceId, reservation.BookingDate, endDate);
                         
-                        if (allConflictingBookings.Any() || allConflictingSpaceReservations.Any() || allConflictingTableReservations.Any() || allConflictingChairReservations.Any() || allConflictingWalkings.Any())
+                        if (allConflictingBookings.Any() || allConflictingSpaceReservations.Any() || allConflictingTableReservations.Any() || allConflictingChairReservations.Any())
                         {
                             var response = ApiResponseService<SpaceReservationDTO>
                                 .Response(null, "can't book at that time!", StatusCodes.Status400BadRequest);

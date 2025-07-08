@@ -18,9 +18,9 @@ public class AdminController : ControllerBase
     }
     
     [HttpPut("make-user-host")]
-    public async Task<ActionResult> MakeUserHost(int userId)
+    public async Task<ActionResult> MakeUserHost(int userId, int restaurantId)
     {
-        var response = await _adminService.MakeUserHost(userId);
+        var response = await _adminService.MakeUserHost(userId, restaurantId);
         return Ok(response);
     }
     

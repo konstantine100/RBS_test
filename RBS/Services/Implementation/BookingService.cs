@@ -47,29 +47,28 @@ public class BookingService : IBookingService
         }
         else
         {
-            var spaceReservationsTask = _context.SpaceReservations
+            var spaceReservationsTask = await _context.SpaceReservations
                 .Include(x => x.Space)
                 .ThenInclude(x => x.Bookings)
                 .Where(x => x.UserId == userId)
                 .ToListAsync();
             
-            var tableReservationsTask = _context.TableReservations
+            var tableReservationsTask = await _context.TableReservations
                 .Include(x => x.Table)
                 .ThenInclude(x => x.Bookings)
                 .Where(x => x.UserId == userId)
                 .ToListAsync();
             
-            var chairReservationsTask = _context.ChairReservations
+            var chairReservationsTask = await _context.ChairReservations
                 .Include(x => x.Chair)
                 .ThenInclude(x => x.Bookings)
                 .Where(x => x.UserId == userId)
                 .ToListAsync();
-
-            await Task.WhenAll(spaceReservationsTask, tableReservationsTask, chairReservationsTask);
             
-            var spaceReservations = spaceReservationsTask.Result;
-            var tableReservations = tableReservationsTask.Result;
-            var chairReservations = chairReservationsTask.Result;
+            
+            var spaceReservations = spaceReservationsTask;
+            var tableReservations = tableReservationsTask;
+            var chairReservations = chairReservationsTask;
 
             if (!spaceReservations.Any() && !tableReservations.Any() && !chairReservations.Any())
             {
@@ -110,17 +109,20 @@ public class BookingService : IBookingService
                 await _context.SaveChangesAsync();
                 
                 // here must be payment, receipt section
-                // ReceiptDTO receiptToAdd = new ReceiptDTO
+                // foreach (var bookingToAdd in allBookings)
                 // {
-                //     BookingId = bookingToAdd.Id,
-                //     ReceiptNumber = "1",
-                //     Date = DateTime.Now,
-                //     TotalAmount = 200,
-                //     CustomerDetails = _mapper.Map<UserDTO>(user),
-                //     Notes = "Something",
-                // };
+                //     ReceiptDTO receiptToAdd = new ReceiptDTO
+                //     {
+                //         BookingId = bookingToAdd.Id,
+                //         ReceiptNumber = "1",
+                //         Date = DateTime.Now,
+                //         TotalAmount = 200,
+                //         CustomerDetails = _mapper.Map<UserDTO>(user),
+                //         Notes = "Something",
+                //     };
                 //
-                // var receipt = await _receiptService.CreateReceiptAsync(receiptToAdd);
+                //     var receipt = await _receiptService.CreateReceiptAsync(receiptToAdd);
+                // }
                 
                 AllBookings BookingsToShow = new AllBookings(); 
                 BookingsToShow.Bookings.AddRange(_mapper.Map<List<BookingDTO>>(allBookings));
@@ -263,7 +265,7 @@ public class BookingService : IBookingService
                 .Include(x => x.Spaces)
                 .Include(x => x.Tables)
                 .Include(x => x.Chairs)
-                .Where(x => (x.BookingDate < DateTime.UtcNow && (x.BookingStatus == BOOKING_STATUS.Finished || x.BookingStatus == BOOKING_STATUS.Not_Announced)) && x.UserId == userId)
+                .Where(x => (x.BookingDate < DateTime.UtcNow || (x.BookingStatus == BOOKING_STATUS.Finished || x.BookingStatus == BOOKING_STATUS.Not_Announced)) && x.UserId == userId)
                 .OrderByDescending(x => x.BookingDate)
                 .ToListAsync();
                 
@@ -299,7 +301,9 @@ public class BookingService : IBookingService
             {
                 if (booking.PaymentStatus == PAYMENT_STATUS.SUCCESS)
                 {
-                    if ((booking.BookingDate - DateTime.UtcNow).Duration().TotalHours <= 6 )
+                    var timeUntilBooking = booking.BookingDate - DateTime.UtcNow;
+                    
+                    if (timeUntilBooking.TotalHours <= 6)
                     {
                         _context.Bookings.Remove(booking);
                         await _context.SaveChangesAsync();

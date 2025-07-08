@@ -137,7 +137,7 @@ public class HostService : IHostService
         }
     }
 
-    public async Task<ApiResponse<BookingDTO>> UpdateBookingLateTimes(int bookingId, TimeSpan lateTime)
+    public async Task<ApiResponse<BookingDTO>> UpdateBookingLateTimes(int bookingId, int lateTime)
     {
         var booking = await _context.Bookings
             .FirstOrDefaultAsync(x => x.Id == bookingId);
@@ -150,7 +150,7 @@ public class HostService : IHostService
         }
         else
         {
-            if (lateTime.Minutes < 15 || lateTime.Minutes > 5)
+            if (lateTime > 15 || lateTime < 5)
             {
                 var response = ApiResponseService<BookingDTO>
                     .Response(null, "incorrect time!", StatusCodes.Status400BadRequest);
@@ -158,7 +158,7 @@ public class HostService : IHostService
             }
             else
             {
-                booking.BookingDateExpiration += lateTime;
+                booking.BookingDateExpiration += TimeSpan.FromMinutes(lateTime);
                 await _context.SaveChangesAsync();
                 
                 var response = ApiResponseService<BookingDTO>

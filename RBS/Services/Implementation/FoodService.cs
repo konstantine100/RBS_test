@@ -86,7 +86,7 @@ public class FoodService : IFoodService
         }
         else
         {
-            if (changeParameter.ToLower() == "englishName")
+            if (changeParameter.ToLower() == "english-name")
             {
                 if (food.FoodCategory.Foods.Any(x => x.EnglishName.ToLower() == changeTo.ToLower()))
                 {
@@ -118,7 +118,7 @@ public class FoodService : IFoodService
                     }
                 }
             }
-            else if (changeParameter.ToLower() == "georgianName")
+            else if (changeParameter.ToLower() == "georgian-name")
             {
                 if (food.FoodCategory.Foods.Any(x => x.GeorgianName.ToLower() == changeTo.ToLower()))
                 {

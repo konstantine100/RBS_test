@@ -57,6 +57,12 @@ public class OrderFoodService : IOrderFoodService
                         .Response(null, "Food not found", StatusCodes.Status404NotFound);
                     return response;
                 }
+                else if (food.IsAvailable == false)
+                {
+                    var response = ApiResponseService<OrderedFoodDTO>
+                        .Response(null, "Food is not available", StatusCodes.Status400BadRequest);
+                    return response;
+                }
                 else
                 {
                     var orderedFood = _mapper.Map<OrderedFood>(request);
@@ -308,12 +314,38 @@ public class OrderFoodService : IOrderFoodService
             }
             else
             {
-                _context.OrderedFoods.Remove(orderedFood);
-                await _context.SaveChangesAsync();
+                if (orderedFood.PaymentStatus == PAYMENT_STATUS.SUCCESS)
+                {
+                    if ((orderedFood.Booking.BookingDate - DateTime.UtcNow).TotalHours > 1)
+                    {
+                        // fulis dabruneba
+                        
+                        _context.OrderedFoods.Remove(orderedFood);
+                        await _context.SaveChangesAsync();
                 
-                var response = ApiResponseService<OrderedFoodDTO>
-                    .Response200(_mapper.Map<OrderedFoodDTO>(orderedFood));
-                return response;
+                        var response = ApiResponseService<OrderedFoodDTO>
+                            .Response200(_mapper.Map<OrderedFoodDTO>(orderedFood));
+                        return response;
+                    }
+                    else
+                    {
+                        _context.OrderedFoods.Remove(orderedFood);
+                        await _context.SaveChangesAsync();
+                
+                        var response = ApiResponseService<OrderedFoodDTO>
+                            .Response(_mapper.Map<OrderedFoodDTO>(orderedFood), "Because before booking start time was less than 1 hour, refund is not available", StatusCodes.Status200OK);
+                        return response;
+                    }
+                }
+                else
+                {
+                    _context.OrderedFoods.Remove(orderedFood);
+                    await _context.SaveChangesAsync();
+                
+                    var response = ApiResponseService<OrderedFoodDTO>
+                        .Response200(_mapper.Map<OrderedFoodDTO>(orderedFood));
+                    return response;
+                }
             }
         }
     }

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using RBS.Data;
+using RBS.Enums;
 using RBS.Models;
 using RBS.Services.Interfaces;
 
@@ -23,19 +24,25 @@ public class ConflictSpaceService : IConflictSpaceService
         
         List<Booking> conflictSpaces = await _context.Bookings
             .Include(x => x.Spaces)
-            .Where(x => (x.Spaces.Any(x => x.Id == spaceId))  &&
+            .Where(x => (x.BookingStatus == BOOKING_STATUS.Waiting || 
+                         x.BookingStatus == BOOKING_STATUS.Announced) && 
+                        (x.Spaces.Any(x => x.Id == spaceId))  &&
                         (x.BookingDate >= startDate && x.BookingDate <= endDate) )
             .ToListAsync();
                         
         List<Booking> conflictTables = await _context.Bookings
             .Include(x => x.Tables)
-            .Where(x => (x.Tables.Any(x => x.SpaceId == spaceId))  &&
+            .Where(x => (x.BookingStatus == BOOKING_STATUS.Waiting || 
+                         x.BookingStatus == BOOKING_STATUS.Announced) && 
+                        (x.Tables.Any(x => x.SpaceId == spaceId))  &&
                         (x.BookingDate >= startDate && x.BookingDate <= endDate) )
             .ToListAsync();
                         
         List<Booking> conflictChairs = await _context.Bookings
             .Include(x => x.Tables)
-            .Where(x => (x.Tables.Any(x => x.SpaceId == spaceId))  &&
+            .Where(x => (x.BookingStatus == BOOKING_STATUS.Waiting || 
+                         x.BookingStatus == BOOKING_STATUS.Announced) && 
+                        (x.Tables.Any(x => x.SpaceId == spaceId))  &&
                         (x.BookingDate >= startDate && x.BookingDate <= endDate) )
             .ToListAsync();
         
@@ -80,14 +87,5 @@ public class ConflictSpaceService : IConflictSpaceService
         
         return conflictChairs;
     }
-
-    public async Task<List<WalkIn>> ConflictWalkIns(int spaceId, DateTime startDate, DateTime endDate)
-    {
-        List<WalkIn> conflictWalkIns = await _context.WalkIns
-            .Where(x => x.spaceId == spaceId &&
-                        (x.WalkInAt >= startDate && x.WalkInAt <= endDate) )
-            .ToListAsync();
-        
-        return conflictWalkIns;
-    }
+    
 }

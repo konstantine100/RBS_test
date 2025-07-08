@@ -24,7 +24,7 @@ public class FoodController : ControllerBase
         return Ok(response);
     }
     
-    [HttpPost("update-food")]
+    [HttpPut("update-food")]
     public async Task<ActionResult> UpdateFood(int foodId, string changeParameter, string changeTo)
     {
         var response = await _foodService.UpdateFood(foodId, changeParameter, changeTo);

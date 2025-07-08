@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using RBS.Data;
+using RBS.Enums;
 using RBS.Models;
 using RBS.Services.Interfaces;
 
@@ -25,14 +26,17 @@ public class ConflictChairService : IConflictChairService
         
         List<Booking> chairBookings = await _context.Bookings
             .Include(x => x.Chairs)
-            .Where(x => x.Chairs
-                .Any(x => x.Id == chairId))
+            .Where(x => (x.BookingStatus == BOOKING_STATUS.Waiting || 
+                         x.BookingStatus == BOOKING_STATUS.Announced) &&
+                        x.Chairs
+                            .Any(x => x.Id == chairId))
             .ToListAsync();
         
         List<Booking> tableConflicts = await _context.Bookings
             .Include(x => x.Tables)
             .ThenInclude(x => x.Chairs)
-            .Where(x => x.Tables
+            .Where(x => (x.BookingStatus == BOOKING_STATUS.Waiting || 
+                         x.BookingStatus == BOOKING_STATUS.Announced) && x.Tables
                             .Any(x => x.Chairs
                                 .Any(x => x.Id == chairId)) &&
                         x.BookingDate.Day == startDate.Day)
@@ -42,10 +46,11 @@ public class ConflictChairService : IConflictChairService
             .Include(x => x.Spaces)
             .ThenInclude(x => x.Tables)
             .ThenInclude(x => x.Chairs)
-            .Where(x => x.Spaces
-                .Any(x => x.Tables
-                    .Any(x => x.Chairs
-                        .Any(x => x.Id == chairId))) &&
+            .Where(x => (x.BookingStatus == BOOKING_STATUS.Waiting || 
+                         x.BookingStatus == BOOKING_STATUS.Announced) && x.Spaces
+                            .Any(x => x.Tables
+                                .Any(x => x.Chairs
+                                    .Any(x => x.Id == chairId))) &&
                         x.BookingDate.Day == startDate.Day)
             .ToListAsync();
         
@@ -55,8 +60,8 @@ public class ConflictChairService : IConflictChairService
         if (startDate.Hour < after18Hour.Hours)
         {
             allBookings = allBookings
-                .Where(x => (x.BookingDate - startDate).Duration() < TimeSpan.FromHours(1) &&
-                            (x.BookingDate - startDate).Duration() > TimeSpan.FromHours(-1))
+                .Where(x => (x.BookingDate - startDate).TotalHours < 1 &&
+                            (x.BookingDate - startDate).TotalHours > -1)
                 .ToList();
         }
         else if (startDate.Hour > after18Hour.Hours)
@@ -64,12 +69,12 @@ public class ConflictChairService : IConflictChairService
             allBookings = allBookings
                 .Where(x => x.BookingDate.Hour > after18Hour.Hours &&
                             (x.BookingDate <= startDate ||
-                             (x.BookingDate - startDate).Duration() < TimeSpan.FromHours(-1)))
+                             (x.BookingDate - startDate).TotalHours < 1))
                 .ToList();
         }
         spaceConflicts = spaceConflicts
             .Where(x => x.BookingDateEnd > startDate &&
-                        (x.BookingDate - startDate).Duration() > TimeSpan.FromHours(-1))
+                        (x.BookingDate - startDate).TotalHours > -1)
             .ToList();
         
         allBookings.AddRange(spaceConflicts);
@@ -86,7 +91,7 @@ public class ConflictChairService : IConflictChairService
         
         ConflictSpaceReservation = ConflictSpaceReservation
             .Where(x => x.BookingDateEnd > startDate &&
-                        (x.BookingDate - startDate).Duration() > TimeSpan.FromHours(-1))
+                        (x.BookingDate - startDate).TotalHours > -1)
             .ToList();
         
         return ConflictSpaceReservation;
@@ -104,8 +109,8 @@ public class ConflictChairService : IConflictChairService
         if (startDate.Hour < after18Hour.Hours)
         {
             conflictTableReservations = conflictTableReservations
-                .Where(x => (x.BookingDate - startDate).Duration() < TimeSpan.FromHours(1) &&
-                            (x.BookingDate - startDate).Duration() > TimeSpan.FromHours(-1))
+                .Where(x => (x.BookingDate - startDate).TotalHours < 1 &&
+                            (x.BookingDate - startDate).TotalHours > -1)
                 .ToList();
         }
 
@@ -114,7 +119,7 @@ public class ConflictChairService : IConflictChairService
             conflictTableReservations = conflictTableReservations
                 .Where(x => x.BookingDate.Hour > after18Hour.Hours &&
                             (x.BookingDate <= startDate ||
-                             (x.BookingDate - startDate).Duration() < TimeSpan.FromHours(-1)))
+                             (x.BookingDate - startDate).TotalHours < 1))
                 .ToList();
         }
         
@@ -133,8 +138,8 @@ public class ConflictChairService : IConflictChairService
         if (startDate.Hour < after18Hour.Hours)
         {
             conflictChairReservations = conflictChairReservations
-                .Where(x => (x.BookingDate - startDate).Duration() < TimeSpan.FromHours(1) &&
-                            (x.BookingDate - startDate).Duration() > TimeSpan.FromHours(-1))
+                .Where(x => (x.BookingDate - startDate).TotalHours < 1 &&
+                            (x.BookingDate - startDate).TotalHours > -1)
                 .ToList();
         }
 
@@ -143,7 +148,7 @@ public class ConflictChairService : IConflictChairService
             conflictChairReservations = conflictChairReservations
                 .Where(x => x.BookingDate.Hour > after18Hour.Hours &&
                             (x.BookingDate <= startDate ||
-                             (x.BookingDate - startDate).Duration() < TimeSpan.FromHours(-1)))
+                             (x.BookingDate - startDate).TotalHours < 1))
                 .ToList();
         }
         
@@ -157,7 +162,7 @@ public class ConflictChairService : IConflictChairService
         List<WalkIn> conflictWalkIns = await _context.WalkIns
             .Include(x => x.Table)
             .ThenInclude(x => x.Chairs)
-            .Where(x => 
+            .Where(x => x.IsFinished == false &&
                 (x.ChairId.HasValue ^ x.TableId.HasValue) &&
                 ((x.ChairId.HasValue && x.ChairId == chairId) ||
                  (x.TableId.HasValue && x.Table.Chairs.Any(x => x.Id == chairId))) &&
@@ -167,8 +172,8 @@ public class ConflictChairService : IConflictChairService
         if (startDate.Hour < after18Hour.Hours)
         {
             conflictWalkIns = conflictWalkIns
-                .Where(x => (x.WalkInAt - startDate).Duration() < TimeSpan.FromHours(1) &&
-                            (x.WalkInAt - startDate).Duration() > TimeSpan.FromHours(-1))
+                .Where(x => (x.WalkInAt - startDate).TotalHours < 1 &&
+                            (x.WalkInAt - startDate).TotalHours > -1)
                 .ToList();
         }
 
@@ -177,7 +182,7 @@ public class ConflictChairService : IConflictChairService
             conflictWalkIns = conflictWalkIns
                 .Where(x => x.WalkInAt.Hour > after18Hour.Hours &&
                             (x.WalkInAt <= startDate ||
-                             (x.WalkInAt - startDate).Duration() < TimeSpan.FromHours(-1)))
+                             (x.WalkInAt - startDate).TotalHours < 1))
                 .ToList();
         }
         

@@ -33,7 +33,7 @@ public class HostController : ControllerBase
     }
     
     [HttpPut("update-booking-late-time")]
-    public async Task<ActionResult> UpdateBookingLateTimes(int bookingId, TimeSpan lateTime)
+    public async Task<ActionResult> UpdateBookingLateTimes(int bookingId, int lateTime)
     {
         var response = await _hostService.UpdateBookingLateTimes(bookingId, lateTime);
         return Ok(response);

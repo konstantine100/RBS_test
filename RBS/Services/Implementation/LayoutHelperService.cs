@@ -26,7 +26,9 @@ public class LayoutHelperService : ILayoutHelperService
             .Where(x => x.BookingDate.Year == Date.Year &&
                         x.BookingDate.Month == Date.Month &&
                         x.BookingDate.Day == Date.Day &&
-                        x.BookingDate.Hour == Date.Hour)
+                        x.BookingDate.Hour == Date.Hour &&
+                        (x.BookingStatus == BOOKING_STATUS.Waiting ||
+                         x.BookingStatus == BOOKING_STATUS.Announced))
             .ToList();
         
         return spaceBooking;
@@ -39,7 +41,10 @@ public class LayoutHelperService : ILayoutHelperService
                 .Any(x => x.BookingDate.Year == Date.Year &&
                           x.BookingDate.Month == Date.Month &&
                           x.BookingDate.Day == Date.Day &&
-                          x.BookingDate.Hour == Date.Hour))
+                          x.BookingDate.Hour == Date.Hour &&
+                          (x.BookingStatus == BOOKING_STATUS.Waiting ||
+                           x.BookingStatus == BOOKING_STATUS.Announced)
+                          ))
             .ToList();
         
         return tableBookings;
@@ -52,7 +57,9 @@ public class LayoutHelperService : ILayoutHelperService
                 .Any(x => x.BookingDate.Year == Date.Year &&
                           x.BookingDate.Month == Date.Month &&
                           x.BookingDate.Day == Date.Day &&
-                          x.BookingDate.Hour == Date.Hour))
+                          x.BookingDate.Hour == Date.Hour &&
+                          (x.BookingStatus == BOOKING_STATUS.Waiting ||
+                           x.BookingStatus == BOOKING_STATUS.Announced)))
             .ToList();
         
         return chairBookings;
@@ -103,7 +110,8 @@ public class LayoutHelperService : ILayoutHelperService
                 .Any(x => x.WalkInAt.Year == Date.Year &&
                           x.WalkInAt.Month == Date.Month &&
                           x.WalkInAt.Day == Date.Day &&
-                          x.WalkInAt.Hour == Date.Hour))
+                          x.WalkInAt.Hour == Date.Hour &&
+                          x.IsFinished == false))
             .ToList();
         
         return tableWalkIn;
@@ -116,7 +124,8 @@ public class LayoutHelperService : ILayoutHelperService
                 .Any(x => x.WalkInAt.Year == Date.Year &&
                           x.WalkInAt.Month == Date.Month &&
                           x.WalkInAt.Day == Date.Day &&
-                          x.WalkInAt.Hour == Date.Hour))
+                          x.WalkInAt.Hour == Date.Hour &&
+                          x.IsFinished == false))
             .ToList();
         
         return chairWalkIn;

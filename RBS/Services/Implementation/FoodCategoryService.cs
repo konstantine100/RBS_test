@@ -74,7 +74,7 @@ public class FoodCategoryService : IFoodCategoryService
     public async Task<ApiResponse<FoodCategoryDTO>> UpdateFoodCategory(int categoryId, bool IsEnglish, string newCategoryName)
     {
         var foodCategory = await _context.FoodCategories
-            .Include(x => x.MenuId)
+            .Include(x => x.Menu)
             .FirstOrDefaultAsync(x => x.Id == categoryId);
 
         if (foodCategory == null)
@@ -87,7 +87,7 @@ public class FoodCategoryService : IFoodCategoryService
         {
             if (IsEnglish)
             {
-                if (foodCategory.Menu.Categories.Any(x => x.CategoryEnglishName.ToLower() == foodCategory.CategoryEnglishName.ToLower()))
+                if (foodCategory.Menu.Categories.Any(x => x.CategoryEnglishName.ToLower() == newCategoryName.ToLower()))
                 {
                     var response = ApiResponseService<FoodCategoryDTO>
                         .Response(null, "category already exists", StatusCodes.Status400BadRequest);
@@ -119,7 +119,7 @@ public class FoodCategoryService : IFoodCategoryService
             }
             else
             {
-                if (foodCategory.Menu.Categories.Any(x => x.CategoryGeorgianName.ToLower() == foodCategory.CategoryGeorgianName.ToLower()))
+                if (foodCategory.Menu.Categories.Any(x => x.CategoryGeorgianName.ToLower() == newCategoryName.ToLower()))
                 {
                     var response = ApiResponseService<FoodCategoryDTO>
                         .Response(null, "category already exists", StatusCodes.Status400BadRequest);
