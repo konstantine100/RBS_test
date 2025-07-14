@@ -108,20 +108,20 @@ public class BookingService : IBookingService
                 await _context.SaveChangesAsync();
                 
                 // here must be payment, receipt section
-                // foreach (var bookingToAdd in allBookings)
-                // {
-                //     ReceiptDTO receiptToAdd = new ReceiptDTO
-                //     {
-                //         BookingId = bookingToAdd.Id,
-                //         ReceiptNumber = "1",
-                //         Date = DateTime.Now,
-                //         TotalAmount = 200,
-                //         CustomerDetails = _mapper.Map<UserDTO>(user),
-                //         Notes = "Something",
-                //     };
-                //
-                //     var receipt = await _receiptService.CreateReceiptAsync(receiptToAdd);
-                // }
+                foreach (var bookingToAdd in allBookings)
+                {
+                    ReceiptDTO receiptToAdd = new ReceiptDTO
+                    {
+                        BookingId = bookingToAdd.Id,
+                        ReceiptNumber = "1",
+                        Date = DateTime.Now,
+                        TotalAmount = 200,
+                        CustomerDetails = _mapper.Map<UserDTO>(user),
+                        Notes = "Something",
+                    };
+                
+                    var receipt = await _receiptService.CreateReceiptAsync(receiptToAdd);
+                }
                 
                 var affectedSpaceIds = new HashSet<int>();
                 

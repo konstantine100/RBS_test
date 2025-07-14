@@ -13,4 +13,6 @@ public class WalkIn
     
     public int HostId { get; set; }
     public User Host { get; set; }
+    
+    public List<OrderedFood> OrderedFoods { get; set; } = new List<OrderedFood>();
 }

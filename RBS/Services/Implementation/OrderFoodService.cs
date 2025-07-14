@@ -133,6 +133,7 @@ public class OrderFoodService : IOrderFoodService
             .Include(x => x.Food)
             .Include(x => x.Booking)
             .Where(x => x.Booking.RestaurantId == restaurantId)
+            .OrderBy(x => x.Booking.BookingDate)
             .ToListAsync();
         
         var response = ApiResponseService<List<OrderedFoodDTO>>

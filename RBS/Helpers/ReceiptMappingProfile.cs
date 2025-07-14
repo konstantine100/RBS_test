@@ -2,13 +2,14 @@
 using RBS.DTOs;
 using RBS.Models;
 
-namespace RBS.Helpers
+namespace RBS.Helpers;
+public class ReceiptMappingProfile : Profile
 {
-    public class ReceiptMappingProfile : Profile
+    public ReceiptMappingProfile()
     {
-        public ReceiptMappingProfile()
-        {
-            CreateMap<ReceiptDTO, Receipt>().ReverseMap();
-        }
+        CreateMap<ReceiptDTO, Receipt>()
+            .ForMember(dest => dest.CustomerDetails, opt => opt.Ignore())
+            .ReverseMap()
+            .ForMember(dest => dest.CustomerDetails, opt => opt.MapFrom(src => src.CustomerDetails));
     }
 }

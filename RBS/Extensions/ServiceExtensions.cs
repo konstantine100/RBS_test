@@ -97,6 +97,7 @@ public static class ServiceExtensions
         services.AddScoped<IWalkInService, WalkInService>();
         services.AddScoped<IAdminService, AdminService>();
         services.AddScoped<ILayoutHelperService, LayoutHelperService>();
+        services.AddScoped<IWalkInOrderFoodService, WalkInOrderFoodService>();
         
         services.AddScoped<ILayoutNotificationService, LayoutNotificationService>();
 
