@@ -92,7 +92,7 @@ public class TableReservationService : ITableReservationService
                         else
                         {
                             reservation.Price = table.TablePrice;
-                            reservation.BookingExpireDate = DateTime.UtcNow.AddMinutes(1);
+                            reservation.BookingExpireDate = DateTime.UtcNow.AddMinutes(10);
                             reservation.Table = table;
                             user.TableReservations.Add(reservation);
                             table.TableReservations.Add(reservation);
