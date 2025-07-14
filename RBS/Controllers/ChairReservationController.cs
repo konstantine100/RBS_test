@@ -24,6 +24,13 @@ public class ChairReservationController : ControllerBase
         return Ok(tableReservation);
     }
     
+    [HttpGet("chair-booking-for-day")]
+    public async Task<ActionResult> ChairBookingForDay(int chairId, DateTime date)
+    {
+        var tableReservation = await _chairReservationService.ChairBookingForDay(chairId, date);
+        return Ok(tableReservation);
+    }
+    
     [HttpDelete("remove-chair-reservation")]
     public async Task<ActionResult> RemoveReservationChair(int userId, int reservationId)
     {

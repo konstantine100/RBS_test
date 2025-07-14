@@ -25,6 +25,13 @@ public class TableReservationController : ControllerBase
         return Ok(tableReservation);
     }
     
+    [HttpGet("table-booking-for-day")]
+    public async Task<ActionResult> TableBookingForDay(int tableId, DateTime date)
+    {
+        var tableReservation = await _tableReservationService.TableBookingForDay(tableId, date);
+        return Ok(tableReservation);
+    }
+    
     [HttpDelete("remove-table-reservation")]
     public async Task<ActionResult> RemoveReservationTable(int userId, int reservationId)
     {

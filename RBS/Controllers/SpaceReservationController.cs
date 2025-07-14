@@ -24,6 +24,13 @@ public class SpaceReservationController : ControllerBase
         return Ok(spaceReservation);
     }
     
+    [HttpGet("space-booking-for-day")]
+    public async Task<ActionResult> SpaceBookingForDay(int spaceId, DateTime date)
+    {
+        var tableReservation = await _spaceReservationService.SpaceBookingForDay(spaceId, date);
+        return Ok(tableReservation);
+    }
+    
     [HttpDelete("delete-space-reservation")]
     public async Task<ActionResult> RemoveReservationSpace(int userId, int reservationId)
     {

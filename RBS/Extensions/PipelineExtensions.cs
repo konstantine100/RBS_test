@@ -1,4 +1,6 @@
-﻿namespace RBS.Extensions;
+﻿using RBS.Hubs;
+
+namespace RBS.Extensions;
 
 public static class PipelineExtensions
 {
@@ -16,6 +18,7 @@ public static class PipelineExtensions
         app.UseHttpsRedirection();
         app.UseAuthorization();
         app.MapControllers();
+        app.MapHub<RestaurantHub>("/restaurantHub");
         
         
 

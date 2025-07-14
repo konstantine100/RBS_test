@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using RBS.CORE;
 using RBS.Data;
 using RBS.DTOs;
 using RBS.Enums;
+using RBS.Hubs;
 using RBS.Models;
 using RBS.Requests;
 using RBS.Services.Interfaces;
@@ -16,12 +18,16 @@ public class ChairReservationService : IChairReservationService
     private readonly DataContext _context;
     private readonly IMapper _mapper;
     private readonly IConflictChairService _conflictChairService;
+    private readonly IHubContext<RestaurantHub> _hubContext;
+    private readonly ILayoutNotificationService _layoutNotificationService;
     
-    public ChairReservationService(DataContext context, IMapper mapper, IConflictChairService conflictChairService)
+    public ChairReservationService(DataContext context, IMapper mapper, IConflictChairService conflictChairService, IHubContext<RestaurantHub> hubContext, ILayoutNotificationService layoutNotificationService)
     {
         _context = context;
         _mapper = mapper;
         _conflictChairService = conflictChairService;
+        _hubContext = hubContext;
+        _layoutNotificationService = layoutNotificationService;
     }
     
     public async Task<ApiResponse<ChairReservationDTO>> ChooseChair(int userId, int chairId, AddReservation request) 
@@ -113,6 +119,22 @@ public class ChairReservationService : IChairReservationService
                             user.ChairReservations.Add(reservation);
                             chair.ChairReservations.Add(reservation);
                             await _context.SaveChangesAsync();
+                            
+                            await _hubContext.Clients.Group($"Space_{space.Id}")
+                                .SendAsync("TableReserved", new {
+                                    chairId = chairId,
+                                    reservationId = reservation.Id,
+                                    expiresAt = reservation.BookingExpireDate,
+                                    userId = userId
+                                });
+                            
+                            await _hubContext.Clients.Group($"Space_{space.Id}")
+                                .SendAsync("LayoutChanged", new {
+                                    spaceId = space.Id,
+                                    changeType = "ChairReservation",
+                                    itemId = chairId,
+                                    timestamp = DateTime.UtcNow
+                                });
                         
                             var response = ApiResponseService<ChairReservationDTO>
                                 .Response200(_mapper.Map<ChairReservationDTO>(reservation));
@@ -123,11 +145,39 @@ public class ChairReservationService : IChairReservationService
             }
         }
     }
-    
+
+    public async Task<ApiResponse<List<BookingDTO>>> ChairBookingForDay(int chairId, DateTime date)
+    {
+        var chair = await _context.Chairs
+            .Include(x => x.Bookings)
+            .FirstOrDefaultAsync(x => x.Id == chairId);
+
+        if (chair == null)
+        {
+            var response = ApiResponseService<List<BookingDTO>>
+                .Response(null, "Chair not found", StatusCodes.Status404NotFound);
+            return response;
+        }
+        else
+        {
+            var bookings = chair.Bookings
+                .Where(x => x.BookingDate.Date == date.Date)
+                .OrderBy(x => x.BookingDate)
+                .ToList();
+            
+            var response = ApiResponseService<List<BookingDTO>>
+                .Response200(_mapper.Map<List<BookingDTO>>(bookings));
+            return response;
+
+        }
+    }
+
     public async Task<ApiResponse<ChairReservationDTO>> RemoveReservationChair(int userId, int reservationId)
     {
         var user = await _context.Users
             .Include(x => x.ChairReservations)
+            .ThenInclude(x => x.Chair)
+            .ThenInclude(x => x.Table)
             .FirstOrDefaultAsync(x => x.Id == userId);
 
         if (user == null)
@@ -150,6 +200,23 @@ public class ChairReservationService : IChairReservationService
             {
                 _context.ChairReservations.Remove(reservation);
                 await _context.SaveChangesAsync();
+                
+                // Notify clients about the reservation removal
+                await _hubContext.Clients.Group($"Space_{reservation.Chair.Table.SpaceId}")
+                    .SendAsync("ChairReservationRemoved", new {
+                        chairId = reservation.Chair.Id,
+                        tableId = reservation.Chair.TableId,
+                        spaceId = reservation.Chair.Table.SpaceId,
+                        reservationId = reservationId,
+                        userId = userId
+                    });
+                
+                // Notify about layout change
+                await _layoutNotificationService.NotifyLayoutChanged(reservation.Chair.Table.SpaceId, "ChairReservationRemoved", new { 
+                    itemId = reservation.Chair.Id, 
+                    userId = userId,
+                    reservationId = reservationId
+                });
                 
                 var response = ApiResponseService<ChairReservationDTO>
                     .Response200(_mapper.Map<ChairReservationDTO>(reservation));

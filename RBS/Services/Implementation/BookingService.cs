@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using RBS.CORE;
 using RBS.Data;
 using RBS.DTOs;
 using RBS.Enums;
 using RBS.Helpers;
+using RBS.Hubs;
 using RBS.Models;
 using RBS.Requests;
 using RBS.Services.Interfaces;
@@ -18,20 +20,17 @@ public class BookingService : IBookingService
     private readonly DataContext _context;
     private readonly IMapper _mapper;
     private readonly IReceiptService _receiptService;
-    private readonly IConflictSpaceService _conflictSpaceService;
-    private readonly IConflictTableService _conflictTableService;
-    private readonly IConflictChairService _conflictChairService;
+    private readonly IHubContext<RestaurantHub> _hubContext;
+    private readonly ILayoutNotificationService _layoutNotificationService;
     
-    public BookingService(DataContext context, IMapper mapper, IReceiptService receiptService, IConflictSpaceService conflictSpaceService, IConflictTableService conflictTableService, IConflictChairService conflictChairService)
+    public BookingService(DataContext context, IMapper mapper, IReceiptService receiptService, IHubContext<RestaurantHub> hubContext, ILayoutNotificationService layoutNotificationService)
     {
         _context = context;
         _mapper = mapper;
         _receiptService = receiptService;
-        _conflictSpaceService = conflictSpaceService;
-        _conflictTableService = conflictTableService;
-        _conflictChairService = conflictChairService;
+        _hubContext = hubContext;
+        _layoutNotificationService = layoutNotificationService;
     }
-    
     
     public async Task<ApiResponse<AllBookings>> CompleteBooking(int userId, int restaurantId)
     {
@@ -123,6 +122,28 @@ public class BookingService : IBookingService
                 //
                 //     var receipt = await _receiptService.CreateReceiptAsync(receiptToAdd);
                 // }
+                
+                var affectedSpaceIds = new HashSet<int>();
+                
+                foreach (var reservation in spaceReservations)
+                    affectedSpaceIds.Add(reservation.Space.Id);
+            
+                foreach (var reservation in tableReservations)
+                    affectedSpaceIds.Add(reservation.Table.SpaceId);
+            
+                foreach (var reservation in chairReservations)
+                    affectedSpaceIds.Add(reservation.Chair.Table.SpaceId);
+                
+                foreach (var spaceId in affectedSpaceIds)
+                {
+                    await _hubContext.Clients.Group($"Space_{spaceId}")
+                        .SendAsync("LayoutChanged", new {
+                            spaceId = spaceId,
+                            changeType = "BookingCompleted",
+                            userId = userId,
+                            timestamp = DateTime.UtcNow
+                        });
+                }
                 
                 AllBookings BookingsToShow = new AllBookings(); 
                 BookingsToShow.Bookings.AddRange(_mapper.Map<List<BookingDTO>>(allBookings));
@@ -279,6 +300,12 @@ public class BookingService : IBookingService
     {
         var user = await _context.Users
             .Include(x => x.MyBookings)
+            .ThenInclude(b => b.Tables) // Include Tables to get SpaceIds
+            .Include(x => x.MyBookings)
+            .ThenInclude(b => b.Chairs)
+            .ThenInclude(c => c.Table) // Include Chair's Table to get SpaceId
+            .Include(x => x.MyBookings)
+            .ThenInclude(b => b.Spaces) // Include Spaces directly
             .FirstOrDefaultAsync(x => x.Id == userId);
 
         if (user == null)
@@ -299,6 +326,27 @@ public class BookingService : IBookingService
             }
             else
             {
+                // Collect all affected space IDs from the booking
+                var affectedSpaceIds = new HashSet<int>();
+                
+                // Add space IDs from tables
+                foreach (var table in booking.Tables)
+                {
+                    affectedSpaceIds.Add(table.SpaceId);
+                }
+                
+                // Add space IDs from chairs
+                foreach (var chair in booking.Chairs)
+                {
+                    affectedSpaceIds.Add(chair.Table.SpaceId);
+                }
+                
+                // Add space IDs from spaces
+                foreach (var space in booking.Spaces)
+                {
+                    affectedSpaceIds.Add(space.Id);
+                }
+                
                 if (booking.PaymentStatus == PAYMENT_STATUS.SUCCESS)
                 {
                     var timeUntilBooking = booking.BookingDate - DateTime.UtcNow;
@@ -307,6 +355,20 @@ public class BookingService : IBookingService
                     {
                         _context.Bookings.Remove(booking);
                         await _context.SaveChangesAsync();
+                        
+                        // Send layout notification for booking cancellation
+                        if (affectedSpaceIds.Any())
+                        {
+                            await _layoutNotificationService.NotifyLayoutChanged(affectedSpaceIds, "BookingCancelled", new { 
+                                bookingId = bookingId,
+                                userId = userId,
+                                tableIds = booking.Tables.Select(t => t.Id).ToList(),
+                                chairIds = booking.Chairs.Select(c => c.Id).ToList(),
+                                spaceIds = booking.Spaces.Select(s => s.Id).ToList(),
+                                refundStatus = "NoRefund",
+                                reason = "CancelledWithin6Hours"
+                            });
+                        }
                         
                         var response = ApiResponseService<BookingDTO>
                             .Response(_mapper.Map<BookingDTO>(booking), "yuradgeba radgan javshnamde darchenilia 6 saatze naklebi, sawmuxarod tanxa ar dagibrundebat", StatusCodes.Status200OK);
@@ -319,6 +381,20 @@ public class BookingService : IBookingService
                         _context.Bookings.Remove(booking);
                         await _context.SaveChangesAsync();
                         
+                        // Send layout notification for booking cancellation with refund
+                        if (affectedSpaceIds.Any())
+                        {
+                            await _layoutNotificationService.NotifyLayoutChanged(affectedSpaceIds, "BookingCancelled", new { 
+                                bookingId = bookingId,
+                                userId = userId,
+                                tableIds = booking.Tables.Select(t => t.Id).ToList(),
+                                chairIds = booking.Chairs.Select(c => c.Id).ToList(),
+                                spaceIds = booking.Spaces.Select(s => s.Id).ToList(),
+                                refundStatus = "Refunded",
+                                reason = "CancelledWithRefund"
+                            });
+                        }
+                        
                         var response = ApiResponseService<BookingDTO>
                             .Response200(_mapper.Map<BookingDTO>(booking));
                         return response;
@@ -328,6 +404,20 @@ public class BookingService : IBookingService
                 {
                     _context.Bookings.Remove(booking);
                     await _context.SaveChangesAsync();
+                    
+                    // Send layout notification for unpaid booking cancellation
+                    if (affectedSpaceIds.Any())
+                    {
+                        await _layoutNotificationService.NotifyLayoutChanged(affectedSpaceIds, "BookingCancelled", new { 
+                            bookingId = bookingId,
+                            userId = userId,
+                            tableIds = booking.Tables.Select(t => t.Id).ToList(),
+                            chairIds = booking.Chairs.Select(c => c.Id).ToList(),
+                            spaceIds = booking.Spaces.Select(s => s.Id).ToList(),
+                            refundStatus = "NotApplicable",
+                            reason = "UnpaidBookingCancelled"
+                        });
+                    }
                         
                     var response = ApiResponseService<BookingDTO>
                         .Response200(_mapper.Map<BookingDTO>(booking));

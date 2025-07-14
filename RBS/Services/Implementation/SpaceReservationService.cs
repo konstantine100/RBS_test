@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using RBS.CORE;
 using RBS.Data;
 using RBS.DTOs;
+using RBS.Hubs;
 using RBS.Models;
 using RBS.Requests;
 using RBS.Services.Interfaces;
@@ -15,12 +17,16 @@ public class SpaceReservationService : ISpaceReservationService
     private readonly DataContext _context;
     private readonly IMapper _mapper;
     private readonly IConflictSpaceService _conflictSpaceService;
+    private readonly IHubContext<RestaurantHub> _hubContext;
+    private readonly ILayoutNotificationService _layoutNotificationService;
     
-    public SpaceReservationService(DataContext context, IMapper mapper, IConflictSpaceService conflictSpaceService)
+    public SpaceReservationService(DataContext context, IMapper mapper, IConflictSpaceService conflictSpaceService, IHubContext<RestaurantHub> hubContext, ILayoutNotificationService layoutNotificationService)
     {
         _context = context;
         _mapper = mapper;
         _conflictSpaceService = conflictSpaceService;
+        _hubContext = hubContext;
+        _layoutNotificationService = layoutNotificationService;
     }
     
     public async Task<ApiResponse<SpaceReservationDTO>> ChooseSpace(int userId, int spaceId, AddReservation request, DateTime endDate)
@@ -93,6 +99,22 @@ public class SpaceReservationService : ISpaceReservationService
                             space.SpaceReservations.Add(reservation);
                             
                             await _context.SaveChangesAsync();
+                            
+                            await _hubContext.Clients.Group($"Space_{spaceId}")
+                                .SendAsync("TableReserved", new {
+                                    spaceId = spaceId,
+                                    reservationId = reservation.Id,
+                                    expiresAt = reservation.BookingExpireDate,
+                                    userId = userId
+                                });
+                            
+                            await _hubContext.Clients.Group($"Space_{spaceId}")
+                                .SendAsync("LayoutChanged", new {
+                                    spaceId = spaceId,
+                                    changeType = "SpaceReservation",
+                                    itemId = spaceId,
+                                    timestamp = DateTime.UtcNow
+                                });
 
                             var response = ApiResponseService<SpaceReservationDTO>
                                 .Response200(_mapper.Map<SpaceReservationDTO>(reservation));
@@ -101,6 +123,32 @@ public class SpaceReservationService : ISpaceReservationService
                     }
                 }
             }
+        }
+    }
+
+    public async Task<ApiResponse<List<BookingDTO>>> SpaceBookingForDay(int spaceId, DateTime date)
+    {
+        var space = await _context.Spaces
+            .Include(x => x.Bookings)
+            .FirstOrDefaultAsync(x => x.Id == spaceId);
+
+        if (space == null)
+        {
+            var response = ApiResponseService<List<BookingDTO>>
+                .Response(null, "Chair not found", StatusCodes.Status404NotFound);
+            return response;
+        }
+        else
+        {
+            var bookings = space.Bookings
+                .Where(x => x.BookingDate.Date == date.Date)
+                .OrderBy(x => x.BookingDate)
+                .ToList();
+            
+            var response = ApiResponseService<List<BookingDTO>>
+                .Response200(_mapper.Map<List<BookingDTO>>(bookings));
+            return response;
+
         }
     }
 
@@ -130,6 +178,21 @@ public class SpaceReservationService : ISpaceReservationService
             {
                 _context.SpaceReservations.Remove(reservation);
                 await _context.SaveChangesAsync();
+                
+                // Notify clients about the reservation removal
+                await _hubContext.Clients.Group($"Space_{reservation.SpaceId}")
+                    .SendAsync("SpaceReservationRemoved", new {
+                        spaceId = reservation.SpaceId,
+                        reservationId = reservationId,
+                        userId = userId
+                    });
+                
+                // Notify about layout change
+                await _layoutNotificationService.NotifyLayoutChanged(reservation.SpaceId, "SpaceReservationRemoved", new { 
+                    itemId = reservation.SpaceId, 
+                    userId = userId,
+                    reservationId = reservationId
+                });
                 
                 var response = ApiResponseService<SpaceReservationDTO>
                     .Response200(_mapper.Map<SpaceReservationDTO>(reservation));

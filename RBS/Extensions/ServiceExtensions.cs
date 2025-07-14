@@ -28,6 +28,7 @@ public static class ServiceExtensions
         services.AddAuthenticationServices(configuration);
         services.AddAuthorizationServices();
         services.AddOtherServices();
+        services.AddSignalR();
         return services;
     }
     
@@ -96,6 +97,10 @@ public static class ServiceExtensions
         services.AddScoped<IWalkInService, WalkInService>();
         services.AddScoped<IAdminService, AdminService>();
         services.AddScoped<ILayoutHelperService, LayoutHelperService>();
+        
+        services.AddScoped<ILayoutNotificationService, LayoutNotificationService>();
+
+        services.AddHostedService<ReservationCleanupService>();
         
         // Apple payment service
         services.AddScoped<IApplePaymentService, ApplePaymentService>();
@@ -174,7 +179,10 @@ public static class ServiceExtensions
         {
             options.AddDefaultPolicy(builder =>
             {
-                builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+                builder.WithOrigins("http://localhost:4200")
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowCredentials();
             });
         });
         
