@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using RBS.Data;
+using RBS.Helpers;
 using RBS.Models;
 using RBS.Services.Implementation;
 using RBS.Services.Implenetation;
@@ -106,6 +107,8 @@ public static class ServiceExtensions
         // Apple payment service
         services.AddScoped<IApplePaymentService, ApplePaymentService>();
         services.AddHttpClient<IApplePaymentService, ApplePaymentService>();
+        
+        services.AddScoped<BookingDataSeeder>();
         
         return services;
     }

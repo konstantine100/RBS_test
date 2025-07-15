@@ -452,36 +452,6 @@ namespace RBS.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "OrderedFoods",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    FoodId = table.Column<int>(type: "int", nullable: false),
-                    Quantity = table.Column<int>(type: "int", nullable: false),
-                    OverallPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    MessageToStuff = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PaymentStatus = table.Column<int>(type: "int", nullable: false),
-                    BookingId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_OrderedFoods", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_OrderedFoods_Bookings_BookingId",
-                        column: x => x.BookingId,
-                        principalTable: "Bookings",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_OrderedFoods_Foods_FoodId",
-                        column: x => x.FoodId,
-                        principalTable: "Foods",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "BookingTable",
                 columns: table => new
                 {
@@ -656,6 +626,41 @@ namespace RBS.Migrations
                         principalColumn: "Id");
                 });
 
+            migrationBuilder.CreateTable(
+                name: "OrderedFoods",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    FoodId = table.Column<int>(type: "int", nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: false),
+                    OverallPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    MessageToStuff = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PaymentStatus = table.Column<int>(type: "int", nullable: false),
+                    BookingId = table.Column<int>(type: "int", nullable: true),
+                    WalkInId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OrderedFoods", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_OrderedFoods_Bookings_BookingId",
+                        column: x => x.BookingId,
+                        principalTable: "Bookings",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_OrderedFoods_Foods_FoodId",
+                        column: x => x.FoodId,
+                        principalTable: "Foods",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_OrderedFoods_WalkIns_WalkInId",
+                        column: x => x.WalkInId,
+                        principalTable: "WalkIns",
+                        principalColumn: "Id");
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -777,6 +782,11 @@ namespace RBS.Migrations
                 column: "FoodId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_OrderedFoods_WalkInId",
+                table: "OrderedFoods",
+                column: "WalkInId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Receipts_CustomerDetailsId",
                 table: "Receipts",
                 column: "CustomerDetailsId");
@@ -880,9 +890,6 @@ namespace RBS.Migrations
                 name: "TableReservations");
 
             migrationBuilder.DropTable(
-                name: "WalkIns");
-
-            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
@@ -892,16 +899,19 @@ namespace RBS.Migrations
                 name: "Foods");
 
             migrationBuilder.DropTable(
-                name: "Chairs");
+                name: "WalkIns");
 
             migrationBuilder.DropTable(
                 name: "FoodCategories");
 
             migrationBuilder.DropTable(
-                name: "Tables");
+                name: "Chairs");
 
             migrationBuilder.DropTable(
                 name: "Menus");
+
+            migrationBuilder.DropTable(
+                name: "Tables");
 
             migrationBuilder.DropTable(
                 name: "Spaces");

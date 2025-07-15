@@ -5,7 +5,10 @@ namespace RBS.Services.Interfaces;
 
 public interface IHostService
 {
-    Task<ApiResponse<List<BookingDTO>>> GetRestaurantBookings(int restaurantId);
+    Task<ApiResponse<List<BookingDTO>>> GetRestaurantCurrentBookings(int restaurantId);
+    Task<ApiResponse<List<BookingDTO>>> GetRestaurantFinishedBookings(int restaurantId);
+    Task<ApiResponse<List<BookingDTO>>> GetRestaurantAnnouncedBookings(int restaurantId);
+    Task<ApiResponse<List<BookingDTO>>> GetRestaurantNotAnnouncedBookings(int restaurantId);
     Task<ApiResponse<List<LayoutByHour>>> GetCurrentLayout(int spaceId); // websocket
     Task<ApiResponse<BookingDTO>> UpdateBookingLateTimes(int bookingId, int lateTime);
     Task<ApiResponse<BookingDTO>> BookingUserAnnounced(int bookingId);

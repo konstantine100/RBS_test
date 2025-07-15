@@ -24,7 +24,7 @@ public class HostService : IHostService
         _layoutHelperService = layoutService;
     }
     
-    public async Task<ApiResponse<List<BookingDTO>>> GetRestaurantBookings(int restaurantId)
+    public async Task<ApiResponse<List<BookingDTO>>> GetRestaurantCurrentBookings(int restaurantId)
     {
         var restaurant = _context.Restaurants
             .FirstOrDefault(x => x.Id == restaurantId);
@@ -42,7 +42,92 @@ public class HostService : IHostService
                 .Include(x => x.Tables)
                 .Include(x => x.Chairs)
                 .Include(x => x.User)
-                .Where(x => x.RestaurantId == restaurantId)
+                .Where(x => x.RestaurantId == restaurantId && x.BookingStatus == BOOKING_STATUS.Waiting)
+                .OrderBy(x => x.BookingDate)
+                .ToListAsync();
+            
+            var response = ApiResponseService<List<BookingDTO>>
+                .Response200(_mapper.Map<List<BookingDTO>>(bookings));
+            return response;
+        }
+    }
+
+    public async Task<ApiResponse<List<BookingDTO>>> GetRestaurantFinishedBookings(int restaurantId)
+    {
+        var restaurant = _context.Restaurants
+            .FirstOrDefault(x => x.Id == restaurantId);
+    
+        if (restaurant == null)
+        {
+            var response = ApiResponseService<List<BookingDTO>>
+                .Response(null, "Restaurant not found", StatusCodes.Status404NotFound);
+            return response;
+        }
+        else
+        {
+            var bookings = await _context.Bookings
+                .Include(x => x.Spaces)
+                .Include(x => x.Tables)
+                .Include(x => x.Chairs)
+                .Include(x => x.User)
+                .Where(x => x.RestaurantId == restaurantId && x.BookingStatus == BOOKING_STATUS.Finished)
+                .OrderBy(x => x.BookingDate)
+                .ToListAsync();
+            
+            var response = ApiResponseService<List<BookingDTO>>
+                .Response200(_mapper.Map<List<BookingDTO>>(bookings));
+            return response;
+        }
+    }
+
+    public async Task<ApiResponse<List<BookingDTO>>> GetRestaurantAnnouncedBookings(int restaurantId)
+    {
+        var restaurant = _context.Restaurants
+            .FirstOrDefault(x => x.Id == restaurantId);
+    
+        if (restaurant == null)
+        {
+            var response = ApiResponseService<List<BookingDTO>>
+                .Response(null, "Restaurant not found", StatusCodes.Status404NotFound);
+            return response;
+        }
+        else
+        {
+            var bookings = await _context.Bookings
+                .Include(x => x.Spaces)
+                .Include(x => x.Tables)
+                .Include(x => x.Chairs)
+                .Include(x => x.User)
+                .Where(x => x.RestaurantId == restaurantId && x.BookingStatus == BOOKING_STATUS.Announced)
+                .OrderBy(x => x.BookingDate)
+                .ToListAsync();
+            
+            var response = ApiResponseService<List<BookingDTO>>
+                .Response200(_mapper.Map<List<BookingDTO>>(bookings));
+            return response;
+        }
+    }
+
+    public async Task<ApiResponse<List<BookingDTO>>> GetRestaurantNotAnnouncedBookings(int restaurantId)
+    {
+        var restaurant = _context.Restaurants
+            .FirstOrDefault(x => x.Id == restaurantId);
+    
+        if (restaurant == null)
+        {
+            var response = ApiResponseService<List<BookingDTO>>
+                .Response(null, "Restaurant not found", StatusCodes.Status404NotFound);
+            return response;
+        }
+        else
+        {
+            var bookings = await _context.Bookings
+                .Include(x => x.Spaces)
+                .Include(x => x.Tables)
+                .Include(x => x.Chairs)
+                .Include(x => x.User)
+                .Where(x => x.RestaurantId == restaurantId && x.BookingStatus == BOOKING_STATUS.Not_Announced)
+                .OrderBy(x => x.BookingDate)
                 .ToListAsync();
             
             var response = ApiResponseService<List<BookingDTO>>

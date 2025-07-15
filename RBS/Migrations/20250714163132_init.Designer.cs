@@ -12,8 +12,8 @@ using RBS.Data;
 namespace RBS.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20250714135408_orderFoodWalkin")]
-    partial class orderFoodWalkin
+    [Migration("20250714163132_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

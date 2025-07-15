@@ -18,10 +18,31 @@ public class HostController : ControllerBase
         _hostService = hostService;
     }
 
-    [HttpGet("restaurant-bookings")]
-    public async Task<ActionResult> GetRestaurantBookings(int restaurantId)
+    [HttpGet("restaurant-current-bookings")]
+    public async Task<ActionResult> GetRestaurantCurrentBookings(int restaurantId)
     {
-        var response = await _hostService.GetRestaurantBookings(restaurantId);
+        var response = await _hostService.GetRestaurantCurrentBookings(restaurantId);
+        return Ok(response);
+    }
+    
+    [HttpGet("restaurant-finished-bookings")]
+    public async Task<ActionResult> GetRestaurantFinishedBookings(int restaurantId)
+    {
+        var response = await _hostService.GetRestaurantFinishedBookings(restaurantId);
+        return Ok(response);
+    }
+    
+    [HttpGet("restaurant-announced-bookings")]
+    public async Task<ActionResult> GetRestaurantAnnouncedBookings(int restaurantId)
+    {
+        var response = await _hostService.GetRestaurantAnnouncedBookings(restaurantId);
+        return Ok(response);
+    }
+    
+    [HttpGet("restaurant-not-announced-bookings")]
+    public async Task<ActionResult> GetRestaurantNotAnnouncedBookings(int restaurantId)
+    {
+        var response = await _hostService.GetRestaurantNotAnnouncedBookings(restaurantId);
         return Ok(response);
     }
     
