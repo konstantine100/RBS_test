@@ -45,14 +45,14 @@ public class UserService : IUserService
             return response;
         }
         
-        var validParameters = new[] { "name", "lastname", "email", "password" };
+        var validParameters = new[] { "name", "lastname", "email", "password", "phone" };
         if (!validParameters.Contains(changeParameter.ToLower()))
         {
             var response = new ApiResponse<UserDTO>
             {
                 Data = null,
                 Status = StatusCodes.Status400BadRequest,
-                Message = "Invalid parameter. Valid parameters are: name, lastname, email, password"
+                Message = "Invalid parameter. Valid parameters are: name, lastname, email, password, phone"
             };
             return response;
         }
@@ -68,6 +68,11 @@ public class UserService : IUserService
 
             case "lastname":
                 user.LastName = toChange;
+                updateResult = await _userManager.UpdateAsync(user);
+                break;
+            
+            case "phone":
+                user.PhoneNumber = toChange;
                 updateResult = await _userManager.UpdateAsync(user);
                 break;
 
@@ -163,8 +168,7 @@ public class UserService : IUserService
         }
 
         var user = _mapper.Map<User>(request);
-
-        // Set UserName to Email (required by Identity)
+        
         user.UserName = user.Email;
 
         var validator = new UserValidator();
@@ -172,11 +176,12 @@ public class UserService : IUserService
 
         if (!result.IsValid)
         {
+            var errors = string.Join(", ", result.Errors.Select(e => e.ErrorMessage));
             var errorResponse = new ApiResponse<UserDTO>
             {
                 Data = null,
                 Status = StatusCodes.Status400BadRequest,
-                Message = "Invalid User Information",
+                Message = $"errors: {errors}",
             };
             return errorResponse;
         }

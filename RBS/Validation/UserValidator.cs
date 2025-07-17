@@ -16,5 +16,11 @@ public class UserValidator : AbstractValidator<User>
         RuleFor(x => x.Email)
             .NotEmpty().WithMessage("Email cannot be empty")
             .EmailAddress().WithMessage("Invalid email address");
+        RuleFor(x => x.PhoneNumber)
+            .NotEmpty().WithMessage("Phone number cannot be empty")
+            .Matches(@"^(?:\+995|0)?5\d{8}$")
+            .WithMessage("Invalid Georgian phone number format");
+
+
     }
 }
