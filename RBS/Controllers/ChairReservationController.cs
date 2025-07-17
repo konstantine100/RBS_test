@@ -17,24 +17,45 @@ public class ChairReservationController : ControllerBase
         _chairReservationService = chairReservationService;
     }
 
-    [HttpPost("choose-chair")]
+    [HttpPost("choose-chair/{chairId}")]
     public async Task<ActionResult> ChooseChair(int userId, int chairId, AddReservation request)
     {
-        var tableReservation = await _chairReservationService.ChooseChair(userId, chairId, request);
-        return Ok(tableReservation);
+        try
+        {
+            var tableReservation = await _chairReservationService.ChooseChair(userId, chairId, request);
+            return Ok(tableReservation);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("An error occurred while reserving chair.", ex);
+        }
     }
     
-    [HttpGet("chair-booking-for-day")]
+    [HttpGet("chair-booking-for-day/{chairId}")]
     public async Task<ActionResult> ChairBookingForDay(int chairId, DateTime date)
     {
-        var tableReservation = await _chairReservationService.ChairBookingForDay(chairId, date);
-        return Ok(tableReservation);
+        try
+        {
+            var tableReservation = await _chairReservationService.ChairBookingForDay(chairId, date);
+            return Ok(tableReservation);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("An error occurred while retrieving chair bookings.", ex);
+        }
     }
     
-    [HttpDelete("remove-chair-reservation")]
+    [HttpDelete("remove-chair-reservation/{chairId}")]
     public async Task<ActionResult> RemoveReservationChair(int userId, int reservationId)
     {
-        var tableReservation = await _chairReservationService.RemoveReservationChair(userId, reservationId);
-        return Ok(tableReservation);
+        try
+        {
+            var tableReservation = await _chairReservationService.RemoveReservationChair(userId, reservationId);
+            return Ok(tableReservation);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("An error occurred while deleting chair reservation.", ex);
+        }
     }
 }

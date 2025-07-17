@@ -24,7 +24,7 @@ public class HostService : IHostService
         _layoutHelperService = layoutService;
     }
     
-    public async Task<ApiResponse<List<BookingDTO>>> GetRestaurantCurrentBookings(int restaurantId)
+    public async Task<ApiResponse<List<BookingDTO>>> GetRestaurantCurrentBookings(int restaurantId,  int pageNumber = 1, int pageSize = 15)
     {
         var restaurant = _context.Restaurants
             .FirstOrDefault(x => x.Id == restaurantId);
@@ -37,22 +37,26 @@ public class HostService : IHostService
         }
         else
         {
-            var bookings = await _context.Bookings
+            var query = _context.Bookings
                 .Include(x => x.Spaces)
                 .Include(x => x.Tables)
                 .Include(x => x.Chairs)
                 .Include(x => x.User)
                 .Where(x => x.RestaurantId == restaurantId && x.BookingStatus == BOOKING_STATUS.Waiting)
-                .OrderBy(x => x.BookingDate)
+                .OrderBy(x => x.BookingDate);
+
+            var pagedBookings = await query
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
                 .ToListAsync();
             
             var response = ApiResponseService<List<BookingDTO>>
-                .Response200(_mapper.Map<List<BookingDTO>>(bookings));
+                .Response200(_mapper.Map<List<BookingDTO>>(pagedBookings));
             return response;
         }
     }
 
-    public async Task<ApiResponse<List<BookingDTO>>> GetRestaurantFinishedBookings(int restaurantId)
+    public async Task<ApiResponse<List<BookingDTO>>> GetRestaurantFinishedBookings(int restaurantId ,  int pageNumber = 1, int pageSize = 15)
     {
         var restaurant = _context.Restaurants
             .FirstOrDefault(x => x.Id == restaurantId);
@@ -65,22 +69,26 @@ public class HostService : IHostService
         }
         else
         {
-            var bookings = await _context.Bookings
+            var query = _context.Bookings
                 .Include(x => x.Spaces)
                 .Include(x => x.Tables)
                 .Include(x => x.Chairs)
                 .Include(x => x.User)
                 .Where(x => x.RestaurantId == restaurantId && x.BookingStatus == BOOKING_STATUS.Finished)
-                .OrderBy(x => x.BookingDate)
+                .OrderBy(x => x.BookingDate);
+
+            var pagedBookings = await query
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
                 .ToListAsync();
             
             var response = ApiResponseService<List<BookingDTO>>
-                .Response200(_mapper.Map<List<BookingDTO>>(bookings));
+                .Response200(_mapper.Map<List<BookingDTO>>(pagedBookings));
             return response;
         }
     }
 
-    public async Task<ApiResponse<List<BookingDTO>>> GetRestaurantAnnouncedBookings(int restaurantId)
+    public async Task<ApiResponse<List<BookingDTO>>> GetRestaurantAnnouncedBookings(int restaurantId ,  int pageNumber = 1, int pageSize = 15)
     {
         var restaurant = _context.Restaurants
             .FirstOrDefault(x => x.Id == restaurantId);
@@ -93,22 +101,26 @@ public class HostService : IHostService
         }
         else
         {
-            var bookings = await _context.Bookings
+            var query = _context.Bookings
                 .Include(x => x.Spaces)
                 .Include(x => x.Tables)
                 .Include(x => x.Chairs)
                 .Include(x => x.User)
                 .Where(x => x.RestaurantId == restaurantId && x.BookingStatus == BOOKING_STATUS.Announced)
-                .OrderBy(x => x.BookingDate)
+                .OrderBy(x => x.BookingDate);
+
+            var pagedBookings = await query
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
                 .ToListAsync();
             
             var response = ApiResponseService<List<BookingDTO>>
-                .Response200(_mapper.Map<List<BookingDTO>>(bookings));
+                .Response200(_mapper.Map<List<BookingDTO>>(pagedBookings));
             return response;
         }
     }
 
-    public async Task<ApiResponse<List<BookingDTO>>> GetRestaurantNotAnnouncedBookings(int restaurantId)
+    public async Task<ApiResponse<List<BookingDTO>>> GetRestaurantNotAnnouncedBookings(int restaurantId , int pageNumber = 1, int pageSize = 15)
     {
         var restaurant = _context.Restaurants
             .FirstOrDefault(x => x.Id == restaurantId);
@@ -121,17 +133,21 @@ public class HostService : IHostService
         }
         else
         {
-            var bookings = await _context.Bookings
+            var query = _context.Bookings
                 .Include(x => x.Spaces)
                 .Include(x => x.Tables)
                 .Include(x => x.Chairs)
                 .Include(x => x.User)
                 .Where(x => x.RestaurantId == restaurantId && x.BookingStatus == BOOKING_STATUS.Not_Announced)
-                .OrderBy(x => x.BookingDate)
+                .OrderBy(x => x.BookingDate);
+
+            var pagedBookings = await query
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
                 .ToListAsync();
             
             var response = ApiResponseService<List<BookingDTO>>
-                .Response200(_mapper.Map<List<BookingDTO>>(bookings));
+                .Response200(_mapper.Map<List<BookingDTO>>(pagedBookings));
             return response;
         }
     }

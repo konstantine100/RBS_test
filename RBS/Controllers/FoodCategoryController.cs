@@ -18,30 +18,62 @@ public class FoodCategoryController : ControllerBase
     }
 
     [HttpPost("create-food-category")]
+    //[Authorize(Policy = "Admin")]
     public async Task<ActionResult> AddFoodCategory(int menuId, AddFoodCategory request)
     {
-        var response = await _foodCategoryService.AddFoodCategory(menuId, request);
-        return Ok(response);
+        try
+        {
+            var response = await _foodCategoryService.AddFoodCategory(menuId, request);
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("An error occurred while creating food category.", ex);
+        }
     }
     
-    [HttpPut("update-food-category")]
+    [HttpPut("update-food-category/{categoryId}")]
+    //[Authorize(Policy = "Admin")]
     public async Task<ActionResult> UpdateFoodCategory(int categoryId, bool isEnglish, string newCategoryName)
     {
-        var response = await _foodCategoryService.UpdateFoodCategory(categoryId, isEnglish, newCategoryName);
-        return Ok(response);
+        try
+        {
+            var response = await _foodCategoryService.UpdateFoodCategory(categoryId, isEnglish, newCategoryName);
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("An error occurred while updating food category.", ex);
+        }
     }
     
-    [HttpGet("see-food-category-by-id")]
+    [HttpGet("see-food-category-by-id/{categoryId}")]
+    //[Authorize(Policy = "Admin")]
     public async Task<ActionResult> SeeFoodCategory(int categoryId)
     {
-        var response = await _foodCategoryService.SeeFoodCategory(categoryId);
-        return Ok(response);
+        try
+        {
+            var response = await _foodCategoryService.SeeFoodCategory(categoryId);
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("An error occurred while retrieving food category.", ex);
+        }
     }
     
-    [HttpDelete("delete-food-category")]
+    [HttpDelete("delete-food-category/{categoryId}")]
+    //[Authorize(Policy = "Admin")]
     public async Task<ActionResult> DeleteFoodCategory(int categoryId)
     {
-        var response = await _foodCategoryService.DeleteFoodCategory(categoryId);
-        return Ok(response);
+        try
+        {
+            var response = await _foodCategoryService.DeleteFoodCategory(categoryId);
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("An error occurred while deleting food category.", ex);
+        }
     }
 }

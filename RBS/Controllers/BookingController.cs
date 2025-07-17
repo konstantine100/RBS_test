@@ -17,52 +17,101 @@ public class BookingController : ControllerBase
         _bookingService = bookingService;
     }
     
-    [HttpGet("complete-booking")]
+    [HttpGet("complete-booking/{restaurantId}")]
     public async Task<ActionResult> CompleteBooking(int userId, int restaurantId)
     {
-        var response = await _bookingService.CompleteBooking(userId, restaurantId);
-        return Ok(response);
+        try
+        {
+            var response = await _bookingService.CompleteBooking(userId, restaurantId);
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("An error occurred while completing booking.", ex);
+        }
     }
     
-    [HttpGet("get-my-booking")]
+    [HttpGet("get-my-bookings")]
     public async Task<ActionResult> MyBookings(int userId)
     {
-        var response = await _bookingService.MyBookings(userId);
-        return Ok(response);
+        try
+        {
+            var response = await _bookingService.MyBookings(userId);
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("An error occurred while retrieving bookings.", ex);
+        }
     }
     
-    [HttpGet("get-my-booking-by-id")]
+    [HttpGet("get-my-booking-by-id/{bookingId}")]
     public async Task<ActionResult> GetMyBookingById(int userId, int bookingId)
     {
-        var response = await _bookingService.GetMyBookingById(userId, bookingId);
-        return Ok(response);
+        try
+        {
+            var response = await _bookingService.GetMyBookingById(userId, bookingId);
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("An error occurred while retrieving booking.", ex);
+        }
     }
     
     [HttpGet("get-my-booking-reminder")]
     public async Task<ActionResult> ClosestBookingReminder(int userId)
     {
-        var response = await _bookingService.ClosestBookingReminder(userId);
-        return Ok(response);
+        try
+        {
+            var response = await _bookingService.ClosestBookingReminder(userId);
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("An error occurred while retrieving booking.", ex);
+        }
     }
     
     [HttpGet("get-my-current-bookings")]
     public async Task<ActionResult> MyCurrentBookings(int userId)
     {
-        var response = await _bookingService.MyCurrentBookings(userId);
-        return Ok(response);
+        try
+        {
+            var response = await _bookingService.MyCurrentBookings(userId);
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("An error occurred while retrieving bookings.", ex);
+        }
     }
     
     [HttpGet("get-my-old-bookings")]
     public async Task<ActionResult> MyOldBookings(int userId)
     {
-        var response = await _bookingService.MyOldBookings(userId);
-        return Ok(response);
+        try
+        {
+            var response = await _bookingService.MyOldBookings(userId);
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("An error occurred while retrieving bookings.", ex);
+        }
     }
     
-    [HttpDelete("cancel-booking")]
+    [HttpDelete("cancel-booking/{bookingId}")]
     public async Task<ActionResult> CancelBooking(int userId, int bookingId)
     {
-        var response = await _bookingService.CancelBooking(userId, bookingId);
-        return Ok(response);
+        try
+        {
+            var response = await _bookingService.CancelBooking(userId, bookingId);
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("An error occurred while retrieving bookings.", ex);
+        }
     }
 }

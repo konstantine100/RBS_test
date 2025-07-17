@@ -183,7 +183,7 @@ public class UserService : IUserService
 
         // Generate verification code
         Random rand = new Random();
-        string randomCode = rand.Next(10000, 99999).ToString();
+        string randomCode = rand.Next(100000, 999999).ToString();
         user.VerificationCode = randomCode;
 
         // Send verification email

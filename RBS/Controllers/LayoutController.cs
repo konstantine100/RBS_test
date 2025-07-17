@@ -20,7 +20,14 @@ public class LayoutController : ControllerBase
     [HttpGet("space-layout-by-hour")]
     public async Task<ActionResult> GetLayoutByHour(int spaceId, DateTime Date)
     {
-        var layout = await _layoutService.GetLayoutByHour(spaceId, Date);
-        return Ok(layout);
+        try
+        {
+            var layout = await _layoutService.GetLayoutByHour(spaceId, Date);
+            return Ok(layout);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("An error occurred while retrieving layout.", ex);
+        }
     }
 }

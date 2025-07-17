@@ -18,51 +18,107 @@ public class WalkInOrderFoodController : ControllerBase
     }
     
     [HttpPost("walk-inorder-food")]
+    //[Authorize(Policy = "Universal")]
     public async Task<ActionResult> OrderFood(int hostId, int walkInId, int foodId, AddOrderedFood request)
     {
-        var response = await _walkInOrderFoodService.WalkInOrderFood(hostId, walkInId, foodId, request);
-        return Ok(response);
+        try
+        {
+            var response = await _walkInOrderFoodService.WalkInOrderFood(hostId, walkInId, foodId, request);
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("An error occurred while finishing walk in.", ex);
+        }
     }
     
-    [HttpGet("walk-in-ordered-foods")]
+    [HttpGet("walk-in-ordered-foods/{walkInId}")]
+    //[Authorize(Policy = "Universal")]
     public async Task<ActionResult> GetWalkInOrderedFoods(int hostId, int walkInId)
     {
-        var response = await _walkInOrderFoodService.GetWalkInOrderedFoods(hostId, walkInId);
-        return Ok(response);
+        try
+        {
+            var response = await _walkInOrderFoodService.GetWalkInOrderedFoods(hostId, walkInId);
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("An error occurred while retrieving orders.", ex);
+        }
     }
     
-    [HttpGet("walk-in-restaurant-order-foods")]
+    [HttpGet("walk-in-restaurant-order-foods/{restaurantId}")]
+    //[Authorize(Policy = "Universal")]
     public async Task<ActionResult> GetRestaurantOrderedFoods(int restaurantId)
     {
-        var response = await _walkInOrderFoodService.GetRestaurantOrderedFoods(restaurantId);
-        return Ok(response);
+        try
+        {
+            var response = await _walkInOrderFoodService.GetRestaurantOrderedFoods(restaurantId);
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("An error occurred while retrieving orders.", ex);
+        }
     }
     
-    [HttpPut("update-walk-in-order-foods-quantity")]
+    [HttpPut("update-walk-in-order-foods-quantity/{orderedFoodId}")]
+    //[Authorize(Policy = "Universal")]
     public async Task<ActionResult> ChangeWalkInOrderFoodQuantity(int hostId, int orderedFoodId, int quantity)
     {
-        var response = await _walkInOrderFoodService.ChangeWalkInOrderFoodQuantity(hostId, orderedFoodId, quantity);
-        return Ok(response);
+        try
+        {
+            var response = await _walkInOrderFoodService.ChangeWalkInOrderFoodQuantity(hostId, orderedFoodId, quantity);
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("An error occurred while updating orders.", ex);
+        }
     }
     
-    [HttpPut("update-walk-in-order-foods-message")]
+    [HttpPut("update-walk-in-order-foods-message/{orderedFoodId}")]
+    //[Authorize(Policy = "Universal")]
     public async Task<ActionResult> ChangeWalkInOrderFoodMessage(int hostId, int orderedFoodId, string? message)
     {
-        var response = await _walkInOrderFoodService.ChangeWalkInOrderFoodMessage(hostId, orderedFoodId, message);
-        return Ok(response);
+        try
+        {
+            var response = await _walkInOrderFoodService.ChangeWalkInOrderFoodMessage(hostId, orderedFoodId, message);
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("An error occurred while updating orders.", ex);
+        }
     }
     
-    [HttpPut("update-walk-in-order-foods-payment-status")]
+    [HttpPut("update-walk-in-order-foods-payment-status/{walkInId}")]
+    //[Authorize(Policy = "Universal")]
     public async Task<ActionResult> ChangeOrderFoodPaymentStatus(int hostId, int walkInId)
     {
-        var response = await _walkInOrderFoodService.ChangeOrderFoodPaymentStatus(hostId, walkInId);
-        return Ok(response);
+        try
+        {
+            var response = await _walkInOrderFoodService.ChangeOrderFoodPaymentStatus(hostId, walkInId);
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("An error occurred while updating order payment status.", ex);
+        }
     }
     
-    [HttpDelete("delete-walk-in-order-foods")]
+    [HttpDelete("delete-walk-in-order-foods/{orderedFoodId}")]
+    //[Authorize(Policy = "Universal")]
     public async Task<ActionResult> DeleteOrderFood(int hostId, int orderedFoodId)
     {
-        var response = await _walkInOrderFoodService.DeleteOrderFood(hostId, orderedFoodId);
-        return Ok(response);
+        try
+        {
+            var response = await _walkInOrderFoodService.DeleteOrderFood(hostId, orderedFoodId);
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("An error occurred while deleting order food.", ex);
+        }
     }
 }

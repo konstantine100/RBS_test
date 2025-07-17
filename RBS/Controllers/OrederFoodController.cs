@@ -17,52 +17,102 @@ public class OrederFoodController : ControllerBase
         _orderFoodService = orderFoodService;
     }
 
-    [HttpPost("order-food")]
+    [HttpPost("order-food/{foodId}")]
     public async Task<ActionResult> OrderFood(int userId, int bookingId, int foodId, AddOrderedFood request)
     {
-        var response = await _orderFoodService.OrderFood(userId, bookingId, foodId, request);
-        return Ok(response);
+        try
+        {
+            var response = await _orderFoodService.OrderFood(userId, bookingId, foodId, request);
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("An error occurred while ordering.", ex);
+        }
     }
     
-    [HttpGet("my-order-foods")]
+    [HttpGet("my-order-foods/{userId}")]
     public async Task<ActionResult> GetMyOrderedFoods(int userId, int bookingId)
     {
-        var response = await _orderFoodService.GetMyOrderedFoods(userId, bookingId);
-        return Ok(response);
+        try
+        {
+            var response = await _orderFoodService.GetMyOrderedFoods(userId, bookingId);
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("An error occurred while retrieving orders.", ex);
+        }
     }
     
-    [HttpGet("restaurant-order-foods")]
+    [HttpGet("restaurant-order-foods/{restaurantId}")]
+    //[Authorize(Policy = "Universal")]
     public async Task<ActionResult> GetRestaurantOrderedFoods(int restaurantId)
     {
-        var response = await _orderFoodService.GetRestaurantOrderedFoods(restaurantId);
-        return Ok(response);
+        try
+        {
+            var response = await _orderFoodService.GetRestaurantOrderedFoods(restaurantId);
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("An error occurred while retrieving orders.", ex);
+        }
     }
     
-    [HttpPut("update-order-foods-quantity")]
+    [HttpPut("update-order-foods-quantity/{orderedFoodId}")]
     public async Task<ActionResult> ChangeOrderFoodQuantity(int userId, int orderedFoodId, int quantity)
     {
-        var response = await _orderFoodService.ChangeOrderFoodQuantity(userId, orderedFoodId, quantity);
-        return Ok(response);
+        try
+        {
+            var response = await _orderFoodService.ChangeOrderFoodQuantity(userId, orderedFoodId, quantity);
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("An error occurred while updating order.", ex);
+        }
     }
     
-    [HttpPut("update-order-foods-message")]
+    [HttpPut("update-order-foods-message/{orderedFoodId}")]
     public async Task<ActionResult> ChangeOrderFoodMessage(int userId, int orderedFoodId, string? message)
     {
-        var response = await _orderFoodService.ChangeOrderFoodMessage(userId, orderedFoodId, message);
-        return Ok(response);
+        try
+        {
+            var response = await _orderFoodService.ChangeOrderFoodMessage(userId, orderedFoodId, message);
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("An error occurred while updating order.", ex);
+        }
     }
     
-    [HttpPut("pay-for-order-foods")]
+    [HttpPut("pay-for-order-foods/{bookingId}")]
     public async Task<ActionResult> PayForOrder(int userId, int bookingId)
     {
-        var response = await _orderFoodService.PayForOrder(userId, bookingId);
-        return Ok(response);
+        try
+        {
+            var response = await _orderFoodService.PayForOrder(userId, bookingId);
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("An error occurred while paying for order.", ex);
+        }
     }
     
     [HttpDelete("delete-order-foods")]
     public async Task<ActionResult> DeleteOrderFood(int userId, int orderedFoodId)
     {
-        var response = await _orderFoodService.DeleteOrderFood(userId, orderedFoodId);
-        return Ok(response);
+        try
+        {
+            var response = await _orderFoodService.DeleteOrderFood(userId, orderedFoodId);
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("An error occurred while deleting order.", ex);
+        }
     }
 }

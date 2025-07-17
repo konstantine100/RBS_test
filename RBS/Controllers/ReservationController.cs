@@ -18,11 +18,18 @@ public class ReservationController : ControllerBase
         _reservationService = reservationService;
     }
 
-    [HttpGet("my-reservations")]
+    [HttpGet("my-reservations/{userId}")]
     public async Task<ActionResult> MyReservations(int userId)
     {
-        var reservations = await _reservationService.MyReservations(userId);
-        return Ok(reservations);
+        try
+        {
+            var reservations = await _reservationService.MyReservations(userId);
+            return Ok(reservations);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("An error occurred while paying for order.", ex);
+        }
     }
     
 }
