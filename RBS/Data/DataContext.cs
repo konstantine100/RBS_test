@@ -1,14 +1,42 @@
-﻿using RBS.Models;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+using RBS.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace RBS.Data;
 
-public class DataContext : DbContext
+public class DataContext : IdentityDbContext<User, IdentityRole<int>, int>
 {
-    public DbSet<User> Users { get; set; }
+    private readonly IConfiguration _configuration;
+
+    public DataContext(DbContextOptions<DataContext> options, IConfiguration configuration) 
+        : base(options)
+    {
+        _configuration = configuration;
+    }
+
+    public DbSet<Restaurant> Restaurants { get; set; }
+    public DbSet<Space> Spaces { get; set; }
+    public DbSet<Table> Tables { get; set; }
+    public DbSet<Chair> Chairs { get; set; }
+    public DbSet<Booking> Bookings { get; set; }
+    public DbSet<SpaceReservation> SpaceReservations { get; set; }
+    public DbSet<TableReservation> TableReservations { get; set; }
+    public DbSet<ChairReservation> ChairReservations { get; set; }
+    public DbSet<Receipt> Receipts { get; set; }
+    public DbSet<Menu> Menus { get; set; }
+    public DbSet<FoodCategory> FoodCategories { get; set; }
+    public DbSet<Food> Foods { get; set; }
+    public DbSet<Ingredient> Ingredients { get; set; }
+    public DbSet<OrderedFood> OrderedFoods { get; set; }
+    public DbSet<WalkIn> WalkIns { get; set; }
     
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseSqlServer(@"Data Source=(localdb)\ProjectModels;Initial Catalog=Api14;Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False");
+        if (!optionsBuilder.IsConfigured)
+        {
+            optionsBuilder.UseSqlServer(_configuration.GetConnectionString("DefaultConnection"));
+        }
     }
 }

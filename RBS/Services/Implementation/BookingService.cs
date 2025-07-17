@@ -1,0 +1,502 @@
+﻿using AutoMapper;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
+using RBS.CORE;
+using RBS.Data;
+using RBS.DTOs;
+using RBS.Enums;
+using RBS.Helpers;
+using RBS.Hubs;
+using RBS.Models;
+using RBS.Requests;
+using RBS.Services.Interfaces;
+using RBS.SMTP;
+using RBS.Validation;
+
+namespace RBS.Services.Implenetation;
+
+public class BookingService : IBookingService
+{
+    private readonly DataContext _context;
+    private readonly IMapper _mapper;
+    private readonly IReceiptService _receiptService;
+    private readonly IHubContext<RestaurantHub> _hubContext;
+    private readonly ILayoutNotificationService _layoutNotificationService;
+    
+    public BookingService(DataContext context, IMapper mapper, IReceiptService receiptService, IHubContext<RestaurantHub> hubContext, ILayoutNotificationService layoutNotificationService)
+    {
+        _context = context;
+        _mapper = mapper;
+        _receiptService = receiptService;
+        _hubContext = hubContext;
+        _layoutNotificationService = layoutNotificationService;
+    }
+    
+    public async Task<ApiResponse<AllBookings>> CompleteBooking(int userId, int restaurantId)
+    {
+        var user = await _context.Users
+            .Include(x => x.MyBookings)
+            .FirstOrDefaultAsync(x => x.Id == userId);
+
+        if (user == null)
+        {
+            var response = ApiResponseService<AllBookings>
+                .Response(null, "User not found", StatusCodes.Status404NotFound);
+            return response;
+        }
+        else
+        {
+            var spaceReservationsTask = await _context.SpaceReservations
+                .Include(x => x.Space)
+                .ThenInclude(x => x.Bookings)
+                .Where(x => x.UserId == userId)
+                .ToListAsync();
+            
+            var tableReservationsTask = await _context.TableReservations
+                .Include(x => x.Table)
+                .ThenInclude(x => x.Bookings)
+                .Where(x => x.UserId == userId)
+                .ToListAsync();
+            
+            var chairReservationsTask = await _context.ChairReservations
+                .Include(x => x.Chair)
+                .ThenInclude(x => x.Bookings)
+                .Where(x => x.UserId == userId)
+                .ToListAsync();
+            
+            
+            var spaceReservations = spaceReservationsTask;
+            var tableReservations = tableReservationsTask;
+            var chairReservations = chairReservationsTask;
+
+            if (!spaceReservations.Any() && !tableReservations.Any() && !chairReservations.Any())
+            {
+                var response = ApiResponseService<AllBookings>
+                    .Response(null, "Reservation not Selected", StatusCodes.Status404NotFound);
+                return response;
+            }
+            else
+            {
+                foreach (var reservation in spaceReservations)
+                    reservation.PaymentStatus = PAYMENT_STATUS.IN_PROGRESS;
+                foreach (var reservation in tableReservations)
+                    reservation.PaymentStatus = PAYMENT_STATUS.IN_PROGRESS;
+                foreach (var reservation in chairReservations)
+                    reservation.PaymentStatus = PAYMENT_STATUS.IN_PROGRESS;
+                
+                await _context.SaveChangesAsync();
+               
+                try
+                {
+                    SMTPService smtpService = new SMTPService();
+                    await smtpService.SendEmailAsync(user.Email, "Booking completed", $"<p>aq mere vitom qr kodi an sxva ram gamochndeba aha dzmao dajavshnili gaq</p>");
+                }
+                catch (Exception ex)
+                {
+                }
+                
+                List<Booking> allBookings = new List<Booking>();
+                
+                allBookings.AddRange(CreateBookingsFromSpaceReservations(spaceReservations, user, restaurantId));
+                allBookings.AddRange(CreateBookingsFromTableReservations(tableReservations, user, restaurantId));
+                allBookings.AddRange(CreateBookingsFromChairReservations(chairReservations, user, restaurantId));
+                
+                _context.SpaceReservations.RemoveRange(spaceReservations);
+                _context.TableReservations.RemoveRange(tableReservations);
+                _context.ChairReservations.RemoveRange(chairReservations);
+                
+                await _context.SaveChangesAsync();
+                
+                // here must be payment, receipt section
+                foreach (var bookingToAdd in allBookings)
+                {
+                    ReceiptDTO receiptToAdd = new ReceiptDTO
+                    {
+                        BookingId = bookingToAdd.Id,
+                        ReceiptNumber = "1",
+                        Date = DateTime.Now,
+                        TotalAmount = 200,
+                        CustomerDetails = _mapper.Map<UserDTO>(user),
+                        Notes = "Something",
+                    };
+                
+                    var receipt = await _receiptService.CreateReceiptAsync(receiptToAdd);
+                }
+                
+                var affectedSpaceIds = new HashSet<int>();
+                
+                foreach (var reservation in spaceReservations)
+                    affectedSpaceIds.Add(reservation.Space.Id);
+            
+                foreach (var reservation in tableReservations)
+                    affectedSpaceIds.Add(reservation.Table.SpaceId);
+            
+                foreach (var reservation in chairReservations)
+                    affectedSpaceIds.Add(reservation.Chair.Table.SpaceId);
+                
+                foreach (var spaceId in affectedSpaceIds)
+                {
+                    await _hubContext.Clients.Group($"Space_{spaceId}")
+                        .SendAsync("LayoutChanged", new {
+                            spaceId = spaceId,
+                            changeType = "BookingCompleted",
+                            userId = userId,
+                            timestamp = DateTime.UtcNow
+                        });
+                }
+                
+                AllBookings BookingsToShow = new AllBookings(); 
+                BookingsToShow.Bookings.AddRange(_mapper.Map<List<BookingDTO>>(allBookings));
+                
+                var response = ApiResponseService<AllBookings>
+                    .Response200(BookingsToShow); 
+                return response;
+            }
+        }
+    }  
+
+    public async Task<ApiResponse<List<BookingDTO>>> MyBookings(int userId)
+    {
+        var user = await _context.Users
+            .FirstOrDefaultAsync(x => x.Id == userId);
+
+        if (user == null)
+        {
+            var response = ApiResponseService<List<BookingDTO>>
+                .Response(null, "User not found", StatusCodes.Status404NotFound);
+            return response;
+        }
+        else
+        {
+            var bookings = await _context.Bookings
+                .Include(x => x.Spaces)
+                .Include(x => x.Tables)
+                .Include(x => x.Chairs)
+                .Where(x => x.UserId == user.Id)
+                .ToListAsync();
+            
+            var response = ApiResponseService<List<BookingDTO>>
+                .Response200(_mapper.Map<List<BookingDTO>>(bookings));
+            return response;
+        }
+    }
+
+    public async Task<ApiResponse<BookingDTO>> GetMyBookingById(int userId, int bookingId)
+    {
+        var user = await _context.Users
+            .FirstOrDefaultAsync(x => x.Id == userId);
+
+        if (user == null)
+        {
+            var response = ApiResponseService<BookingDTO>
+                .Response(null, "User not found", StatusCodes.Status404NotFound);
+            return response;
+        }
+        else
+        {
+            var booking = await _context.Bookings
+                .Include(x => x.Spaces)
+                .Include(x => x.Tables)
+                .Include(x => x.Chairs)
+                .FirstOrDefaultAsync(x => x.Id == bookingId && x.UserId == userId);
+
+            if (booking == null)
+            {
+                var response = ApiResponseService<BookingDTO>
+                    .Response(null, "Booking not found", StatusCodes.Status404NotFound);
+                return response;
+            }
+            else
+            {
+                var response = ApiResponseService<BookingDTO>
+                    .Response200(_mapper.Map<BookingDTO>(booking));
+                return response;
+            }
+        }
+    }
+
+    public async Task<ApiResponse<BookingDTO>> ClosestBookingReminder(int userId)
+    {
+        var user = await _context.Users
+            .FirstOrDefaultAsync(x => x.Id == userId);
+
+        if (user == null)
+        {
+            var response = ApiResponseService<BookingDTO>
+                .Response(null, "User not found", StatusCodes.Status404NotFound);
+            return response;
+        }
+        else
+        {
+                var booking = await _context.Bookings
+                    .Include(x => x.Spaces)
+                    .Include(x => x.Tables)
+                    .Include(x => x.Chairs)
+                    .Where(x => x.BookingDate > DateTime.UtcNow && x.UserId == userId)
+                    .OrderBy(x => x.BookingDate)
+                    .FirstOrDefaultAsync();
+                
+                var response = ApiResponseService<BookingDTO>
+                    .Response200(_mapper.Map<BookingDTO>(booking));
+                return response;
+        }
+    }
+
+    public async Task<ApiResponse<List<BookingDTO>>> MyCurrentBookings(int userId)
+    {
+        var user = await _context.Users
+            .FirstOrDefaultAsync(x => x.Id == userId);
+
+        if (user == null)
+        {
+            var response = ApiResponseService<List<BookingDTO>>
+                .Response(null, "User not found", StatusCodes.Status404NotFound);
+            return response;
+        }
+        else 
+        {
+            var bookings = await _context.Bookings
+                .Include(x => x.Spaces)
+                .Include(x => x.Tables)
+                .Include(x => x.Chairs)
+                .Where(x => (x.BookingDate > DateTime.UtcNow && x.BookingStatus == BOOKING_STATUS.Waiting) && x.UserId == userId)
+                .OrderBy(x => x.BookingDate)
+                .ToListAsync();
+                
+            var response = ApiResponseService<List<BookingDTO>>
+                .Response200(_mapper.Map<List<BookingDTO>>(bookings));
+            return response;
+        }
+    }
+
+    public async Task<ApiResponse<List<BookingDTO>>> MyOldBookings(int userId)  
+    {
+        var user = await _context.Users
+            .FirstOrDefaultAsync(x => x.Id == userId);
+
+        if (user == null)
+        {
+            var response = ApiResponseService<List<BookingDTO>>
+                .Response(null, "User not found", StatusCodes.Status404NotFound);
+            return response;
+        }
+        else 
+        {
+            var bookings = await _context.Bookings
+                .Include(x => x.Spaces)
+                .Include(x => x.Tables)
+                .Include(x => x.Chairs)
+                .Where(x => (x.BookingDate < DateTime.UtcNow || (x.BookingStatus == BOOKING_STATUS.Finished || x.BookingStatus == BOOKING_STATUS.Not_Announced)) && x.UserId == userId)
+                .OrderByDescending(x => x.BookingDate)
+                .ToListAsync();
+                
+            var response = ApiResponseService<List<BookingDTO>>
+                .Response200(_mapper.Map<List<BookingDTO>>(bookings));
+            return response;
+        }
+    }
+
+    public async Task<ApiResponse<BookingDTO>> CancelBooking(int userId, int bookingId)
+    {
+        var user = await _context.Users
+            .Include(x => x.MyBookings)
+            .ThenInclude(b => b.Tables) // Include Tables to get SpaceIds
+            .Include(x => x.MyBookings)
+            .ThenInclude(b => b.Chairs)
+            .ThenInclude(c => c.Table) // Include Chair's Table to get SpaceId
+            .Include(x => x.MyBookings)
+            .ThenInclude(b => b.Spaces) // Include Spaces directly
+            .FirstOrDefaultAsync(x => x.Id == userId);
+
+        if (user == null)
+        {
+            var response = ApiResponseService<BookingDTO>
+                .Response(null, "User not found", StatusCodes.Status404NotFound);
+            return response;
+        }
+        else
+        {
+            var booking = user.MyBookings.FirstOrDefault(x => x.Id == bookingId);
+
+            if (booking == null)
+            {
+                var response = ApiResponseService<BookingDTO>
+                    .Response(null, "Booking not found", StatusCodes.Status404NotFound);
+                return response;
+            }
+            else
+            {
+                // Collect all affected space IDs from the booking
+                var affectedSpaceIds = new HashSet<int>();
+                
+                // Add space IDs from tables
+                foreach (var table in booking.Tables)
+                {
+                    affectedSpaceIds.Add(table.SpaceId);
+                }
+                
+                // Add space IDs from chairs
+                foreach (var chair in booking.Chairs)
+                {
+                    affectedSpaceIds.Add(chair.Table.SpaceId);
+                }
+                
+                // Add space IDs from spaces
+                foreach (var space in booking.Spaces)
+                {
+                    affectedSpaceIds.Add(space.Id);
+                }
+                
+                if (booking.PaymentStatus == PAYMENT_STATUS.SUCCESS)
+                {
+                    var timeUntilBooking = booking.BookingDate - DateTime.UtcNow;
+                    
+                    if (timeUntilBooking.TotalHours <= 6)
+                    {
+                        _context.Bookings.Remove(booking);
+                        await _context.SaveChangesAsync();
+                        
+                        // Send layout notification for booking cancellation
+                        if (affectedSpaceIds.Any())
+                        {
+                            await _layoutNotificationService.NotifyLayoutChanged(affectedSpaceIds, "BookingCancelled", new { 
+                                bookingId = bookingId,
+                                userId = userId,
+                                tableIds = booking.Tables.Select(t => t.Id).ToList(),
+                                chairIds = booking.Chairs.Select(c => c.Id).ToList(),
+                                spaceIds = booking.Spaces.Select(s => s.Id).ToList(),
+                                refundStatus = "NoRefund",
+                                reason = "CancelledWithin6Hours"
+                            });
+                        }
+                        
+                        var response = ApiResponseService<BookingDTO>
+                            .Response(_mapper.Map<BookingDTO>(booking), "yuradgeba radgan javshnamde darchenilia 6 saatze naklebi, sawmuxarod tanxa ar dagibrundebat", StatusCodes.Status200OK);
+                        return response;
+                    }
+                    else
+                    {
+                        // fulis ukan dabrunebis funqcionali
+                        
+                        _context.Bookings.Remove(booking);
+                        await _context.SaveChangesAsync();
+                        
+                        // Send layout notification for booking cancellation with refund
+                        if (affectedSpaceIds.Any())
+                        {
+                            await _layoutNotificationService.NotifyLayoutChanged(affectedSpaceIds, "BookingCancelled", new { 
+                                bookingId = bookingId,
+                                userId = userId,
+                                tableIds = booking.Tables.Select(t => t.Id).ToList(),
+                                chairIds = booking.Chairs.Select(c => c.Id).ToList(),
+                                spaceIds = booking.Spaces.Select(s => s.Id).ToList(),
+                                refundStatus = "Refunded",
+                                reason = "CancelledWithRefund"
+                            });
+                        }
+                        
+                        var response = ApiResponseService<BookingDTO>
+                            .Response200(_mapper.Map<BookingDTO>(booking));
+                        return response;
+                    }
+                }
+                else 
+                {
+                    _context.Bookings.Remove(booking);
+                    await _context.SaveChangesAsync();
+                    
+                    // Send layout notification for unpaid booking cancellation
+                    if (affectedSpaceIds.Any())
+                    {
+                        await _layoutNotificationService.NotifyLayoutChanged(affectedSpaceIds, "BookingCancelled", new { 
+                            bookingId = bookingId,
+                            userId = userId,
+                            tableIds = booking.Tables.Select(t => t.Id).ToList(),
+                            chairIds = booking.Chairs.Select(c => c.Id).ToList(),
+                            spaceIds = booking.Spaces.Select(s => s.Id).ToList(),
+                            refundStatus = "NotApplicable",
+                            reason = "UnpaidBookingCancelled"
+                        });
+                    }
+                        
+                    var response = ApiResponseService<BookingDTO>
+                        .Response200(_mapper.Map<BookingDTO>(booking));
+                    return response;
+                }
+            }
+        }
+    }
+    
+    private List<Booking> CreateBookingsFromSpaceReservations(List<SpaceReservation> reservations, User user, int restaurantId)
+    {
+        return reservations.Select(reservation => 
+        {
+            var booking = new Booking
+            {
+                BookingDate = reservation.BookingDate,
+                BookingDateEnd = reservation.BookingDateEnd,
+                BookingDateExpiration = reservation.BookingDate.AddMinutes(30),
+                BookedAt = DateTime.UtcNow,
+                PaymentStatus = PAYMENT_STATUS.SUCCESS,
+                Price = reservation.Price,
+                UserId = reservation.UserId,
+                RestaurantId = restaurantId,
+                
+            };
+        
+            user.MyBookings.Add(booking);
+            reservation.Space.Bookings.Add(booking);
+            var restaurant = _context.Restaurants.FirstOrDefault(x => x.Id == restaurantId);
+            restaurant.Bookings.Add(booking);
+            return booking;
+        }).ToList();
+    }
+
+    private List<Booking> CreateBookingsFromTableReservations(List<TableReservation> reservations, User user, int restaurantId)
+    {
+        return reservations.Select(reservation => 
+        {
+            var booking = new Booking
+            {
+                BookingDate = reservation.BookingDate,
+                BookingDateEnd = null,
+                BookingDateExpiration = reservation.BookingDate.AddMinutes(30),
+                BookedAt = DateTime.UtcNow,
+                PaymentStatus = PAYMENT_STATUS.SUCCESS,
+                Price = reservation.Price,
+                UserId = reservation.UserId,
+                RestaurantId = restaurantId
+            };
+        
+            user.MyBookings.Add(booking);
+            reservation.Table.Bookings.Add(booking);
+            var restaurant = _context.Restaurants.FirstOrDefault(x => x.Id == restaurantId);
+            restaurant.Bookings.Add(booking);
+            return booking;
+        }).ToList();
+    }
+
+    private List<Booking> CreateBookingsFromChairReservations(List<ChairReservation> reservations, User user, int restaurantId)
+    {
+        return reservations.Select(reservation => 
+        {
+            var booking = new Booking
+            {
+                BookingDate = reservation.BookingDate,
+                BookingDateEnd = null,
+                BookingDateExpiration = reservation.BookingDate.AddMinutes(30),
+                BookedAt = DateTime.UtcNow,
+                PaymentStatus = PAYMENT_STATUS.SUCCESS,
+                Price = reservation.Price,
+                UserId = reservation.UserId,
+                RestaurantId = restaurantId
+            };
+        
+            user.MyBookings.Add(booking);
+            reservation.Chair.Bookings.Add(booking);
+            var restaurant = _context.Restaurants.FirstOrDefault(x => x.Id == restaurantId);
+            restaurant.Bookings.Add(booking);
+            return booking;
+        }).ToList();
+    }
+}
