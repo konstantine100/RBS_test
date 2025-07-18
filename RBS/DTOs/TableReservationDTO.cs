@@ -6,6 +6,7 @@ public class TableReservationDTO
 
     public DateTime BookedAt { get; set; } = DateTime.UtcNow;
     public DateTime BookingDate { get; set; } 
+    public DateTime BookingDateEnd { get; set; }
     public DateTime BookingExpireDate { get; set; }
     
     public decimal Price { get; set; }

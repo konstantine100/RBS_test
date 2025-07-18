@@ -65,62 +65,73 @@ public class SpaceReservationService : ISpaceReservationService
                 {
                     var reservation = _mapper.Map<SpaceReservation>(request);
                     reservation.BookingDateEnd = endDate;
-                    
-                    var validator = new SpaceReservationValidator();
-                    var result = validator.Validate(reservation);
-                    
-                    if (!result.IsValid)
+
+                    if (reservation.BookingDateEnd > reservation.BookingDate.AddHours(3))
                     {
-                        string errors = string.Join(", ", result.Errors.Select(x => x.ErrorMessage));
-                        
                         var response = ApiResponseService<SpaceReservationDTO>
-                            .Response(null, errors, StatusCodes.Status400BadRequest);
+                            .Response(null, "can't book more than 3 hours!", StatusCodes.Status400BadRequest);
                         return response;
                     }
+
                     else
                     {
-                        var allConflictingBookings = await _conflictSpaceService.ConflictSpaceBookings(spaceId, reservation.BookingDate, endDate);
-                        var allConflictingSpaceReservations = await _conflictSpaceService.ConflictSpaceReservation(spaceId, reservation.BookingDate, endDate);
-                        var allConflictingTableReservations = await _conflictSpaceService.ConflictSpaceTableReservation(spaceId, reservation.BookingDate, endDate);
-                        var allConflictingChairReservations = await _conflictSpaceService.ConflictSpaceChairReservation(spaceId, reservation.BookingDate, endDate);
+                        var validator = new SpaceReservationValidator();
+                        var result = validator.Validate(reservation);
                         
-                        if (allConflictingBookings.Any() || allConflictingSpaceReservations.Any() || allConflictingTableReservations.Any() || allConflictingChairReservations.Any())
+                        if (!result.IsValid)
                         {
+                            string errors = string.Join(", ", result.Errors.Select(x => x.ErrorMessage));
+                            
                             var response = ApiResponseService<SpaceReservationDTO>
-                                .Response(null, "can't book at that time!", StatusCodes.Status400BadRequest);
+                                .Response(null, errors, StatusCodes.Status400BadRequest);
                             return response;
                         }
                         else
                         {
-                            reservation.Price = space.SpacePrice;
-                            reservation.BookingExpireDate = DateTime.UtcNow.AddMinutes(10);
-                            reservation.Space = space;
-                            user.SpaceReservations.Add(reservation);
-                            space.SpaceReservations.Add(reservation);
+                            var allConflictingBookings = await _conflictSpaceService.ConflictSpaceBookings(spaceId, reservation.BookingDate, endDate);
+                            var allConflictingSpaceReservations = await _conflictSpaceService.ConflictSpaceReservation(spaceId, reservation.BookingDate, endDate);
+                            var allConflictingTableReservations = await _conflictSpaceService.ConflictSpaceTableReservation(spaceId, reservation.BookingDate, endDate);
+                            var allConflictingChairReservations = await _conflictSpaceService.ConflictSpaceChairReservation(spaceId, reservation.BookingDate, endDate);
                             
-                            await _context.SaveChangesAsync();
-                            
-                            await _hubContext.Clients.Group($"Space_{spaceId}")
-                                .SendAsync("TableReserved", new {
-                                    spaceId = spaceId,
-                                    reservationId = reservation.Id,
-                                    expiresAt = reservation.BookingExpireDate,
-                                    userId = userId
-                                });
-                            
-                            await _hubContext.Clients.Group($"Space_{spaceId}")
-                                .SendAsync("LayoutChanged", new {
-                                    spaceId = spaceId,
-                                    changeType = "SpaceReservation",
-                                    itemId = spaceId,
-                                    timestamp = DateTime.UtcNow
-                                });
+                            if (allConflictingBookings.Any() || allConflictingSpaceReservations.Any() || allConflictingTableReservations.Any() || allConflictingChairReservations.Any())
+                            {
+                                var response = ApiResponseService<SpaceReservationDTO>
+                                    .Response(null, "can't book at that time!", StatusCodes.Status400BadRequest);
+                                return response;
+                            }
+                            else
+                            {
+                                reservation.Price = space.SpacePrice;
+                                reservation.BookingExpireDate = DateTime.UtcNow.AddMinutes(10);
+                                reservation.Space = space;
+                                user.SpaceReservations.Add(reservation);
+                                space.SpaceReservations.Add(reservation);
+                                
+                                await _context.SaveChangesAsync();
+                                
+                                await _hubContext.Clients.Group($"Space_{spaceId}")
+                                    .SendAsync("TableReserved", new {
+                                        spaceId = spaceId,
+                                        reservationId = reservation.Id,
+                                        expiresAt = reservation.BookingExpireDate,
+                                        userId = userId
+                                    });
+                                
+                                await _hubContext.Clients.Group($"Space_{spaceId}")
+                                    .SendAsync("LayoutChanged", new {
+                                        spaceId = spaceId,
+                                        changeType = "SpaceReservation",
+                                        itemId = spaceId,
+                                        timestamp = DateTime.UtcNow
+                                    });
 
-                            var response = ApiResponseService<SpaceReservationDTO>
-                                .Response200(_mapper.Map<SpaceReservationDTO>(reservation));
-                            return response;
+                                var response = ApiResponseService<SpaceReservationDTO>
+                                    .Response200(_mapper.Map<SpaceReservationDTO>(reservation));
+                                return response;
+                            }
                         }
                     }
+                    
                 }
             }
         }

@@ -30,7 +30,7 @@ public class ChairReservationService : IChairReservationService
         _layoutNotificationService = layoutNotificationService;
     }
     
-    public async Task<ApiResponse<ChairReservationDTO>> ChooseChair(int userId, int chairId, AddReservation request) 
+    public async Task<ApiResponse<ChairReservationDTO>> ChooseChair(int userId, int chairId, AddReservation request, int? additionalTime) 
     {
         var user = await _context.Users
             .Include(x => x.ChairReservations)
@@ -72,8 +72,23 @@ public class ChairReservationService : IChairReservationService
                 else
                 {
                     var reservation = _mapper.Map<ChairReservation>(request);
+                    reservation.BookingDateEnd = request.BookingDate.AddHours(2);
                     var validator = new ChairReservationValidator();
                     var result = validator.Validate(reservation);
+                    
+                    if (additionalTime != null)
+                    {
+                        if (additionalTime >= 0 && additionalTime <= 12)
+                        {
+                            reservation.BookingDateEnd = request.BookingDate.AddHours(additionalTime.Value);
+                        }
+                        else
+                        {
+                            var response = ApiResponseService<ChairReservationDTO>
+                                .Response(null, "wrong additional time", StatusCodes.Status400BadRequest);
+                            return response;
+                        }
+                    }
 
                     if (!result.IsValid)
                     {
@@ -93,13 +108,13 @@ public class ChairReservationService : IChairReservationService
                                     .Any(x => x.Id == chairId)));
 
                         var allBookingConflicts =
-                            await _conflictChairService.ConflictChairBookings(chairId, reservation.BookingDate);
+                            await _conflictChairService.ConflictChairBookings(chairId, reservation.BookingDate, reservation.BookingDateEnd);
                         var spaceReservationConflicts =
-                            await _conflictChairService.ConflictSpaceReservation(space.Id, reservation.BookingDate);
+                            await _conflictChairService.ConflictSpaceReservation(space.Id, reservation.BookingDate, reservation.BookingDateEnd);
                         var tableReservationConflicts =
-                            await _conflictChairService.ConflictTableReservation(chair.TableId, reservation.BookingDate);
+                            await _conflictChairService.ConflictTableReservation(chair.TableId, reservation.BookingDate, reservation.BookingDateEnd);
                         var chairReservationConflicts =
-                            await _conflictChairService.ConflictChairReservation(chairId, reservation.BookingDate);
+                            await _conflictChairService.ConflictChairReservation(chairId, reservation.BookingDate, reservation.BookingDateEnd);
                         var walkInConflicts =
                             await _conflictChairService.ConflictWalkIn(chairId, reservation.BookingDate);
 

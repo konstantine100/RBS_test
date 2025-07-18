@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using RBS.CORE;
 using RBS.Data;
 using RBS.DTOs;
+using RBS.Enums;
 using RBS.Models;
 using RBS.Services.Implenetation;
 using RBS.Services.Interfaces;
@@ -85,6 +86,52 @@ public class MenuService : IMenuService
             .Include(x => x.Categories)
             .ThenInclude(x => x.Foods)
             .ThenInclude(x => x.Ingredients)
+            .FirstOrDefaultAsync(x => x.RestaurantId == restaurantId);
+
+        if (menu == null)
+        {
+            var response = ApiResponseService<MenuDTO>
+                .Response(null, "Menu not found", StatusCodes.Status404NotFound);
+            return response;
+        }
+        else
+        {
+            var response = ApiResponseService<MenuDTO>
+                .Response200(_mapper.Map<MenuDTO>(menu));
+            return response;
+        }
+    }
+
+    public async Task<ApiResponse<MenuDTO>> SeeFoodMenu(int restaurantId)
+    {
+        var menu = await _context.Menus
+            .Include(x => x.Categories)
+            .ThenInclude(x => x.Foods)
+            .ThenInclude(x => x.Ingredients)
+            .Where(x => x.Categories.Any(x => x.FoodCategoryType == FOOD_CATEGORY_TYPE.Food))
+            .FirstOrDefaultAsync(x => x.RestaurantId == restaurantId);
+
+        if (menu == null)
+        {
+            var response = ApiResponseService<MenuDTO>
+                .Response(null, "Menu not found", StatusCodes.Status404NotFound);
+            return response;
+        }
+        else
+        {
+            var response = ApiResponseService<MenuDTO>
+                .Response200(_mapper.Map<MenuDTO>(menu));
+            return response;
+        }
+    }
+
+    public async Task<ApiResponse<MenuDTO>> SeeDrinkMenu(int restaurantId)
+    {
+        var menu = await _context.Menus
+            .Include(x => x.Categories)
+            .ThenInclude(x => x.Foods)
+            .ThenInclude(x => x.Ingredients)
+            .Where(x => x.Categories.Any(x => x.FoodCategoryType == FOOD_CATEGORY_TYPE.Drink))
             .FirstOrDefaultAsync(x => x.RestaurantId == restaurantId);
 
         if (menu == null)
