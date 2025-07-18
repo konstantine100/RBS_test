@@ -60,6 +60,34 @@ public class MenuController : ControllerBase
         }
     }
     
+    [HttpGet("see-foods-menu/{restaurantId}")]
+    public async Task<ActionResult> SeeFoodsMenu(int restaurantId)
+    {
+        try
+        {
+            var response = await _menuService.SeeFoodMenu(restaurantId);
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("An error occurred while retrieving menu.", ex);
+        }
+    }
+    
+    [HttpGet("see-drinks-menu/{restaurantId}")]
+    public async Task<ActionResult> SeeDrinksMenu(int restaurantId)
+    {
+        try
+        {
+            var response = await _menuService.SeeDrinkMenu(restaurantId);
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("An error occurred while retrieving menu.", ex);
+        }
+    }
+    
     [HttpGet("search-food-in-menu/{menuId}")]
     public async Task<ActionResult> SearchFoodInMenu(int menuId, string searchTerm)
     {

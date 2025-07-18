@@ -8,5 +8,7 @@ public interface IMenuService
     Task<ApiResponse<MenuDTO>> AddMenu(int restaurantId);
     Task<ApiResponse<MenuDTO>> DeleteMenu(int menuId);
     Task<ApiResponse<MenuDTO>> SeeMenu(int restaurantId);
+    Task<ApiResponse<MenuDTO>> SeeFoodMenu(int restaurantId);
+    Task<ApiResponse<MenuDTO>> SeeDrinkMenu(int restaurantId);
     Task<ApiResponse<List<FoodDTO>>> SearchFoodInMenu(int menuId, string searchTerm);
 }
