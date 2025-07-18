@@ -18,7 +18,7 @@ public class ConflictTableService : IConflictTableService
         _mapper = mapper;
     }
     
-    public async Task<List<Booking>> ConflictTableBookings(int spaceId, int tableId, DateTime startDate)
+    public async Task<List<Booking>> ConflictTableBookings(int spaceId, int tableId, DateTime startDate, DateTime endDate)
     {
         TimeSpan after18Hour = new TimeSpan(18, 0, 0);
 
@@ -48,8 +48,7 @@ public class ConflictTableService : IConflictTableService
         if (startDate.Hour < after18Hour.Hours)
         {
             allConflicts = allConflicts
-                .Where(x => (x.BookingDate - startDate).TotalHours < 1.5 &&
-                            (x.BookingDate - startDate).TotalHours > -1.5)
+                .Where(x => x.BookingDate >= startDate && x.BookingDate <= endDate)
                 .ToList();
         }
 
@@ -58,12 +57,12 @@ public class ConflictTableService : IConflictTableService
             allConflicts = allConflicts
                 .Where(x => x.BookingDate.Hour > after18Hour.Hours &&
                                     (x.BookingDate <= startDate ||
-                                     (x.BookingDate - startDate).TotalHours < 1.5))
+                                     x.BookingDate <= endDate))
                 .ToList();
         }
         conflictSpaceBookings = conflictSpaceBookings
             .Where(x => x.BookingDateEnd > startDate &&
-                        (x.BookingDate - startDate).TotalHours > -1.5)
+                        x.BookingDate < endDate)
             .ToList();
         
         allConflicts.AddRange(conflictSpaceBookings);
@@ -71,7 +70,7 @@ public class ConflictTableService : IConflictTableService
         return allConflicts;
     }
 
-    public async Task<List<SpaceReservation>> ConflictSpaceReservation(int spaceId, DateTime startDate)
+    public async Task<List<SpaceReservation>> ConflictSpaceReservation(int spaceId, DateTime startDate, DateTime endDate)
     {
         List<SpaceReservation> ConflictSpaceReservation = await _context.SpaceReservations
             .Where(x => x.SpaceId == spaceId && 
@@ -80,13 +79,13 @@ public class ConflictTableService : IConflictTableService
         
         ConflictSpaceReservation = ConflictSpaceReservation
             .Where(x => x.BookingDateEnd > startDate &&
-                        (x.BookingDate - startDate).TotalHours > -1.5)
+                        x.BookingDate < endDate)
             .ToList();
         
         return ConflictSpaceReservation;
     }
 
-    public async Task<List<TableReservation>> ConflictTableReservation(int tableId, DateTime startDate)
+    public async Task<List<TableReservation>> ConflictTableReservation(int tableId, DateTime startDate, DateTime endDate)
     {
         TimeSpan after18Hour = new TimeSpan(18, 0, 0);
         
@@ -98,8 +97,7 @@ public class ConflictTableService : IConflictTableService
         if (startDate.Hour < after18Hour.Hours)
         {
             conflictTableReservations = conflictTableReservations
-                .Where(x => (x.BookingDate - startDate).TotalHours < 1.5 &&
-                            (x.BookingDate - startDate).TotalHours > -1.5)
+                .Where(x => x.BookingDate >= startDate && x.BookingDate <= endDate)
                 .ToList();
         }
 
@@ -108,14 +106,14 @@ public class ConflictTableService : IConflictTableService
             conflictTableReservations = conflictTableReservations
                 .Where(x => x.BookingDate.Hour > after18Hour.Hours &&
                             (x.BookingDate <= startDate ||
-                             (x.BookingDate - startDate).TotalHours < 1.5))
+                             x.BookingDate <= endDate))
                 .ToList();
         }
         
         return conflictTableReservations;
     }
 
-    public async Task<List<ChairReservation>> ConflictChairReservation(int tableId, DateTime startDate)
+    public async Task<List<ChairReservation>> ConflictChairReservation(int tableId, DateTime startDate, DateTime endDate)
     {
         TimeSpan after18Hour = new TimeSpan(18, 0, 0);
 
@@ -128,8 +126,7 @@ public class ConflictTableService : IConflictTableService
         if (startDate.Hour < after18Hour.Hours)
         {
             conflictChairReservations = conflictChairReservations
-                .Where(x => (x.BookingDate - startDate).TotalHours < 1.5 &&
-                            (x.BookingDate - startDate).TotalHours > -1.5)
+                .Where(x => x.BookingDate >= startDate && x.BookingDate <= endDate)
                 .ToList();
         }
 
@@ -138,7 +135,7 @@ public class ConflictTableService : IConflictTableService
             conflictChairReservations = conflictChairReservations
                 .Where(x => x.BookingDate.Hour > after18Hour.Hours &&
                             (x.BookingDate <= startDate ||
-                             (x.BookingDate - startDate).TotalHours < 1.5))
+                             x.BookingDate <= endDate))
                 .ToList();
         }
         
@@ -157,22 +154,11 @@ public class ConflictTableService : IConflictTableService
                 x.WalkInAt.Day == startDate.Day)
             .ToListAsync();
         
-        if (startDate.Hour < after18Hour.Hours)
-        {
-            conflictWalkIns = conflictWalkIns
-                .Where(x => (x.WalkInAt - startDate).TotalHours < 1.5 &&
-                            (x.WalkInAt - startDate).TotalHours > -1.5)
-                .ToList();
-        }
-
-        else if (startDate.Hour > after18Hour.Hours)
-        {
-            conflictWalkIns = conflictWalkIns
-                .Where(x => x.WalkInAt.Hour > after18Hour.Hours &&
-                            (x.WalkInAt <= startDate ||
-                             (x.WalkInAt - startDate).TotalHours < 1.5))
-                .ToList();
-        }
+        conflictWalkIns = conflictWalkIns
+            .Where(x => (x.WalkInAt - startDate).TotalHours < 2 &&
+                        (x.WalkInAt - startDate).TotalHours > -2)
+            .ToList();
+        
         
         return conflictWalkIns;
     }

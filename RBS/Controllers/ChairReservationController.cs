@@ -18,11 +18,11 @@ public class ChairReservationController : ControllerBase
     }
 
     [HttpPost("choose-chair/{chairId}")]
-    public async Task<ActionResult> ChooseChair(int userId, int chairId, AddReservation request)
+    public async Task<ActionResult> ChooseChair(int userId, int chairId, AddReservation request, int? additionalHour)
     {
         try
         {
-            var tableReservation = await _chairReservationService.ChooseChair(userId, chairId, request);
+            var tableReservation = await _chairReservationService.ChooseChair(userId, chairId, request, additionalHour);
             return Ok(tableReservation);
         }
         catch (Exception ex)

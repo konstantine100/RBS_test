@@ -58,10 +58,10 @@ public class WalkInService : IWalkInService
                 }
                 else
                 {
-                    var allBookingConflicts = await _conflictTableService.ConflictTableBookings(table.SpaceId, tableId, DateTime.UtcNow);
-                    var spaceReservationConflicts = await _conflictTableService.ConflictSpaceReservation(table.SpaceId, DateTime.UtcNow);
-                    var tableReservationConflicts = await _conflictTableService.ConflictTableReservation(tableId, DateTime.UtcNow);
-                    var chairReservationConflicts = await _conflictTableService.ConflictChairReservation(tableId, DateTime.UtcNow);
+                    var allBookingConflicts = await _conflictTableService.ConflictTableBookings(table.SpaceId, tableId, DateTime.UtcNow, DateTime.UtcNow);
+                    var spaceReservationConflicts = await _conflictTableService.ConflictSpaceReservation(table.SpaceId, DateTime.UtcNow, DateTime.UtcNow);
+                    var tableReservationConflicts = await _conflictTableService.ConflictTableReservation(tableId, DateTime.UtcNow, DateTime.UtcNow);
+                    var chairReservationConflicts = await _conflictTableService.ConflictChairReservation(tableId, DateTime.UtcNow, DateTime.UtcNow);
                     var walkInConflicts = await _conflictTableService.ConflictWalkIn(tableId, DateTime.UtcNow);
 
                     if (allBookingConflicts.Any() || spaceReservationConflicts.Any() || tableReservationConflicts.Any() || chairReservationConflicts.Any() || walkInConflicts.Any())
@@ -131,13 +131,13 @@ public class WalkInService : IWalkInService
                                 .Any(x => x.Id == chairId)));
 
                     var allBookingConflicts =
-                        await _conflictChairService.ConflictChairBookings(chairId, DateTime.UtcNow);
+                        await _conflictChairService.ConflictChairBookings(chairId, DateTime.UtcNow, DateTime.UtcNow);
                     var spaceReservationConflicts =
-                        await _conflictChairService.ConflictSpaceReservation(space.Id, DateTime.UtcNow);
+                        await _conflictChairService.ConflictSpaceReservation(space.Id, DateTime.UtcNow, DateTime.UtcNow);
                     var tableReservationConflicts =
-                        await _conflictChairService.ConflictTableReservation(chair.TableId, DateTime.UtcNow);
+                        await _conflictChairService.ConflictTableReservation(chair.TableId, DateTime.UtcNow, DateTime.UtcNow);
                     var chairReservationConflicts =
-                        await _conflictChairService.ConflictChairReservation(chairId, DateTime.UtcNow);
+                        await _conflictChairService.ConflictChairReservation(chairId, DateTime.UtcNow, DateTime.UtcNow);
                     var walkInConflicts =
                         await _conflictChairService.ConflictWalkIn(chairId, DateTime.UtcNow);
 
