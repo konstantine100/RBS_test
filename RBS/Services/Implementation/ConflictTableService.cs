@@ -48,8 +48,8 @@ public class ConflictTableService : IConflictTableService
         if (startDate.Hour < after18Hour.Hours)
         {
             allConflicts = allConflicts
-                .Where(x => (x.BookingDate - startDate).TotalHours < 1 &&
-                            (x.BookingDate - startDate).TotalHours > -1)
+                .Where(x => (x.BookingDate - startDate).TotalHours < 1.5 &&
+                            (x.BookingDate - startDate).TotalHours > -1.5)
                 .ToList();
         }
 
@@ -58,12 +58,12 @@ public class ConflictTableService : IConflictTableService
             allConflicts = allConflicts
                 .Where(x => x.BookingDate.Hour > after18Hour.Hours &&
                                     (x.BookingDate <= startDate ||
-                                     (x.BookingDate - startDate).TotalHours < 1))
+                                     (x.BookingDate - startDate).TotalHours < 1.5))
                 .ToList();
         }
         conflictSpaceBookings = conflictSpaceBookings
             .Where(x => x.BookingDateEnd > startDate &&
-                        (x.BookingDate - startDate).TotalHours > -1)
+                        (x.BookingDate - startDate).TotalHours > -1.5)
             .ToList();
         
         allConflicts.AddRange(conflictSpaceBookings);
@@ -80,7 +80,7 @@ public class ConflictTableService : IConflictTableService
         
         ConflictSpaceReservation = ConflictSpaceReservation
             .Where(x => x.BookingDateEnd > startDate &&
-                        (x.BookingDate - startDate).TotalHours > -1)
+                        (x.BookingDate - startDate).TotalHours > -1.5)
             .ToList();
         
         return ConflictSpaceReservation;
@@ -98,8 +98,8 @@ public class ConflictTableService : IConflictTableService
         if (startDate.Hour < after18Hour.Hours)
         {
             conflictTableReservations = conflictTableReservations
-                .Where(x => (x.BookingDate - startDate).TotalHours < 1 &&
-                            (x.BookingDate - startDate).TotalHours > -1)
+                .Where(x => (x.BookingDate - startDate).TotalHours < 1.5 &&
+                            (x.BookingDate - startDate).TotalHours > -1.5)
                 .ToList();
         }
 
@@ -108,7 +108,7 @@ public class ConflictTableService : IConflictTableService
             conflictTableReservations = conflictTableReservations
                 .Where(x => x.BookingDate.Hour > after18Hour.Hours &&
                             (x.BookingDate <= startDate ||
-                             (x.BookingDate - startDate).TotalHours < 1))
+                             (x.BookingDate - startDate).TotalHours < 1.5))
                 .ToList();
         }
         
@@ -128,8 +128,8 @@ public class ConflictTableService : IConflictTableService
         if (startDate.Hour < after18Hour.Hours)
         {
             conflictChairReservations = conflictChairReservations
-                .Where(x => (x.BookingDate - startDate).TotalHours < 1 &&
-                            (x.BookingDate - startDate).TotalHours > -1)
+                .Where(x => (x.BookingDate - startDate).TotalHours < 1.5 &&
+                            (x.BookingDate - startDate).TotalHours > -1.5)
                 .ToList();
         }
 
@@ -138,7 +138,7 @@ public class ConflictTableService : IConflictTableService
             conflictChairReservations = conflictChairReservations
                 .Where(x => x.BookingDate.Hour > after18Hour.Hours &&
                             (x.BookingDate <= startDate ||
-                             (x.BookingDate - startDate).TotalHours < 1))
+                             (x.BookingDate - startDate).TotalHours < 1.5))
                 .ToList();
         }
         
@@ -160,8 +160,8 @@ public class ConflictTableService : IConflictTableService
         if (startDate.Hour < after18Hour.Hours)
         {
             conflictWalkIns = conflictWalkIns
-                .Where(x => (x.WalkInAt - startDate).TotalHours < 1 &&
-                            (x.WalkInAt - startDate).TotalHours > -1)
+                .Where(x => (x.WalkInAt - startDate).TotalHours < 1.5 &&
+                            (x.WalkInAt - startDate).TotalHours > -1.5)
                 .ToList();
         }
 
@@ -170,7 +170,7 @@ public class ConflictTableService : IConflictTableService
             conflictWalkIns = conflictWalkIns
                 .Where(x => x.WalkInAt.Hour > after18Hour.Hours &&
                             (x.WalkInAt <= startDate ||
-                             (x.WalkInAt - startDate).TotalHours < 1))
+                             (x.WalkInAt - startDate).TotalHours < 1.5))
                 .ToList();
         }
         
