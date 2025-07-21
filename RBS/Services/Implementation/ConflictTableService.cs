@@ -48,16 +48,15 @@ public class ConflictTableService : IConflictTableService
         if (startDate.Hour < after18Hour.Hours)
         {
             allConflicts = allConflicts
-                .Where(x => x.BookingDate >= startDate && x.BookingDate <= endDate)
+                .Where(x => x.BookingDate.TimeOfDay < after18Hour &&
+                            x.BookingDate < endDate && x.BookingDateEnd > startDate)
                 .ToList();
         }
 
         else if (startDate.Hour > after18Hour.Hours)
         {
             allConflicts = allConflicts
-                .Where(x => x.BookingDate.Hour > after18Hour.Hours &&
-                                    (x.BookingDate <= startDate ||
-                                     x.BookingDate <= endDate))
+                .Where(x => x.BookingDate.TimeOfDay >= after18Hour)
                 .ToList();
         }
         conflictSpaceBookings = conflictSpaceBookings
@@ -97,16 +96,15 @@ public class ConflictTableService : IConflictTableService
         if (startDate.Hour < after18Hour.Hours)
         {
             conflictTableReservations = conflictTableReservations
-                .Where(x => x.BookingDate >= startDate && x.BookingDate <= endDate)
+                .Where(x => x.BookingDate.TimeOfDay < after18Hour &&
+                            x.BookingDate < endDate && x.BookingDateEnd > startDate)
                 .ToList();
         }
 
         else if (startDate.Hour > after18Hour.Hours)
         {
             conflictTableReservations = conflictTableReservations
-                .Where(x => x.BookingDate.Hour > after18Hour.Hours &&
-                            (x.BookingDate <= startDate ||
-                             x.BookingDate <= endDate))
+                .Where(x => x.BookingDate.TimeOfDay >= after18Hour)
                 .ToList();
         }
         
@@ -126,16 +124,15 @@ public class ConflictTableService : IConflictTableService
         if (startDate.Hour < after18Hour.Hours)
         {
             conflictChairReservations = conflictChairReservations
-                .Where(x => x.BookingDate >= startDate && x.BookingDate <= endDate)
+                .Where(x => x.BookingDate.TimeOfDay < after18Hour &&
+                            x.BookingDate < endDate && x.BookingDateEnd > startDate)
                 .ToList();
         }
 
         else if (startDate.Hour > after18Hour.Hours)
         {
             conflictChairReservations = conflictChairReservations
-                .Where(x => x.BookingDate.Hour > after18Hour.Hours &&
-                            (x.BookingDate <= startDate ||
-                             x.BookingDate <= endDate))
+                .Where(x => x.BookingDate.TimeOfDay >= after18Hour)
                 .ToList();
         }
         

@@ -274,6 +274,7 @@ namespace RBS.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     CategoryEnglishName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CategoryGeorgianName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    FoodCategoryType = table.Column<int>(type: "int", nullable: false),
                     MenuId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -371,7 +372,7 @@ namespace RBS.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     BookedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     BookingDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    BookingDateEnd = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    BookingDateEnd = table.Column<DateTime>(type: "datetime2", nullable: false),
                     BookingExpireDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     PaymentStatus = table.Column<int>(type: "int", nullable: false),
@@ -514,6 +515,7 @@ namespace RBS.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     BookedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     BookingDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    BookingDateEnd = table.Column<DateTime>(type: "datetime2", nullable: false),
                     BookingExpireDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     PaymentStatus = table.Column<int>(type: "int", nullable: false),
@@ -569,6 +571,7 @@ namespace RBS.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     BookedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     BookingDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    BookingDateEnd = table.Column<DateTime>(type: "datetime2", nullable: false),
                     BookingExpireDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     PaymentStatus = table.Column<int>(type: "int", nullable: false),

@@ -27,7 +27,7 @@ public class ConflictSpaceService : IConflictSpaceService
             .Where(x => (x.BookingStatus == BOOKING_STATUS.Waiting || 
                          x.BookingStatus == BOOKING_STATUS.Announced) && 
                         (x.Spaces.Any(x => x.Id == spaceId))  &&
-                        (x.BookingDate >= startDate && x.BookingDate <= endDate) )
+                        (x.BookingDate < endDate && x.BookingDateEnd > startDate) )
             .ToListAsync();
                         
         List<Booking> conflictTables = await _context.Bookings
@@ -35,15 +35,16 @@ public class ConflictSpaceService : IConflictSpaceService
             .Where(x => (x.BookingStatus == BOOKING_STATUS.Waiting || 
                          x.BookingStatus == BOOKING_STATUS.Announced) && 
                         (x.Tables.Any(x => x.SpaceId == spaceId))  &&
-                        (x.BookingDate >= startDate && x.BookingDate <= endDate) )
+                        (x.BookingDate < endDate && x.BookingDateEnd > startDate) )
             .ToListAsync();
                         
         List<Booking> conflictChairs = await _context.Bookings
-            .Include(x => x.Tables)
+            .Include(x => x.Chairs)
+            .ThenInclude(x => x.Table)
             .Where(x => (x.BookingStatus == BOOKING_STATUS.Waiting || 
                          x.BookingStatus == BOOKING_STATUS.Announced) && 
-                        (x.Tables.Any(x => x.SpaceId == spaceId))  &&
-                        (x.BookingDate >= startDate && x.BookingDate <= endDate) )
+                        (x.Chairs.Any(x => x.Table.SpaceId == spaceId))  &&
+                        (x.BookingDate < endDate && x.BookingDateEnd > startDate) )
             .ToListAsync();
         
         allConflictBookings.AddRange(conflictSpaces);
@@ -58,7 +59,7 @@ public class ConflictSpaceService : IConflictSpaceService
         List<SpaceReservation> conflictSpaces = await _context.SpaceReservations
             .Include(x => x.Space)
             .Where(x => x.Space.Id == spaceId  &&
-                        (x.BookingDate >= startDate && x.BookingDate <= endDate) )
+                        (x.BookingDate < endDate && x.BookingDateEnd > startDate) )
             .ToListAsync();
         
         return conflictSpaces;
@@ -69,7 +70,7 @@ public class ConflictSpaceService : IConflictSpaceService
         List<TableReservation> conflictTables = await _context.TableReservations
             .Include(x => x.Table)
             .Where(x => x.Table.SpaceId == spaceId  &&
-                        (x.BookingDate >= startDate && x.BookingDate <= endDate) )
+                        (x.BookingDate < endDate && x.BookingDateEnd > startDate) )
             .ToListAsync();
         
         return conflictTables;
@@ -81,8 +82,9 @@ public class ConflictSpaceService : IConflictSpaceService
             .Include(x => x.Chair)
             .ThenInclude(x => x.Table)
             .Where(x => x.Chair.Table.SpaceId == spaceId  &&
-                        (x.BookingDate >= startDate && x.BookingDate <= endDate) )
+                        (x.BookingDate < endDate && x.BookingDateEnd > startDate) )
             .ToListAsync();
+
         
         
         return conflictChairs;

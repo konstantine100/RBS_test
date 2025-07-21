@@ -64,7 +64,7 @@ public class TableReservationService : ITableReservationService
                 else
                 {
                     var reservation = _mapper.Map<TableReservation>(request);
-                    reservation.BookingDateEnd = request.BookingDate.AddHours(2);
+                    reservation.BookingDateEnd = reservation.BookingDate.AddHours(2);
                     var validator = new TableReservationValidator();
                     var result = validator.Validate(reservation);
 
@@ -72,7 +72,7 @@ public class TableReservationService : ITableReservationService
                     {
                         if (additionalTime >= 0 && additionalTime <= 12)
                         {
-                            reservation.BookingDateEnd = request.BookingDate.AddHours(additionalTime.Value);
+                            reservation.BookingDateEnd = reservation.BookingDate.AddHours(2 + additionalTime.Value);
                         }
                         else
                         {

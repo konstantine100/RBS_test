@@ -72,7 +72,7 @@ public class ChairReservationService : IChairReservationService
                 else
                 {
                     var reservation = _mapper.Map<ChairReservation>(request);
-                    reservation.BookingDateEnd = request.BookingDate.AddHours(2);
+                    reservation.BookingDateEnd = reservation.BookingDate.AddHours(2);
                     var validator = new ChairReservationValidator();
                     var result = validator.Validate(reservation);
                     
@@ -80,7 +80,7 @@ public class ChairReservationService : IChairReservationService
                     {
                         if (additionalTime >= 0 && additionalTime <= 12)
                         {
-                            reservation.BookingDateEnd = request.BookingDate.AddHours(additionalTime.Value);
+                            reservation.BookingDateEnd = reservation.BookingDate.AddHours(2 + additionalTime.Value);
                         }
                         else
                         {
