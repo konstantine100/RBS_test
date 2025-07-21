@@ -10,7 +10,9 @@ public class ChairReservationMappingProfile : Profile
 {
     public ChairReservationMappingProfile()
     {
-        CreateMap<AddReservation, ChairReservation>().ReverseMap();
+        CreateMap<AddReservation, ChairReservation>()
+            .ForMember(dest => dest.BookingDateEnd, opt => opt.Ignore())
+            .ReverseMap();
         CreateMap<ChairReservation, ChairReservationDTO>().ReverseMap();
         CreateMap<ChairReservation, OverallReservations>().ReverseMap();
     }

@@ -12,7 +12,7 @@ using RBS.Data;
 namespace RBS.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20250717141531_init")]
+    [Migration("20250721092358_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -303,6 +303,9 @@ namespace RBS.Migrations
                     b.Property<DateTime>("BookingDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<DateTime>("BookingDateEnd")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTime>("BookingExpireDate")
                         .HasColumnType("datetime2");
 
@@ -377,6 +380,9 @@ namespace RBS.Migrations
                     b.Property<string>("CategoryGeorgianName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("FoodCategoryType")
+                        .HasColumnType("int");
 
                     b.Property<int>("MenuId")
                         .HasColumnType("int");
@@ -587,7 +593,7 @@ namespace RBS.Migrations
                     b.Property<DateTime>("BookingDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("BookingDateEnd")
+                    b.Property<DateTime>("BookingDateEnd")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("BookingExpireDate")
@@ -680,6 +686,9 @@ namespace RBS.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("BookingDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("BookingDateEnd")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("BookingExpireDate")

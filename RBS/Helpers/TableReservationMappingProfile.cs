@@ -10,7 +10,9 @@ public class TableReservationMappingProfile : Profile
 {
     public TableReservationMappingProfile()
     {
-        CreateMap<AddReservation, TableReservation>().ReverseMap();
+        CreateMap<AddReservation, TableReservation>()
+            .ForMember(dest => dest.BookingDateEnd, opt => opt.Ignore())
+            .ReverseMap();
         CreateMap<TableReservation, TableReservationDTO>().ReverseMap();
         CreateMap<TableReservation, OverallReservations>().ReverseMap();
     }
