@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RBS.Requests;
 using RBS.Services.Interfaces;
@@ -18,7 +19,7 @@ public class WalkInOrderFoodController : ControllerBase
     }
     
     [HttpPost("walk-inorder-food")]
-    //[Authorize(Policy = "Universal")]
+    [Authorize(Policy = "Universal")]
     public async Task<ActionResult> OrderFood(int hostId, int walkInId, int foodId, AddOrderedFood request)
     {
         try
@@ -33,7 +34,7 @@ public class WalkInOrderFoodController : ControllerBase
     }
     
     [HttpGet("walk-in-ordered-foods/{walkInId}")]
-    //[Authorize(Policy = "Universal")]
+    [Authorize(Policy = "Universal")]
     public async Task<ActionResult> GetWalkInOrderedFoods(int hostId, int walkInId)
     {
         try
@@ -48,7 +49,7 @@ public class WalkInOrderFoodController : ControllerBase
     }
     
     [HttpGet("walk-in-restaurant-order-foods/{restaurantId}")]
-    //[Authorize(Policy = "Universal")]
+    [Authorize(Policy = "Universal")]
     public async Task<ActionResult> GetRestaurantOrderedFoods(int restaurantId)
     {
         try
@@ -63,7 +64,7 @@ public class WalkInOrderFoodController : ControllerBase
     }
     
     [HttpPut("update-walk-in-order-foods-quantity/{orderedFoodId}")]
-    //[Authorize(Policy = "Universal")]
+    [Authorize(Policy = "Universal")]
     public async Task<ActionResult> ChangeWalkInOrderFoodQuantity(int hostId, int orderedFoodId, int quantity)
     {
         try
@@ -78,7 +79,7 @@ public class WalkInOrderFoodController : ControllerBase
     }
     
     [HttpPut("update-walk-in-order-foods-message/{orderedFoodId}")]
-    //[Authorize(Policy = "Universal")]
+    [Authorize(Policy = "Universal")]
     public async Task<ActionResult> ChangeWalkInOrderFoodMessage(int hostId, int orderedFoodId, string? message)
     {
         try
@@ -93,7 +94,7 @@ public class WalkInOrderFoodController : ControllerBase
     }
     
     [HttpPut("update-walk-in-order-foods-payment-status/{walkInId}")]
-    //[Authorize(Policy = "Universal")]
+    [Authorize(Policy = "Universal")]
     public async Task<ActionResult> ChangeOrderFoodPaymentStatus(int hostId, int walkInId)
     {
         try
@@ -108,7 +109,7 @@ public class WalkInOrderFoodController : ControllerBase
     }
     
     [HttpDelete("delete-walk-in-order-foods/{orderedFoodId}")]
-    //[Authorize(Policy = "Universal")]
+    [Authorize(Policy = "Universal")]
     public async Task<ActionResult> DeleteOrderFood(int hostId, int orderedFoodId)
     {
         try

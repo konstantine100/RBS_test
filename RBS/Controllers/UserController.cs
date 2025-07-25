@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RBS.Data;
 using RBS.Requests;
@@ -54,7 +55,7 @@ public class UserController : ControllerBase
     }
 
     [HttpGet("get-profile")]
-    //[Authorize]
+    [Authorize]
     public  ActionResult GetProfile(int id)
     {
         try

@@ -46,6 +46,13 @@ public class TestAddController : ControllerBase
         return Ok(response);
     }
     
+    [HttpPost("post-add-full-menu")]
+    public async Task<IActionResult> AddFullMenu(int restaurantId)
+    {
+        var response = await _testingService.AddFullMenu(restaurantId);
+        return Ok(response);
+    }
+    
     [HttpDelete("delete-restaurant")]
     public ActionResult DeleteRestaurant(int restaurantId)
     {

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RBS.Requests;
 using RBS.Services.Interfaces;
@@ -18,7 +19,7 @@ public class IngredientController : ControllerBase
     }
 
     [HttpPost("create-ingredient")]
-    //[Authorize(Policy = "Admin")]
+    [Authorize(Policy = "AdminOnly")]
     public async Task<ActionResult> AddIngredient(int foodId, AddIngredient request)
     {
         try
@@ -33,7 +34,7 @@ public class IngredientController : ControllerBase
     }
     
     [HttpPut("update-ingredient/{ingredientId}")]
-    //[Authorize(Policy = "Admin")]
+    [Authorize(Policy = "AdminOnly")]
     public async Task<ActionResult> UpdateIngredient(int ingredientId, bool isEnglish, string changeTo)
     {
         try
@@ -48,7 +49,7 @@ public class IngredientController : ControllerBase
     }
     
     [HttpDelete("delete-ingredient/{ingredientId}")]
-    //[Authorize(Policy = "Admin")]
+    [Authorize(Policy = "AdminOnly")]
     public async Task<ActionResult> DeleteIngredient(int ingredientId)
     {
         try
