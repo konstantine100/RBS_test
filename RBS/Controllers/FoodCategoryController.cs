@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RBS.Requests;
 using RBS.Services.Interfaces;
@@ -18,7 +19,7 @@ public class FoodCategoryController : ControllerBase
     }
 
     [HttpPost("create-food-category")]
-    //[Authorize(Policy = "Admin")]
+    [Authorize(Policy = "AdminOnly")]
     public async Task<ActionResult> AddFoodCategory(int menuId, AddFoodCategory request)
     {
         try
@@ -33,7 +34,7 @@ public class FoodCategoryController : ControllerBase
     }
     
     [HttpPut("update-food-category/{categoryId}")]
-    //[Authorize(Policy = "Admin")]
+    [Authorize(Policy = "AdminOnly")]
     public async Task<ActionResult> UpdateFoodCategory(int categoryId, bool isEnglish, string newCategoryName)
     {
         try
@@ -48,7 +49,6 @@ public class FoodCategoryController : ControllerBase
     }
     
     [HttpGet("see-food-category-by-id/{categoryId}")]
-    //[Authorize(Policy = "Admin")]
     public async Task<ActionResult> SeeFoodCategory(int categoryId)
     {
         try
@@ -63,7 +63,7 @@ public class FoodCategoryController : ControllerBase
     }
     
     [HttpDelete("delete-food-category/{categoryId}")]
-    //[Authorize(Policy = "Admin")]
+    [Authorize(Policy = "AdminOnly")]
     public async Task<ActionResult> DeleteFoodCategory(int categoryId)
     {
         try

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RBS.CORE;
 using RBS.Services.Interfaces;
@@ -18,7 +19,7 @@ public class AdminController : ControllerBase
     }
     
     [HttpPut("make-user-host/{userId}")]
-    //[Authorize(Policy = "Admin")]
+    [Authorize(Policy = "AdminOnly")]
     public async Task<ActionResult> MakeUserHost(int userId, int restaurantId)
     {
         try
@@ -33,7 +34,7 @@ public class AdminController : ControllerBase
     }
     
     [HttpGet("restaurant-hosts")]
-    //[Authorize(Policy = "Admin")]
+    [Authorize(Policy = "AdminOnly")]
     public async Task<ActionResult> SeeHosts(int restaurantId)
     {
         try
@@ -49,7 +50,7 @@ public class AdminController : ControllerBase
     }
     
     [HttpGet("get-hosts-walk-ins")]
-    //[Authorize(Policy = "Admin")]
+    [Authorize(Policy = "AdminOnly")]
     public async Task<ActionResult> SeeHostWalkIns(int restaurantId, int hostId)
     {
         try
@@ -65,7 +66,7 @@ public class AdminController : ControllerBase
     }
     
     [HttpPut("demote-host/{hostId}")]
-    //[Authorize(Policy = "Admin")]
+    [Authorize(Policy = "AdminOnly")]
     public async Task<ActionResult> DemoteHost(int restaurantId, int hostId)
     {
         try

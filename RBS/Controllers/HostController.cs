@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RBS.CORE;
 using RBS.DTOs;
@@ -19,7 +20,7 @@ public class HostController : ControllerBase
     }
 
     [HttpGet("restaurant-current-bookings/{restaurantId}")]
-    //[Authorize(Policy = "Universal")]
+    [Authorize(Policy = "Universal")]
     public async Task<ActionResult> GetRestaurantCurrentBookings(int restaurantId, int pageNumber = 1, int pageSize = 15)
     {
         try
@@ -34,7 +35,7 @@ public class HostController : ControllerBase
     }
     
     [HttpGet("restaurant-finished-bookings/{restaurantId}")]
-    //[Authorize(Policy = "Universal")]
+    [Authorize(Policy = "Universal")]
     public async Task<ActionResult> GetRestaurantFinishedBookings(int restaurantId, int pageNumber = 1, int pageSize = 15)
     {
         try
@@ -49,7 +50,7 @@ public class HostController : ControllerBase
     }
     
     [HttpGet("restaurant-announced-bookings/{restaurantId}")]
-    //[Authorize(Policy = "Universal")]
+    [Authorize(Policy = "Universal")]
     public async Task<ActionResult> GetRestaurantAnnouncedBookings(int restaurantId, int pageNumber = 1, int pageSize = 15)
     {
         try
@@ -64,7 +65,7 @@ public class HostController : ControllerBase
     }
     
     [HttpGet("restaurant-not-announced-bookings/{restaurantId}")]
-    //[Authorize(Policy = "Universal")]
+    [Authorize(Policy = "Universal")]
     public async Task<ActionResult> GetRestaurantNotAnnouncedBookings(int restaurantId, int pageNumber = 1, int pageSize = 15)
     {
         try
@@ -79,7 +80,7 @@ public class HostController : ControllerBase
     }
     
     [HttpGet("space-layout-current/{spaceId}")]
-    //[Authorize(Policy = "Universal")]
+    [Authorize(Policy = "Universal")]
     public async Task<ActionResult> GetCurrentLayout(int spaceId)
     {
         try
@@ -94,7 +95,7 @@ public class HostController : ControllerBase
     }
     
     [HttpPut("update-booking-late-time/{bookingId}")]
-    //[Authorize(Policy = "Universal")]
+    [Authorize(Policy = "Universal")]
     public async Task<ActionResult> UpdateBookingLateTimes(int bookingId, int lateTime)
     {
         try
@@ -109,7 +110,7 @@ public class HostController : ControllerBase
     }
     
     [HttpPut("booking-user-announced/{bookingId}")]
-    //[Authorize(Policy = "Universal")]
+    [Authorize(Policy = "Universal")]
     public async Task<ActionResult> BookingUserAnnounced(int bookingId)
     {
         try
@@ -124,7 +125,7 @@ public class HostController : ControllerBase
     }
     
     [HttpPut("booking-user-not-announced/{bookingId}")]
-    //[Authorize(Policy = "Universal")]
+    [Authorize(Policy = "Universal")]
     public async Task<ActionResult> BookingUserNotAnnounced(int bookingId)
     {
         try
@@ -139,7 +140,7 @@ public class HostController : ControllerBase
     }
     
     [HttpPut("finish-booking/{bookingId}")]
-    //[Authorize(Policy = "Universal")]
+    [Authorize(Policy = "Universal")]
     public async Task<ActionResult> FinishBooking(int bookingId)
     {
         try
@@ -154,7 +155,7 @@ public class HostController : ControllerBase
     }
     
     [HttpPut("table-availability-change/{tableId}")]
-    //[Authorize(Policy = "Universal")]
+    [Authorize(Policy = "Universal")]
     public async Task<ActionResult> TableAvailabilityChange(int hostId, int tableId)
     {
         try

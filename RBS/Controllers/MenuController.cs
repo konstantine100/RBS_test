@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RBS.Services.Interfaces;
 
@@ -17,7 +18,7 @@ public class MenuController : ControllerBase
     }
 
     [HttpPost("create-menu")]
-    //[Authorize(Policy = "Admin")]
+    [Authorize(Policy = "AdminOnly")]
     public async Task<ActionResult> AddMenu(int restaurantId)
     {
         try
@@ -32,7 +33,7 @@ public class MenuController : ControllerBase
     }
     
     [HttpDelete("delete-menu/{menuId}")]
-    //[Authorize(Policy = "Admin")]
+    [Authorize(Policy = "AdminOnly")]
     public async Task<ActionResult> DeleteMenu(int menuId)
     {
         try

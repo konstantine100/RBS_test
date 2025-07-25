@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RBS.Requests;
 using RBS.Services.Interfaces;
@@ -18,7 +19,7 @@ public class FoodController : ControllerBase
     }
 
     [HttpPost("create-food")]
-    //[Authorize(Policy = "Admin")]
+    [Authorize(Policy = "AdminOnly")]
     public async Task<ActionResult> AddFood(int categoryId, AddFood request)
     {
         try
@@ -33,7 +34,7 @@ public class FoodController : ControllerBase
     }
     
     [HttpPut("update-food/{foodId}")]
-    //[Authorize(Policy = "Admin")]
+    [Authorize(Policy = "AdminOnly")]
     public async Task<ActionResult> UpdateFood(int foodId, string changeParameter, string changeTo)
     {
         try
@@ -48,7 +49,7 @@ public class FoodController : ControllerBase
     }
     
     [HttpGet("see-food-details/{foodId}")]
-    //[Authorize(Policy = "Admin")]
+    [Authorize(Policy = "AdminOnly")]
     public async Task<ActionResult> SeeFoodDetails(int foodId)
     {
         try
@@ -63,7 +64,7 @@ public class FoodController : ControllerBase
     }
     
     [HttpDelete("delete-food/{foodId}")]
-    //[Authorize(Policy = "Admin")]
+    [Authorize(Policy = "AdminOnly")]
     public async Task<ActionResult> DeleteFood(int foodId)
     {
         try
@@ -78,7 +79,7 @@ public class FoodController : ControllerBase
     }
     
     [HttpDelete("change-food-availability")]
-    //[Authorize(Policy = "Admin")]
+    [Authorize(Policy = "AdminOnly")]
     public async Task<ActionResult> FoodAvailabilityChange(int foodId)
     {
         try

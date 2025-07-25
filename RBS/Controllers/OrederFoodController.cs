@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RBS.Requests;
 using RBS.Services.Interfaces;
@@ -46,7 +47,7 @@ public class OrederFoodController : ControllerBase
     }
     
     [HttpGet("restaurant-order-foods/{restaurantId}")]
-    //[Authorize(Policy = "Universal")]
+    [Authorize(Policy = "Universal")]
     public async Task<ActionResult> GetRestaurantOrderedFoods(int restaurantId)
     {
         try

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RBS.Services.Interfaces;
 
@@ -17,7 +18,7 @@ public class WalkInController : ControllerBase
     }
 
     [HttpPost("create-table-walk-in/{tableId}")]
-    //[Authorize(Policy = "Universal")]
+    [Authorize(Policy = "Universal")]
     public async Task<ActionResult> AddWalkInTable(int hostId, int tableId)
     {
         try
@@ -32,7 +33,7 @@ public class WalkInController : ControllerBase
     }
     
     [HttpPost("create-chair-walk-in/{chairId}")]
-    //[Authorize(Policy = "Universal")]
+    [Authorize(Policy = "Universal")]
     public async Task<ActionResult> AddWalkInChair(int hostId, int chairId)
     {
         try
@@ -47,7 +48,7 @@ public class WalkInController : ControllerBase
     }
     
     [HttpGet("see-host-walk-ins/{hostId}")]
-    //[Authorize(Policy = "Admin")]
+    [Authorize(Policy = "AdminOnly")]
     public async Task<ActionResult> GetMyWalkIns(int hostId)
     {
         try
@@ -62,7 +63,7 @@ public class WalkInController : ControllerBase
     }
     
     [HttpPut("finish-host-walk-in/{walkInId}")]
-    //[Authorize(Policy = "Universal")]
+    [Authorize(Policy = "Universal")]
     public async Task<ActionResult> FinishWalkIn(int hostId, int walkInId)
     {
         try
