@@ -17,6 +17,12 @@ public class TestAddController : ControllerBase
         _testingService = testingService;
     }
 
+    [HttpPatch("admin-maker")]
+    public ActionResult MakeAdmin(int userId, int restaurantId)
+    {
+        var response = _testingService.MakeAdmin(userId, restaurantId);
+        return Ok(response);
+    }
 
     [HttpPost("post-restaurant")]
     public ActionResult AddRestaurant(AddRestaurant request)

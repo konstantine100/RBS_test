@@ -23,7 +23,39 @@ public class TestingService : ITestingService
         _mapper = mapper;
     }
 
-    
+
+    public ApiResponse<UserDTO> MakeAdmin(int userId, int restaurantId)
+    {
+        var user = _context.Users.FirstOrDefault(u => u.Id == userId);
+
+        if (user == null)
+        {
+            return ApiResponseService<UserDTO>
+                .Response(null, "User not found", StatusCodes.Status404NotFound);
+        }
+        else
+        {
+            var restaurant = _context.Restaurants.FirstOrDefault(r => r.Id == restaurantId);
+
+            if (restaurant == null)
+            {
+                return ApiResponseService<UserDTO>
+                    .Response(null, "restaurant not found", StatusCodes.Status404NotFound);
+            }
+            else
+            {
+                user.Role = ROLES.Admin;
+                user.RestaurantId = restaurantId;
+                user.Restaurant = restaurant;
+                _context.SaveChanges();
+            
+                return ApiResponseService<UserDTO>
+                    .Response200(_mapper.Map<UserDTO>(user));
+            }
+            
+        }
+    }
+
     public ApiResponse<RestaurantDTO> AddRestaurant(AddRestaurant request)
     {
         var restaurant = _mapper.Map<Restaurant>(request);

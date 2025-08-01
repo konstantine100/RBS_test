@@ -12,6 +12,8 @@ public class Restaurant
     public List<User> Hosts { get; set; } = new List<User>();
     public List<Space> Spaces { get; set; } = new List<Space>();
     public List<Booking> Bookings { get; set; } = new List<Booking>();
+
+    public List<Events> Events { get; set; } = new List<Events>();
     public Menu Menu { get; set; }
 
     // navigation properties

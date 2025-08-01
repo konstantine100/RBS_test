@@ -99,6 +99,7 @@ public static class ServiceExtensions
         services.AddScoped<IAdminService, AdminService>();
         services.AddScoped<ILayoutHelperService, LayoutHelperService>();
         services.AddScoped<IWalkInOrderFoodService, WalkInOrderFoodService>();
+        services.AddScoped<IEventService, EventService>();
         
         services.AddScoped<ILayoutNotificationService, LayoutNotificationService>();
 
