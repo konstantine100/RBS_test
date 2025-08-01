@@ -7,6 +7,7 @@ namespace RBS.Services.Interfaces;
 
 public interface ITestingService
 {
+    ApiResponse<UserDTO> MakeAdmin(int userId, int restaurntId);
     ApiResponse<RestaurantDTO> AddRestaurant(AddRestaurant request);
     ApiResponse<SpaceDTO> AddSpace(int restaurantId, AddSpace request);
     ApiResponse<TableDTO> AddTable(int spaceId, AddTable request);
