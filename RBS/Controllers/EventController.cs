@@ -19,7 +19,7 @@ public class EventController : ControllerBase
     }
     
     [HttpPost("create-event/{adminId}")]
-    [Authorize(Policy = "Admin")]
+    [Authorize(Policy = "AdminOnly")]
     public async Task<ActionResult> CreateEvent(int adminId, AddEvent request)
     {
         try
@@ -90,7 +90,7 @@ public class EventController : ControllerBase
     }
     
     [HttpPut("update-event/{eventId}")]
-    [Authorize(Policy = "Admin")]
+    [Authorize(Policy = "AdminOnly")]
     public async Task<ActionResult> UpdateEvent(int adminId, int eventId, string changeParameter, string changeTo)
     {
         try
@@ -105,7 +105,7 @@ public class EventController : ControllerBase
     }
     
     [HttpDelete("delete-event/{eventId}")]
-    [Authorize(Policy = "Admin")]
+    [Authorize(Policy = "AdminOnly")]
     public async Task<ActionResult> DeleteEvent(int adminId, int eventId)
     {
         try
