@@ -428,6 +428,8 @@ public class UserService : IUserService
         }
         else
         {
+            IdentityResult updateResult = null;
+            
             Random rand = new Random();
             string randomCode = rand.Next(100000, 999999).ToString();
             user.VerificationCode = randomCode;
@@ -435,7 +437,7 @@ public class UserService : IUserService
             // Send verification email
             SMTPService smtpService = new SMTPService();
             smtpService.SendEmail(user.Email, "Verification", $"<p>{user.VerificationCode}</p>");
-            await _context.SaveChangesAsync();
+            updateResult = await _userManager.UpdateAsync(user);
             
             var response = new ApiResponse<bool>
             {
@@ -543,6 +545,9 @@ public class UserService : IUserService
             // Send verification email
             SMTPService smtpService = new SMTPService();
             smtpService.SendEmail(user.Email, "Verification", $"<p>{user.VerificationCode}</p>");
+
+            user.VerificationCode = randomCode;
+            await _context.SaveChangesAsync();
             var response = new ApiResponse<UserToken>
             {
                 Data = null,
