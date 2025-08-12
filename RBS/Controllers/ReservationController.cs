@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RBS.CORE;
 using RBS.DTOs;
@@ -19,6 +20,7 @@ public class ReservationController : ControllerBase
     }
 
     [HttpGet("my-reservations/{userId}")]
+    [Authorize(Policy = "UserOnly")]
     public async Task<ActionResult> MyReservations(int userId)
     {
         try

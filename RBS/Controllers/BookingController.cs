@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RBS.Requests;
 using RBS.Services.Interfaces;
@@ -18,6 +19,7 @@ public class BookingController : ControllerBase
     }
     
     [HttpGet("complete-booking/{restaurantId}")]
+    [Authorize(Policy = "UserOnly")]
     public async Task<ActionResult> CompleteBooking(int userId, int restaurantId)
     {
         try
@@ -32,6 +34,7 @@ public class BookingController : ControllerBase
     }
     
     [HttpGet("get-my-bookings")]
+    [Authorize(Policy = "UserOnly")]
     public async Task<ActionResult> MyBookings(int userId)
     {
         try
@@ -46,6 +49,7 @@ public class BookingController : ControllerBase
     }
     
     [HttpGet("get-my-booking-by-id/{bookingId}")]
+    [Authorize(Policy = "UserOnly")]
     public async Task<ActionResult> GetMyBookingById(int userId, int bookingId)
     {
         try
@@ -60,6 +64,7 @@ public class BookingController : ControllerBase
     }
     
     [HttpGet("get-my-booking-reminder")]
+    [Authorize(Policy = "UserOnly")]
     public async Task<ActionResult> ClosestBookingReminder(int userId)
     {
         try
@@ -74,6 +79,7 @@ public class BookingController : ControllerBase
     }
     
     [HttpGet("get-my-current-bookings")]
+    [Authorize(Policy = "UserOnly")]
     public async Task<ActionResult> MyCurrentBookings(int userId)
     {
         try
@@ -88,6 +94,7 @@ public class BookingController : ControllerBase
     }
     
     [HttpGet("get-my-old-bookings")]
+    [Authorize(Policy = "UserOnly")]
     public async Task<ActionResult> MyOldBookings(int userId)
     {
         try
@@ -102,6 +109,7 @@ public class BookingController : ControllerBase
     }
     
     [HttpDelete("cancel-booking/{bookingId}")]
+    [Authorize(Policy = "UserOnly")]
     public async Task<ActionResult> CancelBooking(int userId, int bookingId)
     {
         try

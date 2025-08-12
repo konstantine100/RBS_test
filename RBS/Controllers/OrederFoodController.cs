@@ -19,6 +19,7 @@ public class OrederFoodController : ControllerBase
     }
 
     [HttpPost("order-food/{foodId}")]
+    [Authorize(Policy = "UserOnly")]
     public async Task<ActionResult> OrderFood(int userId, int bookingId, int foodId, AddOrderedFood request)
     {
         try
@@ -33,6 +34,7 @@ public class OrederFoodController : ControllerBase
     }
     
     [HttpGet("my-order-foods/{userId}")]
+    [Authorize(Policy = "UserOnly")]
     public async Task<ActionResult> GetMyOrderedFoods(int userId, int bookingId)
     {
         try
@@ -62,6 +64,7 @@ public class OrederFoodController : ControllerBase
     }
     
     [HttpPut("update-order-foods-quantity/{orderedFoodId}")]
+    [Authorize(Policy = "UserOnly")]
     public async Task<ActionResult> ChangeOrderFoodQuantity(int userId, int orderedFoodId, int quantity)
     {
         try
@@ -76,6 +79,7 @@ public class OrederFoodController : ControllerBase
     }
     
     [HttpPut("update-order-foods-message/{orderedFoodId}")]
+    [Authorize(Policy = "UserOnly")]
     public async Task<ActionResult> ChangeOrderFoodMessage(int userId, int orderedFoodId, string? message)
     {
         try
@@ -90,6 +94,7 @@ public class OrederFoodController : ControllerBase
     }
     
     [HttpPut("pay-for-order-foods/{bookingId}")]
+    [Authorize(Policy = "UserOnly")]
     public async Task<ActionResult> PayForOrder(int userId, int bookingId)
     {
         try
@@ -104,6 +109,7 @@ public class OrederFoodController : ControllerBase
     }
     
     [HttpDelete("delete-order-foods")]
+    [Authorize(Policy = "UserOnly")]
     public async Task<ActionResult> DeleteOrderFood(int userId, int orderedFoodId)
     {
         try
