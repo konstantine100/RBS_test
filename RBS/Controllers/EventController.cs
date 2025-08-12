@@ -34,6 +34,7 @@ public class EventController : ControllerBase
     }
     
     [HttpGet("get-active-event/{restaurantId}")]
+    [Authorize]
     public async Task<ActionResult> GetActiveEvents(int restaurantId)
     {
         try
@@ -48,6 +49,7 @@ public class EventController : ControllerBase
     }
     
     [HttpGet("get-past-event/{restaurantId}")]
+    [Authorize]
     public async Task<ActionResult> GetPastEvents(int restaurantId)
     {
         try
@@ -62,6 +64,7 @@ public class EventController : ControllerBase
     }
     
     [HttpGet("search-sort-event/{restaurantId}")]
+    [Authorize]
     public async Task<ActionResult> SearchSortEvents(int restaurantId, string? searchString, string? sortBy)
     {
         try
@@ -76,6 +79,7 @@ public class EventController : ControllerBase
     }
     
     [HttpGet("get-event-by-id/{eventId}")]
+    [Authorize]
     public async Task<ActionResult> GetEventById(int eventId)
     {
         try

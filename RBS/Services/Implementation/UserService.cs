@@ -120,16 +120,63 @@ public class UserService : IUserService
             return response;
         }
     }
-
-    public async Task<ApiResponse<UserDTO>> DeleteUser(int id)
+    
+    public async Task<ApiResponse<UserDTO>> UpdateUserPreferedCurrency(int id, Currencies currency)
     {
-        var user = _context.Users.FirstOrDefault(x => x.Id == id);
+        var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == id);
 
         if (user == null)
         {
             var response = new ApiResponse<UserDTO>
             {
                 Data = null,
+                Status = StatusCodes.Status404NotFound,
+                Message = "User not found"
+            };
+            return response;
+        }
+        
+
+        IdentityResult updateResult = null;
+
+        user.PreferableCurrency = currency;
+        updateResult = await _userManager.UpdateAsync(user);
+        
+        if (updateResult?.Succeeded == true)
+        {
+            var response = new ApiResponse<UserDTO>
+            {
+                Data = _mapper.Map<UserDTO>(user),
+                Status = StatusCodes.Status200OK,
+                Message = null
+            };
+            return response;
+        }
+        else
+        {
+            var errorMessages = updateResult?.Errors?.Any() == true 
+                ? string.Join(", ", updateResult.Errors.Select(e => e.Description))
+                : "Update failed";
+                
+            var response = new ApiResponse<UserDTO>
+            {
+                Data = null,
+                Status = StatusCodes.Status400BadRequest,
+                Message = $"Update failed: {errorMessages}"
+            };
+            return response;
+        }
+    }
+
+    public async Task<ApiResponse<bool>> DeleteUser(int id)
+    {
+        var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == id);
+
+        if (user == null)
+        {
+            var response = new ApiResponse<bool>
+            {
+                Data = false,
                 Status = StatusCodes.Status404NotFound,
                 Message = "User not found"
             };
@@ -141,9 +188,9 @@ public class UserService : IUserService
             _context.Users.Remove(user);
             _context.SaveChanges();
             
-            var response = new ApiResponse<UserDTO>
+            var response = new ApiResponse<bool>
             {
-                Data = _mapper.Map<UserDTO>(user),
+                Data = true,
                 Status = StatusCodes.Status200OK,
                 Message = "User deleted"
             };
@@ -225,7 +272,7 @@ public class UserService : IUserService
     
     public async Task<ApiResponse<bool>> Verify(string email, string code)
     {
-        var user = _context.Users.FirstOrDefault(u => u.Email == email);
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
 
         if (user == null)
         {
@@ -269,7 +316,7 @@ public class UserService : IUserService
 
     public async Task<ApiResponse<UserDTO>> GetProfile(int id)
     {
-        var user = _context.Users.FirstOrDefault(x => x.Id == id);
+        var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == id);
 
         if (user == null)
         {
@@ -311,7 +358,7 @@ public class UserService : IUserService
 
     public async Task<ApiResponse<bool>> GetResetCode(string userEmail)
     {
-        var user = _context.Users.FirstOrDefault(u => u.Email == userEmail);
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == userEmail);
 
         if (user == null)
         {
@@ -360,6 +407,45 @@ public class UserService : IUserService
 
                 return response;
             }
+        }
+    }
+
+    public async Task<ApiResponse<bool>> ResendVerifyCode(string userEmail)
+    {
+        var user = await _context.Users
+            .FirstOrDefaultAsync(x => x.Email == userEmail);
+
+        if (user == null)
+        {
+            var response = new ApiResponse<bool>
+            {
+                Data = false,
+                Message = "User Not Found",
+                Status = StatusCodes.Status404NotFound,
+            };
+
+            return response;
+        }
+        else
+        {
+            Random rand = new Random();
+            string randomCode = rand.Next(100000, 999999).ToString();
+            user.VerificationCode = randomCode;
+
+            // Send verification email
+            SMTPService smtpService = new SMTPService();
+            smtpService.SendEmail(user.Email, "Verification", $"<p>{user.VerificationCode}</p>");
+            await _context.SaveChangesAsync();
+            
+            var response = new ApiResponse<bool>
+            {
+                Data = true,
+                Message = null,
+                Status = StatusCodes.Status200OK,
+            };
+
+            return response;
+            
         }
     }
 
@@ -450,11 +536,18 @@ public class UserService : IUserService
         }
         else if (passwordCheckResult && user.Status == ACCOUNT_STATUS.CODE_SENT)
         {
+            Random rand = new Random();
+            string randomCode = rand.Next(100000, 999999).ToString();
+            user.VerificationCode = randomCode;
+
+            // Send verification email
+            SMTPService smtpService = new SMTPService();
+            smtpService.SendEmail(user.Email, "Verification", $"<p>{user.VerificationCode}</p>");
             var response = new ApiResponse<UserToken>
             {
                 Data = null,
                 Status = StatusCodes.Status403Forbidden,
-                Message = "User Not Verified",
+                Message = "User Not Verified, verification code sent",
             };
             return response;
         }

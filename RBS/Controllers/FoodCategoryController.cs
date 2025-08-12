@@ -49,6 +49,7 @@ public class FoodCategoryController : ControllerBase
     }
     
     [HttpGet("see-food-category-by-id/{categoryId}")]
+    [Authorize(Policy = "UserOnly")]
     public async Task<ActionResult> SeeFoodCategory(int categoryId)
     {
         try

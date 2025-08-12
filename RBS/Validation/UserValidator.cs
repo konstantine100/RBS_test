@@ -18,8 +18,9 @@ public class UserValidator : AbstractValidator<User>
             .EmailAddress().WithMessage("Invalid email address");
         RuleFor(x => x.PhoneNumber)
             .NotEmpty().WithMessage("Phone number cannot be empty")
-            .Matches(@"^(?:\+995|0)?5\d{8}$")
-            .WithMessage("Invalid Georgian phone number format");
+            .Matches(@"^\+?[1-9]\d{1,14}$")
+            .WithMessage("Invalid phone number format");
+
 
 
     }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RBS.CORE;
 using RBS.Requests;
@@ -19,6 +20,7 @@ public class TableReservationController : ControllerBase
     }
 
     [HttpPost("choose-table/{tableId}")]
+    [Authorize(Policy = "UserOnly")]
     public async Task<ActionResult> ChooseTable(int userId, int tableId, AddReservation request, int additionalHour)
     {
         try
@@ -33,6 +35,7 @@ public class TableReservationController : ControllerBase
     }
     
     [HttpGet("table-booking-for-day/{tableId}")]
+    [Authorize(Policy = "UserOnly")]
     public async Task<ActionResult> TableBookingForDay(int tableId, DateTime date)
     {
         try
@@ -47,6 +50,7 @@ public class TableReservationController : ControllerBase
     }
     
     [HttpDelete("remove-table-reservation/{reservationId}")]
+    [Authorize(Policy = "UserOnly")]
     public async Task<ActionResult> RemoveReservationTable(int userId, int reservationId)
     {
         try

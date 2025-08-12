@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RBS.CORE;
 using RBS.Services.Interfaces;
@@ -18,6 +19,7 @@ public class LayoutController : ControllerBase
     }
 
     [HttpGet("space-layout-by-hour")]
+    [Authorize]
     public async Task<ActionResult> GetLayoutByHour(int spaceId, DateTime Date)
     {
         try

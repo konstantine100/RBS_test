@@ -7,6 +7,9 @@ public class User : IdentityUser<int>
 {
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
+
+    public string? ImageUrl { get; set; }
+    public Currencies PreferableCurrency { get; set; } = Currencies.GEL;
     public ACCOUNT_STATUS Status { get; set; } = ACCOUNT_STATUS.CODE_SENT;
     public ROLES Role { get; set; } = ROLES.User;
     // public USER_STATUS UserStatus { get; set; } = USER_STATUS.PENDING;

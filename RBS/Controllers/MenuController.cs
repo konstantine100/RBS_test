@@ -48,6 +48,7 @@ public class MenuController : ControllerBase
     }
     
     [HttpGet("see-menu/{restaurantId}")]
+    [Authorize]
     public async Task<ActionResult> SeeMenu(int restaurantId)
     {
         try
@@ -62,6 +63,7 @@ public class MenuController : ControllerBase
     }
     
     [HttpGet("see-foods-menu/{restaurantId}")]
+    [Authorize]
     public async Task<ActionResult> SeeFoodsMenu(int restaurantId)
     {
         try
@@ -76,6 +78,7 @@ public class MenuController : ControllerBase
     }
     
     [HttpGet("see-drinks-menu/{restaurantId}")]
+    [Authorize]
     public async Task<ActionResult> SeeDrinksMenu(int restaurantId)
     {
         try
@@ -90,6 +93,7 @@ public class MenuController : ControllerBase
     }
     
     [HttpGet("search-food-in-menu/{menuId}")]
+    [Authorize]
     public async Task<ActionResult> SearchFoodInMenu(int menuId, string searchTerm)
     {
         try
