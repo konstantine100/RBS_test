@@ -178,7 +178,6 @@ public class UserController : ControllerBase
     }
     
     [HttpPut("resend-verification-code")]
-    [Authorize]
     public async Task<ActionResult<ApiResponse<bool>>> ResendVerifyCode(string userEmail)
     {
         try
