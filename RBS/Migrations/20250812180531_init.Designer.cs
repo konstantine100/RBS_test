@@ -12,7 +12,7 @@ using RBS.Data;
 namespace RBS.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20250721092358_init")]
+    [Migration("20250812180531_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -328,6 +328,42 @@ namespace RBS.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("ChairReservations");
+                });
+
+            modelBuilder.Entity("RBS.Models.Events", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("EventDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("PublishDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("RestaurantId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RestaurantId");
+
+                    b.ToTable("Events");
                 });
 
             modelBuilder.Entity("RBS.Models.Food", b =>
@@ -744,6 +780,9 @@ namespace RBS.Migrations
                     b.Property<string>("GoogleId")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -773,6 +812,9 @@ namespace RBS.Migrations
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
+
+                    b.Property<int>("PreferableCurrency")
+                        .HasColumnType("int");
 
                     b.Property<string>("RefreshToken")
                         .HasColumnType("nvarchar(max)");
@@ -1003,6 +1045,17 @@ namespace RBS.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("RBS.Models.Events", b =>
+                {
+                    b.HasOne("RBS.Models.Restaurant", "Restaurant")
+                        .WithMany("Events")
+                        .HasForeignKey("RestaurantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Restaurant");
+                });
+
             modelBuilder.Entity("RBS.Models.Food", b =>
                 {
                     b.HasOne("RBS.Models.FoodCategory", "FoodCategory")
@@ -1218,6 +1271,8 @@ namespace RBS.Migrations
             modelBuilder.Entity("RBS.Models.Restaurant", b =>
                 {
                     b.Navigation("Bookings");
+
+                    b.Navigation("Events");
 
                     b.Navigation("Hosts");
 

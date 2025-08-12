@@ -777,6 +777,9 @@ namespace RBS.Migrations
                     b.Property<string>("GoogleId")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -806,6 +809,9 @@ namespace RBS.Migrations
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
+
+                    b.Property<int>("PreferableCurrency")
+                        .HasColumnType("int");
 
                     b.Property<string>("RefreshToken")
                         .HasColumnType("nvarchar(max)");

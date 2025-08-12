@@ -129,7 +129,7 @@ public class UserController : ControllerBase
 
             if (userLogin.Status != StatusCodes.Status200OK)
             {
-                return BadRequest(userLogin.Message);
+                return BadRequest(userLogin.Status);
             }
             return Ok(userLogin);
         }
