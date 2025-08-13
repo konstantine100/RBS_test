@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RBS.CORE;
+using RBS.DTOs;
+using RBS.Models;
 using RBS.Requests;
 using RBS.Services.Interfaces;
 
@@ -19,13 +21,17 @@ public class TableReservationController : ControllerBase
         _tableReservationService = tableReservationService;
     }
 
-    [HttpPost("choose-table/{tableId}")]
+    [HttpPost("choose-table/{userId}/{tableId}")]
     [Authorize(Policy = "UserOnly")]
-    public async Task<ActionResult> ChooseTable(int userId, int tableId, AddReservation request, int additionalHour)
+    public async Task<ActionResult<ApiResponse<TableReservationDTO>>> ChooseTable(int userId, int tableId, AddReservation request, int additionalHour)
     {
         try
         {
             var tableReservation = await _tableReservationService.ChooseTable(userId, tableId, request, additionalHour);
+            if (tableReservation.Status != StatusCodes.Status200OK)
+            {
+                return BadRequest(tableReservation);
+            }
             return Ok(tableReservation);
         }
         catch (Exception ex)
@@ -36,12 +42,16 @@ public class TableReservationController : ControllerBase
     
     [HttpGet("table-booking-for-day/{tableId}")]
     [Authorize(Policy = "UserOnly")]
-    public async Task<ActionResult> TableBookingForDay(int tableId, DateTime date)
+    public async Task<ActionResult<ApiResponse<List<BookingDTO>>>> TableBookingForDay(int tableId, DateTime date)
     {
         try
         {
-            var tableReservation = await _tableReservationService.TableBookingForDay(tableId, date);
-            return Ok(tableReservation);
+            var bookings = await _tableReservationService.TableBookingForDay(tableId, date);
+            if (bookings.Status != StatusCodes.Status200OK)
+            {
+                return BadRequest(bookings);
+            }
+            return Ok(bookings);
         }
         catch (Exception ex)
         {
@@ -49,13 +59,17 @@ public class TableReservationController : ControllerBase
         }
     }
     
-    [HttpDelete("remove-table-reservation/{reservationId}")]
+    [HttpDelete("remove-table-reservation/{userId}/{reservationId}")]
     [Authorize(Policy = "UserOnly")]
-    public async Task<ActionResult> RemoveReservationTable(int userId, int reservationId)
+    public async Task<ActionResult<ApiResponse<TableReservationDTO>>> RemoveReservationTable(int userId, int reservationId)
     {
         try
         {
             var tableReservation = await _tableReservationService.RemoveReservationTable(userId, reservationId);
+            if (tableReservation.Status != StatusCodes.Status200OK)
+            {
+                return BadRequest(tableReservation);
+            }
             return Ok(tableReservation);
         }
         catch (Exception ex)

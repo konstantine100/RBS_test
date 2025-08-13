@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using RBS.CORE;
+using RBS.DTOs;
 using RBS.Requests;
 using RBS.Services.Interfaces;
 
@@ -18,13 +20,17 @@ public class WalkInOrderFoodController : ControllerBase
         _walkInOrderFoodService = walkInOrderFoodService;
     }
     
-    [HttpPost("walk-inorder-food")]
+    [HttpPost("walk-inorder-food/{hostId}/{walkInId}/{foodId}")]
     [Authorize(Policy = "Universal")]
-    public async Task<ActionResult> OrderFood(int hostId, int walkInId, int foodId, AddOrderedFood request)
+    public async Task<ActionResult<ApiResponse<OrderedFoodDTO>>> OrderFood(int hostId, int walkInId, int foodId, AddOrderedFood request)
     {
         try
         {
             var response = await _walkInOrderFoodService.WalkInOrderFood(hostId, walkInId, foodId, request);
+            if (response.Status != StatusCodes.Status200OK)
+            {
+                return BadRequest(response);
+            }
             return Ok(response);
         }
         catch (Exception ex)
@@ -33,13 +39,17 @@ public class WalkInOrderFoodController : ControllerBase
         }
     }
     
-    [HttpGet("walk-in-ordered-foods/{walkInId}")]
+    [HttpGet("walk-in-ordered-foods/{hostId}/{walkInId}")]
     [Authorize(Policy = "Universal")]
-    public async Task<ActionResult> GetWalkInOrderedFoods(int hostId, int walkInId)
+    public async Task<ActionResult<ApiResponse<List<OrderedFoodDTO>>>> GetWalkInOrderedFoods(int hostId, int walkInId)
     {
         try
         {
             var response = await _walkInOrderFoodService.GetWalkInOrderedFoods(hostId, walkInId);
+            if (response.Status != StatusCodes.Status200OK)
+            {
+                return BadRequest(response);
+            }
             return Ok(response);
         }
         catch (Exception ex)
@@ -50,11 +60,15 @@ public class WalkInOrderFoodController : ControllerBase
     
     [HttpGet("walk-in-restaurant-order-foods/{restaurantId}")]
     [Authorize(Policy = "Universal")]
-    public async Task<ActionResult> GetRestaurantOrderedFoods(int restaurantId)
+    public async Task<ActionResult<ApiResponse<List<OrderedFoodDTO>>>> GetRestaurantOrderedFoods(int restaurantId)
     {
         try
         {
             var response = await _walkInOrderFoodService.GetRestaurantOrderedFoods(restaurantId);
+            if (response.Status != StatusCodes.Status200OK)
+            {
+                return BadRequest(response);
+            }
             return Ok(response);
         }
         catch (Exception ex)
@@ -63,13 +77,17 @@ public class WalkInOrderFoodController : ControllerBase
         }
     }
     
-    [HttpPut("update-walk-in-order-foods-quantity/{orderedFoodId}")]
+    [HttpPut("update-walk-in-order-foods-quantity/{hostId}/{orderedFoodId}")]
     [Authorize(Policy = "Universal")]
-    public async Task<ActionResult> ChangeWalkInOrderFoodQuantity(int hostId, int orderedFoodId, int quantity)
+    public async Task<ActionResult<ApiResponse<OrderedFoodDTO>>> ChangeWalkInOrderFoodQuantity(int hostId, int orderedFoodId, int quantity)
     {
         try
         {
             var response = await _walkInOrderFoodService.ChangeWalkInOrderFoodQuantity(hostId, orderedFoodId, quantity);
+            if (response.Status != StatusCodes.Status200OK)
+            {
+                return BadRequest(response);
+            }
             return Ok(response);
         }
         catch (Exception ex)
@@ -78,13 +96,17 @@ public class WalkInOrderFoodController : ControllerBase
         }
     }
     
-    [HttpPut("update-walk-in-order-foods-message/{orderedFoodId}")]
+    [HttpPut("update-walk-in-order-foods-message/{hostId}/{orderedFoodId}")]
     [Authorize(Policy = "Universal")]
-    public async Task<ActionResult> ChangeWalkInOrderFoodMessage(int hostId, int orderedFoodId, string? message)
+    public async Task<ActionResult<ApiResponse<OrderedFoodDTO>>> ChangeWalkInOrderFoodMessage(int hostId, int orderedFoodId, string? message)
     {
         try
         {
             var response = await _walkInOrderFoodService.ChangeWalkInOrderFoodMessage(hostId, orderedFoodId, message);
+            if (response.Status != StatusCodes.Status200OK)
+            {
+                return BadRequest(response);
+            }
             return Ok(response);
         }
         catch (Exception ex)
@@ -93,13 +115,17 @@ public class WalkInOrderFoodController : ControllerBase
         }
     }
     
-    [HttpPut("update-walk-in-order-foods-payment-status/{walkInId}")]
+    [HttpPut("update-walk-in-order-foods-payment-status/{hostId}/{walkInId}")]
     [Authorize(Policy = "Universal")]
-    public async Task<ActionResult> ChangeOrderFoodPaymentStatus(int hostId, int walkInId)
+    public async Task<ActionResult<ApiResponse<List<OrderedFoodDTO>>>> ChangeOrderFoodPaymentStatus(int hostId, int walkInId)
     {
         try
         {
             var response = await _walkInOrderFoodService.ChangeOrderFoodPaymentStatus(hostId, walkInId);
+            if (response.Status != StatusCodes.Status200OK)
+            {
+                return BadRequest(response);
+            }
             return Ok(response);
         }
         catch (Exception ex)
@@ -108,13 +134,17 @@ public class WalkInOrderFoodController : ControllerBase
         }
     }
     
-    [HttpDelete("delete-walk-in-order-foods/{orderedFoodId}")]
+    [HttpDelete("delete-walk-in-order-foods/{hostId}/{orderedFoodId}")]
     [Authorize(Policy = "Universal")]
-    public async Task<ActionResult> DeleteOrderFood(int hostId, int orderedFoodId)
+    public async Task<ActionResult<ApiResponse<OrderedFoodDTO>>> DeleteOrderFood(int hostId, int orderedFoodId)
     {
         try
         {
             var response = await _walkInOrderFoodService.DeleteOrderFood(hostId, orderedFoodId);
+            if (response.Status != StatusCodes.Status200OK)
+            {
+                return BadRequest(response);
+            }
             return Ok(response);
         }
         catch (Exception ex)

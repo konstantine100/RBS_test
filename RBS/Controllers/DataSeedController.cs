@@ -18,6 +18,11 @@ namespace RBS.Controllers
             _logger = logger;
         }
 
+        // LASHAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        // LASHAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        // LASHAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        // lasha es satestoa ar waishleba saboloo jamshi ar gachedo ro authorize ar adevs
+        
         [HttpPost("seed-bookings")]
         public async Task<IActionResult> SeedBookings([FromQuery] int count = 10000)
         {

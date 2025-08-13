@@ -21,11 +21,15 @@ public class ReservationController : ControllerBase
 
     [HttpGet("my-reservations/{userId}")]
     [Authorize(Policy = "UserOnly")]
-    public async Task<ActionResult> MyReservations(int userId)
+    public async Task<ActionResult<ApiResponse<List<OverallReservations>>>> MyReservations(int userId)
     {
         try
         {
             var reservations = await _reservationService.MyReservations(userId);
+            if (reservations.Status != StatusCodes.Status200OK)
+            {
+                return BadRequest(reservations);
+            }
             return Ok(reservations);
         }
         catch (Exception ex)

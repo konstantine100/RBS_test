@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using RBS.CORE;
+using RBS.DTOs;
 using RBS.Requests;
 using RBS.Services.Interfaces;
 
@@ -18,13 +20,17 @@ public class FoodCategoryController : ControllerBase
         _foodCategoryService = foodCategoryService;
     }
 
-    [HttpPost("create-food-category")]
+    [HttpPost("create-food-category/{menuId}")]
     [Authorize(Policy = "AdminOnly")]
-    public async Task<ActionResult> AddFoodCategory(int menuId, AddFoodCategory request)
+    public async Task<ActionResult<ApiResponse<FoodCategoryDTO>>> AddFoodCategory(int menuId, AddFoodCategory request)
     {
         try
         {
             var response = await _foodCategoryService.AddFoodCategory(menuId, request);
+            if (response.Status != StatusCodes.Status200OK)
+            {
+                return BadRequest(response);
+            }
             return Ok(response);
         }
         catch (Exception ex)
@@ -35,11 +41,15 @@ public class FoodCategoryController : ControllerBase
     
     [HttpPut("update-food-category/{categoryId}")]
     [Authorize(Policy = "AdminOnly")]
-    public async Task<ActionResult> UpdateFoodCategory(int categoryId, bool isEnglish, string newCategoryName)
+    public async Task<ActionResult<ApiResponse<FoodCategoryDTO>>> UpdateFoodCategory(int categoryId, bool isEnglish, string newCategoryName)
     {
         try
         {
             var response = await _foodCategoryService.UpdateFoodCategory(categoryId, isEnglish, newCategoryName);
+            if (response.Status != StatusCodes.Status200OK)
+            {
+                return BadRequest(response);
+            }
             return Ok(response);
         }
         catch (Exception ex)
@@ -49,12 +59,16 @@ public class FoodCategoryController : ControllerBase
     }
     
     [HttpGet("see-food-category-by-id/{categoryId}")]
-    [Authorize(Policy = "UserOnly")]
-    public async Task<ActionResult> SeeFoodCategory(int categoryId)
+    [Authorize]
+    public async Task<ActionResult<ApiResponse<FoodCategoryDTO>>> SeeFoodCategory(int categoryId)
     {
         try
         {
             var response = await _foodCategoryService.SeeFoodCategory(categoryId);
+            if (response.Status != StatusCodes.Status200OK)
+            {
+                return BadRequest(response);
+            }
             return Ok(response);
         }
         catch (Exception ex)
@@ -65,11 +79,15 @@ public class FoodCategoryController : ControllerBase
     
     [HttpDelete("delete-food-category/{categoryId}")]
     [Authorize(Policy = "AdminOnly")]
-    public async Task<ActionResult> DeleteFoodCategory(int categoryId)
+    public async Task<ActionResult<ApiResponse<FoodCategoryDTO>>> DeleteFoodCategory(int categoryId)
     {
         try
         {
             var response = await _foodCategoryService.DeleteFoodCategory(categoryId);
+            if (response.Status != StatusCodes.Status200OK)
+            {
+                return BadRequest(response);
+            }
             return Ok(response);
         }
         catch (Exception ex)

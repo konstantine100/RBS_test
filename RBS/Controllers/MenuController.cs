@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using RBS.CORE;
+using RBS.DTOs;
 using RBS.Services.Interfaces;
 
 namespace RBS.Controllers;
@@ -19,11 +21,15 @@ public class MenuController : ControllerBase
 
     [HttpPost("create-menu")]
     [Authorize(Policy = "AdminOnly")]
-    public async Task<ActionResult> AddMenu(int restaurantId)
+    public async Task<ActionResult<ApiResponse<MenuDTO>>> AddMenu(int restaurantId)
     {
         try
         {
             var response = await _menuService.AddMenu(restaurantId);
+            if (response.Status != StatusCodes.Status200OK)
+            {
+                return BadRequest(response);
+            }
             return Ok(response);
         }
         catch (Exception ex)
@@ -34,11 +40,15 @@ public class MenuController : ControllerBase
     
     [HttpDelete("delete-menu/{menuId}")]
     [Authorize(Policy = "AdminOnly")]
-    public async Task<ActionResult> DeleteMenu(int menuId)
+    public async Task<ActionResult<ApiResponse<MenuDTO>>> DeleteMenu(int menuId)
     {
         try
         {
             var response = await _menuService.DeleteMenu(menuId);
+            if (response.Status != StatusCodes.Status200OK)
+            {
+                return BadRequest(response);
+            }
             return Ok(response);
         }
         catch (Exception ex)
@@ -49,11 +59,15 @@ public class MenuController : ControllerBase
     
     [HttpGet("see-menu/{restaurantId}")]
     [Authorize]
-    public async Task<ActionResult> SeeMenu(int restaurantId)
+    public async Task<ActionResult<ApiResponse<MenuDTO>>> SeeMenu(int restaurantId)
     {
         try
         {
             var response = await _menuService.SeeMenu(restaurantId);
+            if (response.Status != StatusCodes.Status200OK)
+            {
+                return BadRequest(response);
+            }
             return Ok(response);
         }
         catch (Exception ex)
@@ -64,11 +78,15 @@ public class MenuController : ControllerBase
     
     [HttpGet("see-foods-menu/{restaurantId}")]
     [Authorize]
-    public async Task<ActionResult> SeeFoodsMenu(int restaurantId)
+    public async Task<ActionResult<ApiResponse<MenuDTO>>> SeeFoodsMenu(int restaurantId)
     {
         try
         {
             var response = await _menuService.SeeFoodMenu(restaurantId);
+            if (response.Status != StatusCodes.Status200OK)
+            {
+                return BadRequest(response);
+            }
             return Ok(response);
         }
         catch (Exception ex)
@@ -79,11 +97,15 @@ public class MenuController : ControllerBase
     
     [HttpGet("see-drinks-menu/{restaurantId}")]
     [Authorize]
-    public async Task<ActionResult> SeeDrinksMenu(int restaurantId)
+    public async Task<ActionResult<ApiResponse<MenuDTO>>> SeeDrinksMenu(int restaurantId)
     {
         try
         {
             var response = await _menuService.SeeDrinkMenu(restaurantId);
+            if (response.Status != StatusCodes.Status200OK)
+            {
+                return BadRequest(response);
+            }
             return Ok(response);
         }
         catch (Exception ex)
@@ -94,11 +116,15 @@ public class MenuController : ControllerBase
     
     [HttpGet("search-food-in-menu/{menuId}")]
     [Authorize]
-    public async Task<ActionResult> SearchFoodInMenu(int menuId, string searchTerm)
+    public async Task<ActionResult<ApiResponse<List<FoodDTO>>>> SearchFoodInMenu(int menuId, string searchTerm)
     {
         try
         {
             var response = await _menuService.SearchFoodInMenu(menuId, searchTerm);
+            if (response.Status != StatusCodes.Status200OK)
+            {
+                return BadRequest(response);
+            }
             return Ok(response);
         }
         catch (Exception ex)
