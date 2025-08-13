@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using RBS.CORE;
+using RBS.DTOs;
+using RBS.Models;
 using RBS.Requests;
 using RBS.Services.Interfaces;
 
@@ -18,13 +21,17 @@ public class SpaceReservationController : ControllerBase
         _spaceReservationService = spaceReservationService;
     }
 
-    [HttpPost("choose-space/{spaceId}")]
+    [HttpPost("choose-space/{userId}/{spaceId}")]
     [Authorize(Policy = "UserOnly")]
-    public async Task<ActionResult> ChooseSpace(int userId, int spaceId, AddReservation request, DateTime endDate)
+    public async Task<ActionResult<ApiResponse<SpaceReservationDTO>>> ChooseSpace(int userId, int spaceId, AddReservation request, DateTime endDate)
     {
         try
         {
             var spaceReservation = await _spaceReservationService.ChooseSpace(userId, spaceId, request, endDate);
+            if (spaceReservation.Status != StatusCodes.Status200OK)
+            {
+                return BadRequest(spaceReservation);
+            }
             return Ok(spaceReservation);
         }
         catch (Exception ex)
@@ -35,12 +42,16 @@ public class SpaceReservationController : ControllerBase
     
     [HttpGet("space-booking-for-day/{spaceId}")]
     [Authorize(Policy = "UserOnly")]
-    public async Task<ActionResult> SpaceBookingForDay(int spaceId, DateTime date)
+    public async Task<ActionResult<ApiResponse<List<BookingDTO>>>> SpaceBookingForDay(int spaceId, DateTime date)
     {
         try
         {
-            var tableReservation = await _spaceReservationService.SpaceBookingForDay(spaceId, date);
-            return Ok(tableReservation);
+            var bookings = await _spaceReservationService.SpaceBookingForDay(spaceId, date);
+            if (bookings.Status != StatusCodes.Status200OK)
+            {
+                return BadRequest(bookings);
+            }
+            return Ok(bookings);
         }
         catch (Exception ex)
         {
@@ -48,13 +59,17 @@ public class SpaceReservationController : ControllerBase
         }
     }
     
-    [HttpDelete("delete-space-reservation/{reservationId}")]
+    [HttpDelete("delete-space-reservation/{userId}/{reservationId}")]
     [Authorize(Policy = "UserOnly")]
-    public async Task<ActionResult> RemoveReservationSpace(int userId, int reservationId)
+    public async Task<ActionResult<ApiResponse<SpaceReservationDTO>>> RemoveReservationSpace(int userId, int reservationId)
     {
         try
         {
             var spaceReservation = await _spaceReservationService.RemoveReservationSpace(userId, reservationId);
+            if (spaceReservation.Status != StatusCodes.Status200OK)
+            {
+                return BadRequest(spaceReservation);
+            }
             return Ok(spaceReservation);
         }
         catch (Exception ex)

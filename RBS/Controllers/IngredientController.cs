@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using RBS.CORE;
+using RBS.DTOs;
+using RBS.Models;
 using RBS.Requests;
 using RBS.Services.Interfaces;
 
@@ -18,13 +21,17 @@ public class IngredientController : ControllerBase
         _ingridientService = ingridientService;
     }
 
-    [HttpPost("create-ingredient")]
+    [HttpPost("create-ingredient/{foodId}")]
     [Authorize(Policy = "AdminOnly")]
-    public async Task<ActionResult> AddIngredient(int foodId, AddIngredient request)
+    public async Task<ActionResult<ApiResponse<IngredientDTO>>> AddIngredient(int foodId, AddIngredient request)
     {
         try
         {
             var response = await _ingridientService.AddIngredient(foodId, request);
+            if (response.Status != StatusCodes.Status200OK)
+            {
+                return BadRequest(response);
+            }
             return Ok(response);
         }
         catch (Exception ex)
@@ -35,11 +42,15 @@ public class IngredientController : ControllerBase
     
     [HttpPut("update-ingredient/{ingredientId}")]
     [Authorize(Policy = "AdminOnly")]
-    public async Task<ActionResult> UpdateIngredient(int ingredientId, bool isEnglish, string changeTo)
+    public async Task<ActionResult<ApiResponse<IngredientDTO>>> UpdateIngredient(int ingredientId, bool isEnglish, string changeTo)
     {
         try
         {
             var response = await _ingridientService.UpdateIngredient(ingredientId, isEnglish, changeTo);
+            if (response.Status != StatusCodes.Status200OK)
+            {
+                return BadRequest(response);
+            }
             return Ok(response);
         }
         catch (Exception ex)
@@ -50,11 +61,15 @@ public class IngredientController : ControllerBase
     
     [HttpDelete("delete-ingredient/{ingredientId}")]
     [Authorize(Policy = "AdminOnly")]
-    public async Task<ActionResult> DeleteIngredient(int ingredientId)
+    public async Task<ActionResult<ApiResponse<IngredientDTO>>> DeleteIngredient(int ingredientId)
     {
         try
         {
             var response = await _ingridientService.DeleteIngredient(ingredientId);
+            if (response.Status != StatusCodes.Status200OK)
+            {
+                return BadRequest(response);
+            }
             return Ok(response);
         }
         catch (Exception ex)

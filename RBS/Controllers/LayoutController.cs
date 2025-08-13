@@ -18,13 +18,17 @@ public class LayoutController : ControllerBase
         _layoutService = layoutService;
     }
 
-    [HttpGet("space-layout-by-hour")]
+    [HttpGet("space-layout-by-hour/{spaceId}")]
     [Authorize]
-    public async Task<ActionResult> GetLayoutByHour(int spaceId, DateTime Date)
+    public async Task<ActionResult<ActionResult<List<LayoutByHour>>>> GetLayoutByHour(int spaceId, DateTime Date)
     {
         try
         {
             var layout = await _layoutService.GetLayoutByHour(spaceId, Date);
+            if (layout.Status != StatusCodes.Status200OK)
+            {
+                return BadRequest(layout);
+            }
             return Ok(layout);
         }
         catch (Exception ex)

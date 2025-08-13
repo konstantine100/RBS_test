@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using RBS.CORE;
+using RBS.DTOs;
+using RBS.Models;
 using RBS.Requests;
 using RBS.Services.Interfaces;
 
@@ -18,13 +21,17 @@ public class ChairReservationController : ControllerBase
         _chairReservationService = chairReservationService;
     }
 
-    [HttpPost("choose-chair/{chairId}")]
+    [HttpPost("choose-chair/{userId}/{chairId}")]
     [Authorize(Policy = "UserOnly")]
-    public async Task<ActionResult> ChooseChair(int userId, int chairId, AddReservation request, int? additionalHour)
+    public async Task<ActionResult<ApiResponse<ChairReservationDTO>>> ChooseChair(int userId, int chairId, AddReservation request, int? additionalHour)
     {
         try
         {
             var tableReservation = await _chairReservationService.ChooseChair(userId, chairId, request, additionalHour);
+            if (tableReservation.Status != StatusCodes.Status200OK)
+            {
+                return BadRequest(tableReservation);
+            }
             return Ok(tableReservation);
         }
         catch (Exception ex)
@@ -32,14 +39,18 @@ public class ChairReservationController : ControllerBase
             throw new Exception("An error occurred while reserving chair.", ex);
         }
     }
-    
+
     [HttpGet("chair-booking-for-day/{chairId}")]
     [Authorize(Policy = "UserOnly")]
-    public async Task<ActionResult> ChairBookingForDay(int chairId, DateTime date)
+    public async Task<ActionResult<ApiResponse<List<BookingDTO>>>> ChairBookingForDay(int chairId, DateTime date)
     {
         try
         {
             var tableReservation = await _chairReservationService.ChairBookingForDay(chairId, date);
+            if (tableReservation.Status != StatusCodes.Status200OK)
+            {
+                return BadRequest(tableReservation);
+            }
             return Ok(tableReservation);
         }
         catch (Exception ex)
@@ -48,13 +59,17 @@ public class ChairReservationController : ControllerBase
         }
     }
     
-    [HttpDelete("remove-chair-reservation/{chairId}")]
+    [HttpDelete("remove-chair-reservation/{userId}/{reservationId}")]
     [Authorize(Policy = "UserOnly")]
-    public async Task<ActionResult> RemoveReservationChair(int userId, int reservationId)
+    public async Task<ActionResult<ApiResponse<ChairReservationDTO>>> RemoveReservationChair(int userId, int reservationId)
     {
         try
         {
             var tableReservation = await _chairReservationService.RemoveReservationChair(userId, reservationId);
+            if (tableReservation.Status != StatusCodes.Status200OK)
+            {
+                return BadRequest(tableReservation);
+            }
             return Ok(tableReservation);
         }
         catch (Exception ex)

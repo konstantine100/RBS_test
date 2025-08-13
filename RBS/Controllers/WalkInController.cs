@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using RBS.CORE;
+using RBS.DTOs;
+using RBS.Models;
 using RBS.Services.Interfaces;
 
 namespace RBS.Controllers;
@@ -17,13 +20,17 @@ public class WalkInController : ControllerBase
         _walkInService = walkInService;
     }
 
-    [HttpPost("create-table-walk-in/{tableId}")]
+    [HttpPost("create-table-walk-in/{hostId}/{tableId}")]
     [Authorize(Policy = "Universal")]
-    public async Task<ActionResult> AddWalkInTable(int hostId, int tableId)
+    public async Task<ActionResult<ApiResponse<WalkInDTO>>> AddWalkInTable(int hostId, int tableId)
     {
         try
         {
             var response = await _walkInService.AddWalkInTable(hostId, tableId);
+            if (response.Status != StatusCodes.Status200OK)
+            {
+                return BadRequest(response);
+            }
             return Ok(response);
         }
         catch (Exception ex)
@@ -32,13 +39,17 @@ public class WalkInController : ControllerBase
         }
     }
     
-    [HttpPost("create-chair-walk-in/{chairId}")]
+    [HttpPost("create-chair-walk-in/{hostId}/{chairId}")]
     [Authorize(Policy = "Universal")]
-    public async Task<ActionResult> AddWalkInChair(int hostId, int chairId)
+    public async Task<ActionResult<ApiResponse<WalkInDTO>>> AddWalkInChair(int hostId, int chairId)
     {
         try
         {
             var response = await _walkInService.AddWalkInChair(hostId, chairId);
+            if (response.Status != StatusCodes.Status200OK)
+            {
+                return BadRequest(response);
+            }
             return Ok(response);
         }
         catch (Exception ex)
@@ -49,11 +60,15 @@ public class WalkInController : ControllerBase
     
     [HttpGet("see-host-walk-ins/{hostId}")]
     [Authorize(Policy = "AdminOnly")]
-    public async Task<ActionResult> GetMyWalkIns(int hostId)
+    public async Task<ActionResult<ApiResponse<List<WalkInDTO>>>> GetMyWalkIns(int hostId)
     {
         try
         {
             var response = await _walkInService.GetMyWalkIns(hostId);
+            if (response.Status != StatusCodes.Status200OK)
+            {
+                return BadRequest(response);
+            }
             return Ok(response);
         }
         catch (Exception ex)
@@ -62,13 +77,17 @@ public class WalkInController : ControllerBase
         }
     }
     
-    [HttpPut("finish-host-walk-in/{walkInId}")]
+    [HttpPut("finish-host-walk-in/{hostId}/{walkInId}")]
     [Authorize(Policy = "Universal")]
-    public async Task<ActionResult> FinishWalkIn(int hostId, int walkInId)
+    public async Task<ActionResult<ApiResponse<WalkInDTO>>> FinishWalkIn(int hostId, int walkInId)
     {
         try
         {
             var response = await _walkInService.FinishWalkIn(hostId, walkInId);
+            if (response.Status != StatusCodes.Status200OK)
+            {
+                return BadRequest(response);
+            }
             return Ok(response);
         }
         catch (Exception ex)

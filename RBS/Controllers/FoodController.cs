@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using RBS.CORE;
+using RBS.DTOs;
 using RBS.Requests;
 using RBS.Services.Interfaces;
 
@@ -18,13 +20,17 @@ public class FoodController : ControllerBase
         _foodService = foodService;
     }
 
-    [HttpPost("create-food")]
+    [HttpPost("create-food/{categoryId}")]
     [Authorize(Policy = "AdminOnly")]
-    public async Task<ActionResult> AddFood(int categoryId, AddFood request)
+    public async Task<ActionResult<ApiResponse<FoodDTO>>> AddFood(int categoryId, AddFood request)
     {
         try
         {
             var response = await _foodService.AddFood(categoryId, request);
+            if (response.Status != StatusCodes.Status200OK)
+            {
+                return BadRequest(response);
+            }
             return Ok(response);
         }
         catch (Exception ex)
@@ -35,11 +41,15 @@ public class FoodController : ControllerBase
     
     [HttpPut("update-food/{foodId}")]
     [Authorize(Policy = "AdminOnly")]
-    public async Task<ActionResult> UpdateFood(int foodId, string changeParameter, string changeTo)
+    public async Task<ActionResult<ApiResponse<FoodDTO>>> UpdateFood(int foodId, string changeParameter, string changeTo)
     {
         try
         {
             var response = await _foodService.UpdateFood(foodId, changeParameter, changeTo);
+            if (response.Status != StatusCodes.Status200OK)
+            {
+                return BadRequest(response);
+            }
             return Ok(response);
         }
         catch (Exception ex)
@@ -49,12 +59,16 @@ public class FoodController : ControllerBase
     }
     
     [HttpGet("see-food-details/{foodId}")]
-    [Authorize(Policy = "AdminOnly")]
-    public async Task<ActionResult> SeeFoodDetails(int foodId)
+    [Authorize]
+    public async Task<ActionResult<ApiResponse<FoodDTO>>> SeeFoodDetails(int foodId)
     {
         try
         {
             var response = await _foodService.SeeFoodDetails(foodId);
+            if (response.Status != StatusCodes.Status200OK)
+            {
+                return BadRequest(response);
+            }
             return Ok(response);
         }
         catch (Exception ex)
@@ -65,11 +79,15 @@ public class FoodController : ControllerBase
     
     [HttpDelete("delete-food/{foodId}")]
     [Authorize(Policy = "AdminOnly")]
-    public async Task<ActionResult> DeleteFood(int foodId)
+    public async Task<ActionResult<ApiResponse<FoodDTO>>> DeleteFood(int foodId)
     {
         try
         {
             var response = await _foodService.DeleteFood(foodId);
+            if (response.Status != StatusCodes.Status200OK)
+            {
+                return BadRequest(response);
+            }
             return Ok(response);
         }
         catch (Exception ex)
@@ -80,11 +98,15 @@ public class FoodController : ControllerBase
     
     [HttpDelete("change-food-availability")]
     [Authorize(Policy = "AdminOnly")]
-    public async Task<ActionResult> FoodAvailabilityChange(int foodId)
+    public async Task<ActionResult<ApiResponse<FoodDTO>>> FoodAvailabilityChange(int foodId)
     {
         try
         {
             var response = await _foodService.FoodAvailabilityChange(foodId);
+            if (response.Status != StatusCodes.Status200OK)
+            {
+                return BadRequest(response);
+            }
             return Ok(response);
         }
         catch (Exception ex)

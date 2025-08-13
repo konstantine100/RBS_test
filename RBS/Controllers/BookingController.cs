@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using RBS.CORE;
+using RBS.DTOs;
 using RBS.Requests;
 using RBS.Services.Interfaces;
 
@@ -18,13 +20,17 @@ public class BookingController : ControllerBase
         _bookingService = bookingService;
     }
     
-    [HttpGet("complete-booking/{restaurantId}")]
+    [HttpPost("complete-booking/{restaurantId}/{userId}")]
     [Authorize(Policy = "UserOnly")]
-    public async Task<ActionResult> CompleteBooking(int userId, int restaurantId)
+    public async Task<ActionResult<ApiResponse<AllBookings>>> CompleteBooking(int userId, int restaurantId)
     {
         try
         {
             var response = await _bookingService.CompleteBooking(userId, restaurantId);
+            if (response.Status != StatusCodes.Status200OK)
+            {
+                return BadRequest(response);
+            }
             return Ok(response);
         }
         catch (Exception ex)
@@ -33,13 +39,17 @@ public class BookingController : ControllerBase
         }
     }
     
-    [HttpGet("get-my-bookings")]
+    [HttpGet("get-my-bookings/{userId}")]
     [Authorize(Policy = "UserOnly")]
-    public async Task<ActionResult> MyBookings(int userId)
+    public async Task<ActionResult<ApiResponse<List<BookingDTO>>>> MyBookings(int userId)
     {
         try
         {
             var response = await _bookingService.MyBookings(userId);
+            if (response.Status != StatusCodes.Status200OK)
+            {
+                return BadRequest(response);
+            }
             return Ok(response);
         }
         catch (Exception ex)
@@ -48,13 +58,17 @@ public class BookingController : ControllerBase
         }
     }
     
-    [HttpGet("get-my-booking-by-id/{bookingId}")]
+    [HttpGet("get-my-booking-by-id/{userId}/{bookingId}")]
     [Authorize(Policy = "UserOnly")]
-    public async Task<ActionResult> GetMyBookingById(int userId, int bookingId)
+    public async Task<ActionResult<ApiResponse<BookingDTO>>> GetMyBookingById(int userId, int bookingId)
     {
         try
         {
             var response = await _bookingService.GetMyBookingById(userId, bookingId);
+            if (response.Status != StatusCodes.Status200OK)
+            {
+                return BadRequest(response);
+            }
             return Ok(response);
         }
         catch (Exception ex)
@@ -63,13 +77,17 @@ public class BookingController : ControllerBase
         }
     }
     
-    [HttpGet("get-my-booking-reminder")]
+    [HttpGet("get-my-booking-reminder/{userId}")]
     [Authorize(Policy = "UserOnly")]
-    public async Task<ActionResult> ClosestBookingReminder(int userId)
+    public async Task<ActionResult<ApiResponse<BookingDTO>>> ClosestBookingReminder(int userId)
     {
         try
         {
             var response = await _bookingService.ClosestBookingReminder(userId);
+            if (response.Status != StatusCodes.Status200OK)
+            {
+                return BadRequest(response);
+            }
             return Ok(response);
         }
         catch (Exception ex)
@@ -78,13 +96,17 @@ public class BookingController : ControllerBase
         }
     }
     
-    [HttpGet("get-my-current-bookings")]
+    [HttpGet("get-my-current-bookings/{userId}")]
     [Authorize(Policy = "UserOnly")]
-    public async Task<ActionResult> MyCurrentBookings(int userId)
+    public async Task<ActionResult<ApiResponse<List<BookingDTO>>>> MyCurrentBookings(int userId)
     {
         try
         {
             var response = await _bookingService.MyCurrentBookings(userId);
+            if (response.Status != StatusCodes.Status200OK)
+            {
+                return BadRequest(response);
+            }
             return Ok(response);
         }
         catch (Exception ex)
@@ -93,13 +115,17 @@ public class BookingController : ControllerBase
         }
     }
     
-    [HttpGet("get-my-old-bookings")]
+    [HttpGet("get-my-old-bookings/{userId}")]
     [Authorize(Policy = "UserOnly")]
-    public async Task<ActionResult> MyOldBookings(int userId)
+    public async Task<ActionResult<ApiResponse<List<BookingDTO>>>> MyOldBookings(int userId)
     {
         try
         {
             var response = await _bookingService.MyOldBookings(userId);
+            if (response.Status != StatusCodes.Status200OK)
+            {
+                return BadRequest(response);
+            }
             return Ok(response);
         }
         catch (Exception ex)
@@ -108,13 +134,17 @@ public class BookingController : ControllerBase
         }
     }
     
-    [HttpDelete("cancel-booking/{bookingId}")]
+    [HttpDelete("cancel-booking/{userId}/{bookingId}")]
     [Authorize(Policy = "UserOnly")]
-    public async Task<ActionResult> CancelBooking(int userId, int bookingId)
+    public async Task<ActionResult<ApiResponse<BookingDTO>>> CancelBooking(int userId, int bookingId)
     {
         try
         {
             var response = await _bookingService.CancelBooking(userId, bookingId);
+            if (response.Status != StatusCodes.Status200OK)
+            {
+                return BadRequest(response);
+            }
             return Ok(response);
         }
         catch (Exception ex)

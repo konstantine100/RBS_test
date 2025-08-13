@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using RBS.CORE;
+using RBS.DTOs;
 using RBS.Requests;
 using RBS.Services.Interfaces;
 
@@ -20,11 +22,15 @@ public class EventController : ControllerBase
     
     [HttpPost("create-event/{adminId}")]
     [Authorize(Policy = "AdminOnly")]
-    public async Task<ActionResult> CreateEvent(int adminId, AddEvent request)
+    public async Task<ActionResult<ApiResponse<EventDTO>>> CreateEvent(int adminId, AddEvent request)
     {
         try
         {
             var response = await _eventService.CreateEvent(adminId, request);
+            if (response.Status != StatusCodes.Status200OK)
+            {
+                return BadRequest(response);
+            }
             return Ok(response);
         }
         catch (Exception ex)
@@ -34,12 +40,15 @@ public class EventController : ControllerBase
     }
     
     [HttpGet("get-active-event/{restaurantId}")]
-    [Authorize]
-    public async Task<ActionResult> GetActiveEvents(int restaurantId)
+    public async Task<ActionResult<ApiResponse<List<EventDTO>>>> GetActiveEvents(int restaurantId)
     {
         try
         {
             var response = await _eventService.GetActiveEvents(restaurantId);
+            if (response.Status != StatusCodes.Status200OK)
+            {
+                return BadRequest(response);
+            }
             return Ok(response);
         }
         catch (Exception ex)
@@ -49,12 +58,15 @@ public class EventController : ControllerBase
     }
     
     [HttpGet("get-past-event/{restaurantId}")]
-    [Authorize]
-    public async Task<ActionResult> GetPastEvents(int restaurantId)
+    public async Task<ActionResult<ApiResponse<List<EventDTO>>>> GetPastEvents(int restaurantId)
     {
         try
         {
             var response = await _eventService.GetPastEvents(restaurantId);
+            if (response.Status != StatusCodes.Status200OK)
+            {
+                return BadRequest(response);
+            }
             return Ok(response);
         }
         catch (Exception ex)
@@ -64,12 +76,15 @@ public class EventController : ControllerBase
     }
     
     [HttpGet("search-sort-event/{restaurantId}")]
-    [Authorize]
-    public async Task<ActionResult> SearchSortEvents(int restaurantId, string? searchString, string? sortBy)
+    public async Task<ActionResult<ApiResponse<List<EventDTO>>>> SearchSortEvents(int restaurantId, string? searchString, string? sortBy)
     {
         try
         {
             var response = await _eventService.SearchSortEvents(restaurantId, searchString, sortBy);
+            if (response.Status != StatusCodes.Status200OK)
+            {
+                return BadRequest(response);
+            }
             return Ok(response);
         }
         catch (Exception ex)
@@ -79,12 +94,15 @@ public class EventController : ControllerBase
     }
     
     [HttpGet("get-event-by-id/{eventId}")]
-    [Authorize]
-    public async Task<ActionResult> GetEventById(int eventId)
+    public async Task<ActionResult<ApiResponse<EventDTO>>> GetEventById(int eventId)
     {
         try
         {
             var response = await _eventService.GetEventById(eventId);
+            if (response.Status != StatusCodes.Status200OK)
+            {
+                return BadRequest(response);
+            }
             return Ok(response);
         }
         catch (Exception ex)
@@ -95,11 +113,15 @@ public class EventController : ControllerBase
     
     [HttpPut("update-event/{eventId}")]
     [Authorize(Policy = "AdminOnly")]
-    public async Task<ActionResult> UpdateEvent(int adminId, int eventId, string changeParameter, string changeTo)
+    public async Task<ActionResult<ApiResponse<EventDTO>>> UpdateEvent(int adminId, int eventId, string changeParameter, string changeTo)
     {
         try
         {
             var response = await _eventService.UpdateEvent(adminId, eventId, changeParameter, changeTo);
+            if (response.Status != StatusCodes.Status200OK)
+            {
+                return BadRequest(response);
+            }
             return Ok(response);
         }
         catch (Exception ex)
@@ -110,11 +132,15 @@ public class EventController : ControllerBase
     
     [HttpDelete("delete-event/{eventId}")]
     [Authorize(Policy = "AdminOnly")]
-    public async Task<ActionResult> DeleteEvent(int adminId, int eventId)
+    public async Task<ActionResult<ApiResponse<EventDTO>>> DeleteEvent(int adminId, int eventId)
     {
         try
         {
             var response = await _eventService.DeleteEvent(adminId, eventId);
+            if (response.Status != StatusCodes.Status200OK)
+            {
+                return BadRequest(response);
+            }
             return Ok(response);
         }
         catch (Exception ex)

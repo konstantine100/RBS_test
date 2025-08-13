@@ -37,7 +37,7 @@ public class UserController : ControllerBase
             var User = await _userService.RegisterUser(request);
             if (User.Status != StatusCodes.Status200OK)
             {
-                return BadRequest(User.Message);
+                return BadRequest(User);
             }
             return Ok(User);
         }
@@ -74,7 +74,7 @@ public class UserController : ControllerBase
             var getProfile = await  _userService.GetProfile(id);
             if (getProfile.Status != StatusCodes.Status200OK)
             {
-                return BadRequest(getProfile.Message);
+                return BadRequest(getProfile);
             }
             return Ok(getProfile);
         }
@@ -92,7 +92,7 @@ public class UserController : ControllerBase
             var getResetCode = await _userService.GetResetCode(userEmail);
             if (getResetCode.Status != StatusCodes.Status200OK)
             {
-                return BadRequest(getResetCode.Message);
+                return BadRequest(getResetCode);
             }
             return Ok(getResetCode);
         }
@@ -110,7 +110,7 @@ public class UserController : ControllerBase
             var resetPassword = await _userService.ResetPassword(email, code, newPassword);
             if (resetPassword.Status != StatusCodes.Status200OK)
             {
-                return BadRequest(resetPassword.Message);
+                return BadRequest(resetPassword);
             }
             return Ok(resetPassword);
         }
@@ -148,7 +148,7 @@ public class UserController : ControllerBase
             var user = await _userService.UpdateUser(id, changeParamert, changeTo);
             if (user.Status != StatusCodes.Status200OK)
             {
-                return BadRequest(user.Message);
+                return BadRequest(user);
             }
             return Ok(user);
         }
@@ -167,7 +167,7 @@ public class UserController : ControllerBase
             var user = await _userService.UpdateUserPreferedCurrency(id, currency);
             if (user.Status != StatusCodes.Status200OK)
             {
-                return BadRequest(user.Message);
+                return BadRequest(user);
             }
             return Ok(user);
         }
@@ -185,7 +185,7 @@ public class UserController : ControllerBase
             var user = await _userService.ResendVerifyCode(userEmail);
             if (user.Status != StatusCodes.Status200OK)
             {
-                return BadRequest(user.Message);
+                return BadRequest(user);
             }
             return Ok(user);
         }
@@ -204,7 +204,7 @@ public class UserController : ControllerBase
             var user = await _userService.DeleteUser(id);
             if (user.Status != StatusCodes.Status200OK)
             {
-                return BadRequest(user.Message);
+                return BadRequest(user);
             }
             return Ok(user);
         }
